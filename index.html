@@ -1,0 +1,222 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio</title>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="stylesheet/styles.css" />
+
+    <style>
+      .logo {
+        font-size: 2.5rem;
+        color: var(--text-color);
+        font-weight: 600;
+        cursor: default;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <a href="#" class="logo">Portfolio</a>
+
+      <box-icon name="menu" id="menu-icon"></box-icon>
+
+      <nav class="navbar">
+        <a href="#home" class="active">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#portfolio">Project</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <!-- home section desing -->
+    <section class="home" id="home">
+      <div class="home-content">
+        <h3>Hello,It's Me</h3>
+        <h1>Md Shakil Ahmed</h1>
+        <h3>And I'm a <span>Full Stack Developer</span></h3>
+
+        <div class="social-media">
+          <a href="https://www.facebook.com/ahmedmshakil13" target="_blank"
+            ><i class="bx bxl-facebook-square"></i></a>
+
+          <a href="https://github.com/ahmedmshakil"target="_blank"><i class="bx bxl-github"></i></a>
+
+          <a href="#"><i class="bx bxl-instagram"></i></a>
+
+          <a href="https://www.linkedin.com/in/ahmedmshakil/"target="_blank"><i class="bx bxl-linkedin"></i></a>
+        </div>
+        <a
+          href="https://drive.google.com/file/d/1QrqXmozd-MRxP11tY_na72kknE52WLAg/view?usp=drive_link"
+          class="btn"
+          target="_blank"
+          >Download Resume</a
+        >
+      </div>
+      <div class="home-img">
+        <img src="Images/sk.png" alt="" />
+      </div>
+    </section>
+
+    <!-- about section design -->
+    <section class="about" id="about">
+      <div class="about-img">
+        <img src="Images/sk.png" alt="" />
+      </div>
+      <div class="about-content">
+        <h2 class="heading">About <span>Me</span></h2>
+        <h3>Full Stack Developer</h3>
+        <br />
+        <p>
+          Undergraduate CSE student at IUB, proficient in HTML, CSS, JS, PHP,
+          MySQL, Python, C++, and Pygame. <br>Passionate about chess,
+          and enthusiastic traveler. Actively engaged in coding competitions and
+          the local chess community.<br> Committed to continuous learning and making
+          a positive impact through technology.
+        </p>
+        <br />
+        <a href="#" class="btn">Read More</a>
+      </div>
+    </section>
+
+    <!-- services section design -->
+    <section class="services" id="services">
+      <h2 class="heading">My <span>Expertise</span></h2>
+      <div class="services-container">
+        <div class="services-box">
+          <i class="bx bx-code-alt"></i>
+          <h3>Web Development</h3>
+          <br />
+          <p>I have developed severals website.<br /></p>
+          <br />
+          <a href="#" class="btn">Read More</a>
+        </div>
+
+        <div class="services-box">
+          <i class="bx bx-game"></i>
+          <h3>Game Development</h3>
+          <br />
+          <p>
+            Worked on game development projects
+            <br />
+          </p>
+          <br />
+          <a href="#" class="btn">Read More</a>
+        </div>
+
+        <div class="services-box">
+          <i class="bx bx-bar-chart"></i>
+          <h3>Software Engineering</h3>
+          <br />
+          <p>Worked as devOps Engineer<br /></p>
+          <br />
+          <a href="#" class="btn">Read More</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- portfolio section design -->
+
+    <section class="portfolio" id="portfolio">
+      <h2 class="heading">Latest <span>Project</span></h2>
+      <div class="portfolio-container">
+        <div class="portfolio-box">
+          <img src="Images/portfolio1.jpg" alt="" />
+          <div class="portfolio-layer">
+            <!-- Using inline styling -->
+            <h4 style="color: rgb(6, 22, 7)">Game Development Projects</h4>
+
+            <a
+              href="https://github.com/ahmedmshakil/Game_File"
+              target="_blank"
+              ><i class="bx bx-link-external"></i
+            ></a>
+          </div>
+        </div>
+
+        <div class="portfolio-box">
+          <img src="Images/portfolio2.jpg" alt="" />
+          <div class="portfolio-layer">
+            <!-- Using inline styling -->
+            <h4 style="color: rgb(6, 22, 7)">MedEasy</h4>
+
+            <a
+              href="https://2120290-mis455-mid-spring24.netlify.app/"
+              target="_blank"
+              ><i class="bx bx-link-external"></i
+            ></a>
+          </div>
+        </div>
+
+        <div class="portfolio-box">
+          <img src="Images/portfolio3.jpg" alt="" />
+          <div class="portfolio-layer">
+            <!-- Using inline styling -->
+            <h4 style="color: rgb(6, 22, 7)">Medicine Chai</h4>
+
+            <a
+              href="https://mis455-2120290-bootstrap-assignment.netlify.app/"
+              target="_blank"
+              ><i class="bx bx-link-external"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- contact section design -->
+
+    <section class="contact" id="contact">
+      <h2 class="heading">Contact <span>Me!</span></h2>
+      <form action="#contact">
+        <div class="input-box">
+          <input type="text" placeholder="Full Name" id="name" required />
+          <input type="email" id="email" placeholder="Email Address" required />
+        </div>
+        <div class="input-box">
+          <input
+            type="number"
+            id="phone"
+            placeholder="Mobile Number"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Email Subject"
+            id="subject"
+            required
+          />
+        </div>
+        <textarea
+          id="message"
+          cols="30"
+          rows="10"
+          placeholder="Your Message"
+          required
+        ></textarea>
+        <button type="submit" class="btn">Send Message</button>
+        <!-- <input type="submit" class="btn" id="submit" /> -->
+      </form>
+    </section>
+
+    <!-- footer design -->
+    <footer class="footer">
+      <div class="footer-text">
+        <p>
+          Copyright @ 2024 by Shakil Ahmed | All Rights Reserved
+        </p>
+      </div>
+      <div class="footer-iconTop">
+        <a href="#home"><i class="bx bx-up-arrow-alt"></i></a>
+      </div>
+    </footer>
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+    <script src="Scripts/scripts.js"></script>
+  </body>
+</html>
