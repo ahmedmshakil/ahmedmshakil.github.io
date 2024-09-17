@@ -341,3 +341,16 @@ span {
   font-size: 2.4rem;
   color: var(--second-bg-color);
 }
+.footer-docMiddle a {
+  
+  display: inline-block;
+  padding: 1rem 1.5rem;
+  background: var(--main-color);
+  border-radius: 10rem;
+  box-shadow: 0 0 1rem var(--main-color);
+  font-size: 1.0rem;
+  /* color: var(--second-bg-color); */
+  letter-spacing: 0.1rem;
+  font-weight: 100;
+
+} 
