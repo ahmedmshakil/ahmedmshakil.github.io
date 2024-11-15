@@ -1,0 +1,313 @@
+/* General reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    padding: 10px 0;
+}
+
+header h1 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.content {
+    display: flex;
+    margin-top: 20px;
+}
+
+.sidebar {
+    width: 200px;
+    margin-right: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+}
+
+.sidebar ul li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a:focus,
+.sidebar ul li a:active {
+    color: #3498db; /* Blue color for active or hovered links */
+}
+
+.main-content {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.main-content h2 {
+    font-size: 1.8em;
+    color: #e0e0e0;
+}
+
+.main-content h3 {
+    font-size: 1.5em;
+    color: #e0e0e0;
+    margin-top: 20px;
+}
+
+.main-content p a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.profile {
+    width: 180px;
+    text-align: center;
+}
+
+.profile img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+footer {
+    margin-top: 150px;
+    font-size: 0.9em;
+    color: #a0a0a0;
+    text-align: center;
+}
+
+footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+/* Research */
+
+
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    padding: 10px 0;
+}
+
+.header h1 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.content {
+    display: flex;
+    margin-top: 20px;
+}
+
+.sidebar {
+    width: 200px;
+    margin-right: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+}
+
+.sidebar ul li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+.sidebar ul li a.active {
+    color: #3498db; /* Blue color for active link */
+}
+
+.main-content {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.main-content h2 {
+    font-size: 1.8em;
+    color: #e0e0e0;
+}
+
+.main-content h3 {
+    font-size: 1.5em;
+    color: #e0e0e0;
+    margin-top: 20px;
+}
+
+.paper h4 {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #e0e0e0;
+    margin-top: 20px;
+}
+
+.paper p {
+    margin: 10px 0;
+}
+
+.paper p a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.abstract {
+    font-style: italic;
+    color: #c0c0c0;
+}
+
+.footer {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #a0a0a0;
+    text-align: center;
+}
+
+.footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+/* cv */
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    padding: 10px 0;
+}
+
+.header h1 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.content {
+    display: flex;
+    margin-top: 20px;
+}
+
+.sidebar {
+    width: 200px;
+    margin-right: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+}
+
+.sidebar ul li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+.sidebar ul li a.active {
+    color: #3498db; /* Blue color for active link */
+}
+
+.main-content {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.main-content h2 {
+    font-size: 1.8em;
+    color: #e0e0e0;
+}
+
+.main-content h2 a {
+    color: #3498db;
+    font-size: 0.8em;
+    text-decoration: none;
+}
+
+.horizontal-line {
+    border-top: 2px solid #555555;
+    margin: 10px 0 20px 0;
+}
+
+.pdf-viewer {
+    background-color: #2c2c2c;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.footer {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #a0a0a0;
+    text-align: center;
+}
+
+.footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+/* resources */
+
