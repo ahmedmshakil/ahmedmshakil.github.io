@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Initialize EmailJS
-    emailjs.init("SK_EMAIL_API_KEY"); //currently on (Shakil)_Replace with YOUR_PUBLIC_KEY
+    emailjs.init("YJZu6V-1TBhEYFccE"); //currently on (Shakil)_Replace with YOUR_PUBLIC_KEY
 
     // Contact Form Submission
     const contactForm = document.getElementById('contactForm');
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
             };
 
             // Send email using EmailJS
-            emailjs.send("service_pwxjohm", "template_i3vwuvk", formValues)
+            emailjs.send("service_tq5blnq", "template_8wmpcf9", formValues)
                 .then(function (response) {
                     console.log("Email sent successfully!", response);
 
