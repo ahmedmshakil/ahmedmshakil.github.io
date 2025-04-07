@@ -1,6 +1,6 @@
 /**
- * Main JavaScript for Anower Zihad's Portfolio
- * Theme: Backend/DevOps Engineer
+ * Main JavaScript for Shakil Ahmed's Portfolio
+ * Theme: Software Engineer, Backend/DevOps Engineer
  */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Initialize EmailJS
-    emailjs.init("8ixomQhHl_J5j-fLH"); // Replace with YOUR_PUBLIC_KEY
+    emailjs.init("SK_EMAIL_API_KEY"); //currently on (Shakil)_Replace with YOUR_PUBLIC_KEY
 
     // Contact Form Submission
     const contactForm = document.getElementById('contactForm');
