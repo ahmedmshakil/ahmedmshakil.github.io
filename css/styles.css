@@ -892,3 +892,31 @@ section {
         width: calc(50% - 10px);
     }
 }
+
+/* Certificate Styles */
+.certificate-image {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.certificate-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.certificate-image img:hover {
+    transform: scale(1.05);
+}
+
+.project-card .project-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+}
