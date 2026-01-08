@@ -4,6 +4,73 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Fetch and display user's IP address using ONLY IPinfo free API
+    const userIpElement = document.getElementById('user-ip');
+    const ipLinkElement = document.getElementById('ip-link');
+
+    let ipInfoData = null;
+
+    function isValidIP(ip) {
+        const ipv4Pattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        const ipv6Pattern = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::$|^([0-9a-fA-F]{1,4}:){1,7}:$|^:(:([0-9a-fA-F]{1,4})){1,7}$|^([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}$|^([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}$|^([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}$|^([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}$|^([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}$|^[0-9a-fA-F]{1,4}:(:[0-9a-fA-F]{1,4}){1,6}$/;
+
+        return ipv4Pattern.test(ip) || ipv6Pattern.test(ip);
+    }
+
+    async function fetchIpInfo() {
+        if (!userIpElement) return;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+            const response = await fetch('https://ipinfo.io/json', {
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!data || !data.ip || !isValidIP(data.ip)) {
+                throw new Error('Invalid IPinfo response');
+            }
+
+            ipInfoData = data;
+            userIpElement.textContent = data.ip;
+        } catch (error) {
+            console.error('IPinfo fetch failed:', error);
+            if (userIpElement) userIpElement.textContent = 'Not detected';
+            ipInfoData = null;
+        }
+    }
+
+    // Clicking IP opens /ipinfo/ page with data stored in localStorage
+    if (ipLinkElement) {
+        ipLinkElement.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            if (!ipInfoData) {
+                alert('IP information not loaded yet. Please wait a moment.');
+                return;
+            }
+
+            // Store IP data in localStorage
+            localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData));
+            
+            // Open /ipinfo/ in new tab
+            window.open('/ipinfo/', '_blank');
+        });
+    }
+
+    fetchIpInfo();
+
     // Mobile Navigation Toggle
     const menuToggle = document.querySelector('.menu-toggle');
     const navMenu = document.querySelector('.nav-menu');

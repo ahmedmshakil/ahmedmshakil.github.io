@@ -158,6 +158,42 @@ section {
     align-items: center;
 }
 
+.logo {
+    flex: 0 0 auto;
+    text-align: left;
+}
+
+.ip-display {
+    flex: 0 0 auto;
+    text-align: right;
+    margin-left: 30px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.ip-display a {
+    color: var(--terminal-green);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    transition: text-decoration-color 0.3s ease;
+}
+
+.ip-display a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--terminal-green);
+    text-underline-offset: 4px;
+}
+
+.nav-menu {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+}
+
 .logo a {
     font-family: var(--font-mono);
     font-size: 2rem;
@@ -835,6 +871,14 @@ section {
 @media (max-width: 768px) {
     .menu-toggle {
         display: block;
+    }
+    
+    .ip-display {
+        display: none;
+    }
+    
+    .logo {
+        flex: none;
     }
     
     .nav-menu {
