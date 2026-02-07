@@ -3,7 +3,7 @@
 
 ## 🌐 Live Website
 
-Visit my portfolio at: [shakilahmed.live](https://shakilahmed.live)
+Visit my portfolio at: [shakilahmed.live](https://shakilahmed.tech/)
 
 ## 🏗️ Portfolio Structure
 
