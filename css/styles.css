@@ -145,18 +145,21 @@ section {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: rgba(13, 17, 23, 0.9);
-    backdrop-filter: blur(10px);
+    background-color: rgba(13, 17, 23, 0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     z-index: 1000;
-    border-bottom: 1px solid var(--border-color);
-    padding: 15px 0;
-    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 8px 0;
 }
 
 .navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+    max-width: none;
+    padding: 0 200px;
 }
 
 .logo {
@@ -197,7 +200,7 @@ section {
 
 .logo a {
     font-family: var(--font-mono);
-    font-size: 2rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--terminal-green);
     text-decoration: none;
@@ -799,10 +802,11 @@ section {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: rgba(13, 17, 23, 0.95);
-    backdrop-filter: blur(10px);
+    background-color: rgba(13, 17, 23, 0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 6px 0;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
     z-index: 1000;
 }
 

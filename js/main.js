@@ -122,16 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Navbar scroll effect
+    // Navbar scroll effect disabled — fixed slim header
     const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.style.padding = '10px 0';
-            navbar.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
-        } else {
-            navbar.style.padding = '15px 0';
-            navbar.style.boxShadow = 'none';
-        }
-    });
 
     // Terminal typing effect simulation
     function simulateTyping() {

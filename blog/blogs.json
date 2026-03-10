@@ -15,9 +15,30 @@
   },
   {
     "id": "003",
-    "title": "Hello, World!",
-    "file": "hello.html",
-    "subtitle": "Version control — the time machine every developer uses, explained from scratch.",
-    "date": "2025-02-20"
+    "title": "What is Docker?",
+    "file": "docker-explainer.html",
+    "subtitle": "Package your app and everything it needs into a portable box — runs anywhere, every time.",
+    "date": "2025-03-10"
+  },
+  {
+    "id": "004",
+    "title": "What is Async/Await in C++?",
+    "file": "async-await-explainer.html",
+    "subtitle": "Do multiple things at once without blocking — using std::future, std::async, and C++20 coroutines.",
+    "date": "2025-04-05"
+  },
+  {
+    "id": "005",
+    "title": "What are Pointers?",
+    "file": "pointers-explainer.html",
+    "subtitle": "Variables that store memory addresses — the most powerful (and feared) feature of C++.",
+    "date": "2025-05-12"
+  },
+  {
+    "id": "006",
+    "title": "What is Recursion?",
+    "file": "recursion-explainer.html",
+    "subtitle": "A function that calls itself — and why that's incredibly powerful.",
+    "date": "2025-06-18"
   }
 ]

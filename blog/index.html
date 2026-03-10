@@ -40,7 +40,7 @@
         .blog-wrapper {
             display: flex;
             position: fixed;
-            top: 60px;    /* below navbar */
+            top: 50px;    /* below navbar */
             bottom: 40px; /* above footer */
             left: 0;
             right: 0;
@@ -48,9 +48,9 @@
 
         /* ===== Sidebar ===== */
         .blog-sidebar {
-            width: 20%;
-            min-width: 200px;
-            max-width: 280px;
+            width: 25%;
+            min-width: 240px;
+            max-width: 360px;
             background: var(--blog-surface);
             border-right: 1px solid var(--blog-border);
             overflow-y: auto;
@@ -193,7 +193,7 @@
 
         /* ===== Navbar overrides for blog page ===== */
         .navbar {
-            padding: 10px 0 !important;
+            padding: 8px 0 !important;
         }
 
         /* ===== Footer overrides for blog page ===== */
@@ -281,7 +281,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="logo">
-                <a href="/">Shakil∞Ahmed</a>
+                <a href="/">shakilahmed@portfolio:~$</a>
             </div>
             <div class="menu-toggle">
                 <div class="bar"></div>
@@ -297,6 +297,9 @@
                 <li><a href="/#contact" class="nav-link">Contact</a></li>
                 <li><a href="/blog/" class="nav-link active-page">Blog</a></li>
             </ul>
+            <div class="ip-display">
+                Detected Ip address: <a href="#" id="ip-link"><span id="user-ip">Loading...</span></a>
+            </div>
         </div>
     </nav>
 
@@ -435,6 +438,52 @@
                 loadBlog(hash);
             }
         });
+
+        // --- IP Detection (same as portfolio) ---
+        const userIpElement = document.getElementById('user-ip');
+        const ipLinkElement = document.getElementById('ip-link');
+        let ipInfoData = null;
+
+        function isValidIP(ip) {
+            const ipv4 = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            return ipv4.test(ip);
+        }
+
+        async function fetchIpInfo() {
+            if (!userIpElement) return;
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000);
+                const response = await fetch('https://ipinfo.io/json', {
+                    signal: controller.signal,
+                    headers: { 'Accept': 'application/json' }
+                });
+                clearTimeout(timeoutId);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const data = await response.json();
+                if (!data || !data.ip || !isValidIP(data.ip)) throw new Error('Invalid response');
+                ipInfoData = data;
+                userIpElement.textContent = data.ip;
+            } catch (e) {
+                console.error('IPinfo fetch failed:', e);
+                if (userIpElement) userIpElement.textContent = 'Not detected';
+                ipInfoData = null;
+            }
+        }
+
+        if (ipLinkElement) {
+            ipLinkElement.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!ipInfoData) {
+                    alert('IP information not loaded yet. Please wait a moment.');
+                    return;
+                }
+                localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData));
+                window.open('/ipinfo/', '_blank');
+            });
+        }
+
+        fetchIpInfo();
     </script>
 </body>
 </html>
