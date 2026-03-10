@@ -1,185 +1,199 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta name="google-site-verification" content="eoYoYe_3OeFPBYfE24IOaWfFihTbgbyAmItw2nS6dYI" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shakil Ahmed</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css" />
     <!-- <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet" />
 
-    <link rel="apple-touch-icon" sizes="180x180" href="./images/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-</head>
-<body>
+    <link rel="apple-touch-icon" sizes="180x180" href="./images/favicon/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <a href="#home">shakilahmed@portfolio:~$</a>
-            </div>
-            <div class="menu-toggle">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#about" class="nav-link">About</a></li>
-                <!-- <li><a href="#experience" class="nav-link">Experience</a></li> -->
-                <li><a href="#skills" class="nav-link">Skills</a></li>
-                <li><a href="#projects" class="nav-link">Projects</a></li>
-                <li><a href="#certifications" class="nav-link">Certifications</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
-                <li><a href="/blog/" class="nav-link">Blog</a></li>
-            </ul>
-            <div class="ip-display">
-                Detected Ip address: <a href="#" id="ip-link"><span id="user-ip">Loading...</span></a>
-            </div>
+      <div class="container">
+        <div class="logo">
+          <a href="#home">shakilahmed@portfolio:~$</a>
         </div>
+        <div class="menu-toggle">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <ul class="nav-menu">
+          <li><a href="#home" class="nav-link">Home</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+          <!-- <li><a href="#experience" class="nav-link">Experience</a></li> -->
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#certifications" class="nav-link">Certifications</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+          <li><a href="/blog/" class="nav-link">Blog</a></li>
+        </ul>
+        <div class="ip-display">
+          Detected Ip address:
+          <a href="#" id="ip-link"><span id="user-ip">Loading...</span></a>
+        </div>
+      </div>
     </nav>
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Md Shakil Ahmed</h1>
-                <div class="terminal">
-                    <div class="terminal-header">
-                        <div class="terminal-buttons">
-                            <span class="terminal-button red"></span>
-                            <span class="terminal-button yellow"></span>
-                            <span class="terminal-button green"></span>
-                        </div>
-                        <div class="terminal-title">terminal</div>
-                    </div>
-
-                    <div class="terminal-body">
-                        <div class="line">
-                            <span class="prompt">$</span>
-                            <span class="command">whoami</span>
-                        </div>
-                        <div class="line">
-                            <span class="output">Software Engineer</span>
-                        </div>
-                        <div class="line">
-                            <span class="prompt">$</span>
-                            <span class="command">cat skills.txt</span>
-                        </div>
-                        <div class="line">
-                            <span class="output typing-text">AWS | Docker | Kubernetes | Terraform | Ansible | CI/CD | Python | JavaScript</span>
-                        </div>
-                        <div class="line">
-                            <span class="prompt">$</span>
-                            <span class="cursor"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-buttons">
-                    <a href="#contact" class="btn primary-btn">Get in Touch</a>
-                    <a href="#" class="btn secondary-btn" download>Download Resume</a>
-                    <!-- <a href="../cv-pdf/shakil-ahmed-cv-v13.pdf" class="btn secondary-btn" download>Download Resume</a> -->
-                </div>
+      <div class="container">
+        <div class="hero-content">
+          <h1>Md Shakil Ahmed</h1>
+          <div class="terminal">
+            <div class="terminal-header">
+              <div class="terminal-buttons">
+                <span class="terminal-button red"></span>
+                <span class="terminal-button yellow"></span>
+                <span class="terminal-button green"></span>
+              </div>
+              <div class="terminal-title">terminal</div>
             </div>
+
+            <div class="terminal-body">
+              <div class="line">
+                <span class="prompt">$</span>
+                <span class="command">whoami</span>
+              </div>
+              <div class="line">
+                <span class="output">Software Engineer</span>
+              </div>
+              <div class="line">
+                <span class="prompt">$</span>
+                <span class="command">cat skills.txt</span>
+              </div>
+              <div class="line">
+                <span class="output typing-text">
+                  AWS | Docker | Kubernetes | Terraform | Ansible | CI/CD | Python | JavaScript
+                </span>
+              </div>
+              <div class="line">
+                <span class="prompt">$</span>
+                <span class="cursor"></span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-buttons">
+            <a href="#contact" class="btn primary-btn">Get in Touch</a>
+            <a href="#" class="btn secondary-btn" download>Download Resume</a>
+            <!-- <a href="../cv-pdf/shakil-ahmed-cv-v13.pdf" class="btn secondary-btn" download>Download Resume</a> -->
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- About Section -->
     <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <div class="about-image">
-                    <div class="image-container">
-                        <div class="avatar-placeholder">
-                            <!-- <i class="fas fa-user"></i> --> 
-                             <img src="./images/shakil.png" width="100%" height="100%" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="about-text">
-                    <p>I am a undergrad student in Computer Science at <a href="https://iub.ac.bd/" target="_blank"> Independent University, Bangladesh, </a> also work as an Undergrad Researcher, supervision of
-                        <a href="https://ccds.ai/entry/sanzar-adnan-alam/" target="_blank">Sanzar Adnan Alam</a>. Our project focuses on transparency in credit scoring system using Blockchain Technology.<br>I am also interested in working on Image Processing Project.</p>
-                    
-                  
-                    
-                    <p>I'm passionate about optimizing development workflows, implementing efficient infrastructure solutions, and solving complex technical challenges. My experience includes working with AWS cloud services, Docker, Kubernetes, Terraform, Ansible, and various CI/CD tools.</p>
-                    
-                    <div class="education">
-                        <h3>Education</h3>
-                        <div class="education-item">
-                            <h4>Bachelor of Computer Science and Engineering</h4>
-                            <p>Independent University, Bangladesh</p>
-                            <p class="date">Jan. 2021 – June. 2025</p>
-                        </div>
-                    </div>
-                </div>
+      <div class="container">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-content">
+          <div class="about-image">
+            <div class="image-container">
+              <div class="avatar-placeholder">
+                <!-- <i class="fas fa-user"></i> -->
+                <img src="./images/shakil.png" width="100%" height="100%" alt="" />
+              </div>
             </div>
+          </div>
+          <div class="about-text">
+            <p>
+              I am a undergrad student in Computer Science at
+              <a href="https://iub.ac.bd/" target="_blank">Independent University, Bangladesh,</a>
+              also work as an Undergrad Researcher, supervision of
+              <a href="https://ccds.ai/entry/sanzar-adnan-alam/" target="_blank">Sanzar Adnan Alam</a>
+              . Our project focuses on transparency in credit scoring system using Blockchain Technology.
+              <br />
+              I am also interested in working on Image Processing Project.
+            </p>
+
+            <p>
+              I'm passionate about optimizing development workflows, implementing efficient infrastructure solutions,
+              and solving complex technical challenges. My experience includes working with AWS cloud services, Docker,
+              Kubernetes, Terraform, Ansible, and various CI/CD tools.
+            </p>
+
+            <div class="education">
+              <h3>Education</h3>
+              <div class="education-item">
+                <h4>Bachelor of Computer Science and Engineering</h4>
+                <p>Independent University, Bangladesh</p>
+                <p class="date">Jan. 2021 – June. 2025</p>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Experience Section -->
-     
-     <!-- will be added later on -->
+
+    <!-- will be added later on -->
 
     <!-- Skills Section -->
     <section id="skills" class="skills">
-        <div class="container">
-            <h2 class="section-title">Technical Skills</h2>
-            <div class="skills-container">
-                <div class="skill-category">
-                    <h3>Programming Languages</h3>
-                    <div class="skill-items">
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-python"></i></div>
-                            <span>Python</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-js"></i></div>
-                            <span>JavaScript</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-terminal"></i></div>
-                            <span>Bash</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-database"></i></div>
-                            <span>SQL</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-code"></i></div>
-                            <span>Golang</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-java"></i></div>
-                            <span>Java</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <h3>Cloud & Infrastructure</h3>
-                    <div class="skill-items">
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-aws"></i></div>
-                            <span>AWS EC2</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-aws"></i></div>
-                            <span>AWS VPC</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-aws"></i></div>
-                            <span>AWS S3</span>
-                        </div>
-                        <!-- <div class="skill-item">
+      <div class="container">
+        <h2 class="section-title">Technical Skills</h2>
+        <div class="skills-container">
+          <div class="skill-category">
+            <h3>Programming Languages</h3>
+            <div class="skill-items">
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-python"></i></div>
+                <span>Python</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-js"></i></div>
+                <span>JavaScript</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-terminal"></i></div>
+                <span>Bash</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-database"></i></div>
+                <span>SQL</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-code"></i></div>
+                <span>Golang</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-java"></i></div>
+                <span>Java</span>
+              </div>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>Cloud & Infrastructure</h3>
+            <div class="skill-items">
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-aws"></i></div>
+                <span>AWS EC2</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-aws"></i></div>
+                <span>AWS VPC</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-aws"></i></div>
+                <span>AWS S3</span>
+              </div>
+              <!-- <div class="skill-item">
                             <div class="skill-icon"><i class="fab fa-aws"></i></div>
                             <span>AWS RDS</span>
                         </div>
@@ -191,25 +205,25 @@
                             <div class="skill-icon"><i class="fab fa-aws"></i></div>
                             <span>AWS EKS</span>
                         </div> -->
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <h3>Containerization & Orchestration</h3>
-                    <div class="skill-items">
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-docker"></i></div>
-                            <span>Docker</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-dharmachakra"></i></div>
-                            <span>Kubernetes</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <h3>CI/CD & IaC</h3>
-                    <div class="skill-items">
-                        <!-- <div class="skill-item">
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>Containerization & Orchestration</h3>
+            <div class="skill-items">
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-docker"></i></div>
+                <span>Docker</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-dharmachakra"></i></div>
+                <span>Kubernetes</span>
+              </div>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>CI/CD & IaC</h3>
+            <div class="skill-items">
+              <!-- <div class="skill-item">
                             <div class="skill-icon"><i class="fas fa-code-branch"></i></div>
                             <span>Terraform</span>
                         </div>
@@ -217,25 +231,25 @@
                             <div class="skill-icon"><i class="fas fa-cogs"></i></div>
                             <span>Ansible</span>
                         </div> -->
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-gitlab"></i></div>
-                            <span>GitLab CI/CD</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-jenkins"></i></div>
-                            <span>Jenkins</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-code-branch"></i></div>
-                            <span>GitOps</span>
-                        </div>
-                        <!-- <div class="skill-item">
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-gitlab"></i></div>
+                <span>GitLab CI/CD</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-jenkins"></i></div>
+                <span>Jenkins</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-code-branch"></i></div>
+                <span>GitOps</span>
+              </div>
+              <!-- <div class="skill-item">
                             <div class="skill-icon"><i class="fas fa-ship"></i></div>
                             <span>ArgoCD</span>
                         </div> -->
-                    </div>
-                </div>
-                <!-- <div class="skill-category">
+            </div>
+          </div>
+          <!-- <div class="skill-category">
                     <h3>Monitoring & Logging</h3>
                     <div class="skill-items">
                         <div class="skill-item">
@@ -252,390 +266,420 @@
                         </div>
                     </div>
                 </div> -->
-                <div class="skill-category">
-                    <h3>Web Technologies</h3>
-                    <div class="skill-items">
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-node-js"></i></div>
-                            <span>Node.js</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fab fa-python"></i></div>
-                            <span>Flask</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-database"></i></div>
-                            <span>MongoDB</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="skill-category">
-                    <h3>Machine Learning</h3>
-                    <div class="skill-items">
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-brain"></i></div>
-                            <span>TensorFlow/Keras</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-table"></i></div>
-                            <span>Pandas</span>
-                        </div>
-                        <div class="skill-item">
-                            <div class="skill-icon"><i class="fas fa-calculator"></i></div>
-                            <span>NumPy</span>
-                        </div>
-                        <!-- <div class="skill-item">
+          <div class="skill-category">
+            <h3>Web Technologies</h3>
+            <div class="skill-items">
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-node-js"></i></div>
+                <span>Node.js</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fab fa-python"></i></div>
+                <span>Flask</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-database"></i></div>
+                <span>MongoDB</span>
+              </div>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>Machine Learning</h3>
+            <div class="skill-items">
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-brain"></i></div>
+                <span>TensorFlow/Keras</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-table"></i></div>
+                <span>Pandas</span>
+              </div>
+              <div class="skill-item">
+                <div class="skill-icon"><i class="fas fa-calculator"></i></div>
+                <span>NumPy</span>
+              </div>
+              <!-- <div class="skill-item">
                             <div class="skill-icon"><i class="fas fa-cogs"></i></div>
                             <span>Scikit-Learn</span>
                         </div> -->
-                    </div>
-                </div>
             </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Projects Section -->
     <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">Projects</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-language project-icon"></i>
-                        <h3>BLCS</h3>
-                    </div>
-                    <div class="project-body">
-                        <p>Legal consultation app for communicate directly with Lawyer and Advocate using our platform.</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">React</span>
-                            <span class="tech-tag">MongoDB</span>
-                            <span class="tech-tag">Firebase</span>
-                            <span class="tech-tag">GoogleAuth</span>
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://blsc-system.web.app/" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i> GitHub
-                        </a>
-                        <a href="https://blsc-system.web.app/" target="_blank" class="project-link">
-                            <i class="fas fa-external-link-alt"></i> Live Demo
-                        </a>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-video project-icon"></i>
-                        <h3>WebRTC Video Chat App</h3>
-                    </div>
-                    <div class="project-body">
-                        <p>A web application that lets users video chat in rooms in a peer-to-peer system. Utilized the WebRTC API and configured the TURN server for relay connection on AWS EC2.</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">Node.js</span>
-                            <span class="tech-tag">Express.js</span>
-                            <span class="tech-tag">WebRTC</span>
-                            <span class="tech-tag">PeerJS</span>
-                            <span class="tech-tag">Web Sockets</span>
-                            <span class="tech-tag">AWS EC2</span>
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://github.com/ahmedmshakil" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i> GitHub
-                        </a>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-newspaper project-icon"></i>
-                        <h3>A Decentralized Method for Approval of Personal Loans</h3>
-                    </div>
-                    <div class="project-body">
-                        <p>Enhancing Consumers' Financial Accessibility with Blockchain-Powered Credit Scoring: A Decentralized Method for Approval of Personal Loans</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">Machine Learning</span>
-                            <span class="tech-tag">Deep Learning</span>
-<!--                             <span class="tech-tag">Transformer Models</span> -->
-<!--                             <span class="tech-tag">NLP</span> -->
-                            <span class="tech-tag">Python</span>
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="#" class="project-link">
-                            <i class="fas fa-file-alt"></i> Thesis Paper
-                        </a>
-                    </div>
-                </div>
+      <div class="container">
+        <h2 class="section-title">Projects</h2>
+        <div class="projects-grid">
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-language project-icon"></i>
+              <h3>BLCS</h3>
             </div>
+            <div class="project-body">
+              <p>Legal consultation app for communicate directly with Lawyer and Advocate using our platform.</p>
+              <div class="project-tech">
+                <span class="tech-tag">React</span>
+                <span class="tech-tag">MongoDB</span>
+                <span class="tech-tag">Firebase</span>
+                <span class="tech-tag">GoogleAuth</span>
+              </div>
+            </div>
+            <div class="project-footer">
+              <a href="https://blsc-system.web.app/" target="_blank" class="project-link">
+                <i class="fab fa-github"></i>
+                GitHub
+              </a>
+              <a href="https://blsc-system.web.app/" target="_blank" class="project-link">
+                <i class="fas fa-external-link-alt"></i>
+                Live Demo
+              </a>
+            </div>
+          </div>
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-video project-icon"></i>
+              <h3>WebRTC Video Chat App</h3>
+            </div>
+            <div class="project-body">
+              <p>
+                A web application that lets users video chat in rooms in a peer-to-peer system. Utilized the WebRTC API
+                and configured the TURN server for relay connection on AWS EC2.
+              </p>
+              <div class="project-tech">
+                <span class="tech-tag">Node.js</span>
+                <span class="tech-tag">Express.js</span>
+                <span class="tech-tag">WebRTC</span>
+                <span class="tech-tag">PeerJS</span>
+                <span class="tech-tag">Web Sockets</span>
+                <span class="tech-tag">AWS EC2</span>
+              </div>
+            </div>
+            <div class="project-footer">
+              <a href="https://github.com/ahmedmshakil" target="_blank" class="project-link">
+                <i class="fab fa-github"></i>
+                GitHub
+              </a>
+            </div>
+          </div>
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-newspaper project-icon"></i>
+              <h3>A Decentralized Method for Approval of Personal Loans</h3>
+            </div>
+            <div class="project-body">
+              <p>
+                Enhancing Consumers' Financial Accessibility with Blockchain-Powered Credit Scoring: A Decentralized
+                Method for Approval of Personal Loans
+              </p>
+              <div class="project-tech">
+                <span class="tech-tag">Machine Learning</span>
+                <span class="tech-tag">Deep Learning</span>
+                <!--                             <span class="tech-tag">Transformer Models</span> -->
+                <!--                             <span class="tech-tag">NLP</span> -->
+                <span class="tech-tag">Python</span>
+              </div>
+            </div>
+            <div class="project-footer">
+              <a href="#" class="project-link">
+                <i class="fas fa-file-alt"></i>
+                Thesis Paper
+              </a>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
     <!-- Certifications Section -->
     <section id="certifications" class="certifications">
-        <div class="container">
-            <h2 class="section-title">Certifications</h2>
-            <div class="projects-grid">
-
-
-
-                <!-- 1st certificate start -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-certificate project-icon"></i>
-                        <h3>CCNA Badge</h3>
-                    </div>
-                    <div class="project-body">
-                        <div class="certificate-image">
-                            <img src="certificates/ccna-bedge.png" alt="AWS Certificate" class="cert-img">
-                        </div>
-                        <div class="project-tech">
-                            <span class="tech-tag">Issued by: Cisco</span>
-                            <span class="tech-tag">Issued on: 2024-12-28</span>
-                            <!-- <span class="tech-tag">Validity: 3 years</span> -->
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://drive.google.com/file/d/1FXSSIpFhmSZVefZl8YldC5Gl0mttQqlY/view?usp=sharing" target="_blank">
-                            <i class="fas fa-external-link-alt"></i> View Badge
-                        </a>
-                        <a href="https://www.credly.com/badges/f7ba4b0b-2cd2-4861-a435-aa4e0c2a35d1/public_url" target="_blank">
-                            <i class="fas fa-badge-check"></i> Verify
-                        </a>
-                    </div>
-                </div>
-                <!-- 1st certificate end -->
-
-                <!-- 2nd certificate start -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-certificate project-icon"></i>
-                        <h3>CCNA: Introduction to Networks</h3>
-                    </div>
-                    <div class="project-body">
-                        <div class="certificate-image">
-                            <img src="certificates/ccna-certificate.png" alt="CCNA Certificate" class="cert-img">
-                        </div>
-                        <div class="project-tech">
-                            <span class="tech-tag">Issued by: Cisco</span>
-                            <span class="tech-tag">Issued on: 2024-12-28</span>
-                            <!-- <span class="tech-tag">Validity: 3 years</span> -->
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://drive.google.com/file/d/1SiCaof3WNAKxDfYbjpkF2yuI-c2KSBkV/view?usp=sharing" target="_blank">
-                            <i class="fas fa-external-link-alt"></i> View Certificate
-                        </a>
-                        <a href="https://www.credly.com/badges/f7ba4b0b-2cd2-4861-a435-aa4e0c2a35d1/public_url" target="_blank">
-                            <i class="fas fa-badge-check"></i> Verify
-                        </a>
-                    </div>
-                </div>
-                    <!-- 2nd certificate end -->
-
-
-                <!-- 3rd certificate start -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-certificate project-icon"></i>
-                        <h3>Introduction to DevOps</h3>
-                    </div>
-                    <div class="project-body">
-                        <div class="certificate-image">
-                            <img src="certificates/ibm-devops.jpg" alt="IBM DevOps Certificate" class="cert-img">
-                        </div>
-                        <div class="project-tech">
-                            <span class="tech-tag">Issued by: Coursera</span>
-                            <span class="tech-tag">Issued on: 2025-08-31</span>
-                            <!-- <span class="tech-tag">Validity: 3 years</span> -->
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://drive.google.com/file/d/1AbiCdDqsulD6nga4IFaEXUSjEVjTDDJT/view?usp=sharing" target="_blank">
-                            <i class="fas fa-external-link-alt"></i> View Certificate
-                        </a>
-                        <a href="https://coursera.org/share/bb3773ea01ba0f5017827ac60b80cd4e" target="_blank">
-                            <i class="fas fa-badge-check"></i> Verify
-                        </a>
-                    </div>
-                </div>
-                <!-- 3rd certificate end -->
-
-
-
-                <!-- 4th certificate start -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-certificate project-icon"></i>
-                        <h3>Docker Training Course</h3>
-                    </div>
-                    <div class="project-body">
-                        <div class="certificate-image">
-                            <img src="certificates/kodekloud-docker-training.png" alt="Docker Training Course Certificate" class="cert-img">
-                        </div>
-                        <div class="project-tech">
-                            <span class="tech-tag">Issued by: KodeKloud</span>
-                            <span class="tech-tag">Issued on: 2025-03-15</span>
-                            <!-- <span class="tech-tag">Validity: 3 years</span> -->
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://drive.google.com/file/d/1rEIW8ueyfj7rP2DVV8EaLacL1IsZXMVA/view?usp=sharing" target="_blank">
-                            <i class="fas fa-external-link-alt"></i> View Certificate
-                        </a>
-                        <a href="https://learn.kodekloud.com/user/certificate/8dd64f16-dc01-4f38-a244-6e918308270a" target="_blank">
-                            <i class="fas fa-badge-check"></i> Verify
-                        </a>
-                    </div>
-                </div>
-                <!-- 4th certificate end -->
-
-
-
-
-                <!-- 5th certificate start -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-certificate project-icon"></i>
-                        <h3>CKAD Labs</h3>
-                    </div>
-                    <div class="project-body">
-                        <div class="certificate-image">
-                            <img src="certificates/kodekloud-ckad-labs.png" alt="AWS Certificate" class="cert-img">
-                        </div>
-                        <div class="project-tech">
-                            <span class="tech-tag">Issued by: KodeKloud</span>
-                            <span class="tech-tag">Issued on: 2025-03-29</span>
-                            <!-- <span class="tech-tag">Validity: 3 years</span> -->
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://drive.google.com/file/d/1-SdGDqh3D5gCnwyuQzGp2IHdxjdW1hfY/view?usp=sharing" target="_blank">
-                            <i class="fas fa-external-link-alt"></i> View Certificate
-                        </a>
-                        <a href="https://learn.kodekloud.com/user/certificate/6424060a-495d-43f9-8110-55486b0f6a65" target="_blank">
-                            <i class="fas fa-badge-check"></i> Verify
-                        </a>
-                    </div>
-                </div>
-                <!-- 5th certificate end -->
-
-
-
-
-                <!-- 6th certificate start -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <i class="fas fa-certificate project-icon"></i>
-                        <h3>AWS ECS</h3>
-                    </div>
-                    <div class="project-body">
-                        <div class="certificate-image">
-                            <img src="certificates/kodekloud-aws-ecs.png" alt="AWS Certificate" class="cert-img">
-                        </div>
-                        <div class="project-tech">
-                            <span class="tech-tag">Issued by: KodeKloud</span>
-                            <span class="tech-tag">Issued on: 2025-02-18</span>
-                            <!-- <span class="tech-tag">Validity: 3 years</span> -->
-                        </div>
-                    </div>
-                    <div class="project-footer">
-                        <a href="https://drive.google.com/file/d/1N2TCq_HAI_q5dp4msecWVEWFrVOPYc1P/view?usp=sharing" target="_blank">
-                            <i class="fas fa-external-link-alt"></i> View Certificate
-                        </a>
-                        <a href="https://learn.kodekloud.com/user/certificate/c2c42cd4-8a94-48e5-ac91-8ab02b22076b" target="_blank">
-                            <i class="fas fa-badge-check"></i> Verify
-                        </a>
-                    </div>
-                </div>
-                <!-- 6th certificate end -->
-
-                
+      <div class="container">
+        <h2 class="section-title">Certifications</h2>
+        <div class="projects-grid">
+          <!-- 1st certificate start -->
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-certificate project-icon"></i>
+              <h3>CCNA Badge</h3>
             </div>
+            <div class="project-body">
+              <div class="certificate-image">
+                <img src="certificates/ccna-bedge.png" alt="AWS Certificate" class="cert-img" />
+              </div>
+              <div class="project-tech">
+                <span class="tech-tag">Issued by: Cisco</span>
+                <span class="tech-tag">Issued on: 2024-12-28</span>
+                <!-- <span class="tech-tag">Validity: 3 years</span> -->
+              </div>
+            </div>
+            <div class="project-footer">
+              <a
+                href="https://drive.google.com/file/d/1FXSSIpFhmSZVefZl8YldC5Gl0mttQqlY/view?usp=sharing"
+                target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                View Badge
+              </a>
+              <a href="https://www.credly.com/badges/f7ba4b0b-2cd2-4861-a435-aa4e0c2a35d1/public_url" target="_blank">
+                <i class="fas fa-badge-check"></i>
+                Verify
+              </a>
+            </div>
+          </div>
+          <!-- 1st certificate end -->
+
+          <!-- 2nd certificate start -->
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-certificate project-icon"></i>
+              <h3>CCNA: Introduction to Networks</h3>
+            </div>
+            <div class="project-body">
+              <div class="certificate-image">
+                <img src="certificates/ccna-certificate.png" alt="CCNA Certificate" class="cert-img" />
+              </div>
+              <div class="project-tech">
+                <span class="tech-tag">Issued by: Cisco</span>
+                <span class="tech-tag">Issued on: 2024-12-28</span>
+                <!-- <span class="tech-tag">Validity: 3 years</span> -->
+              </div>
+            </div>
+            <div class="project-footer">
+              <a
+                href="https://drive.google.com/file/d/1SiCaof3WNAKxDfYbjpkF2yuI-c2KSBkV/view?usp=sharing"
+                target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                View Certificate
+              </a>
+              <a href="https://www.credly.com/badges/f7ba4b0b-2cd2-4861-a435-aa4e0c2a35d1/public_url" target="_blank">
+                <i class="fas fa-badge-check"></i>
+                Verify
+              </a>
+            </div>
+          </div>
+          <!-- 2nd certificate end -->
+
+          <!-- 3rd certificate start -->
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-certificate project-icon"></i>
+              <h3>Introduction to DevOps</h3>
+            </div>
+            <div class="project-body">
+              <div class="certificate-image">
+                <img src="certificates/ibm-devops.jpg" alt="IBM DevOps Certificate" class="cert-img" />
+              </div>
+              <div class="project-tech">
+                <span class="tech-tag">Issued by: Coursera</span>
+                <span class="tech-tag">Issued on: 2025-08-31</span>
+                <!-- <span class="tech-tag">Validity: 3 years</span> -->
+              </div>
+            </div>
+            <div class="project-footer">
+              <a
+                href="https://drive.google.com/file/d/1AbiCdDqsulD6nga4IFaEXUSjEVjTDDJT/view?usp=sharing"
+                target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                View Certificate
+              </a>
+              <a href="https://coursera.org/share/bb3773ea01ba0f5017827ac60b80cd4e" target="_blank">
+                <i class="fas fa-badge-check"></i>
+                Verify
+              </a>
+            </div>
+          </div>
+          <!-- 3rd certificate end -->
+
+          <!-- 4th certificate start -->
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-certificate project-icon"></i>
+              <h3>Docker Training Course</h3>
+            </div>
+            <div class="project-body">
+              <div class="certificate-image">
+                <img
+                  src="certificates/kodekloud-docker-training.png"
+                  alt="Docker Training Course Certificate"
+                  class="cert-img" />
+              </div>
+              <div class="project-tech">
+                <span class="tech-tag">Issued by: KodeKloud</span>
+                <span class="tech-tag">Issued on: 2025-03-15</span>
+                <!-- <span class="tech-tag">Validity: 3 years</span> -->
+              </div>
+            </div>
+            <div class="project-footer">
+              <a
+                href="https://drive.google.com/file/d/1rEIW8ueyfj7rP2DVV8EaLacL1IsZXMVA/view?usp=sharing"
+                target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                View Certificate
+              </a>
+              <a
+                href="https://learn.kodekloud.com/user/certificate/8dd64f16-dc01-4f38-a244-6e918308270a"
+                target="_blank">
+                <i class="fas fa-badge-check"></i>
+                Verify
+              </a>
+            </div>
+          </div>
+          <!-- 4th certificate end -->
+
+          <!-- 5th certificate start -->
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-certificate project-icon"></i>
+              <h3>CKAD Labs</h3>
+            </div>
+            <div class="project-body">
+              <div class="certificate-image">
+                <img src="certificates/kodekloud-ckad-labs.png" alt="AWS Certificate" class="cert-img" />
+              </div>
+              <div class="project-tech">
+                <span class="tech-tag">Issued by: KodeKloud</span>
+                <span class="tech-tag">Issued on: 2025-03-29</span>
+                <!-- <span class="tech-tag">Validity: 3 years</span> -->
+              </div>
+            </div>
+            <div class="project-footer">
+              <a
+                href="https://drive.google.com/file/d/1-SdGDqh3D5gCnwyuQzGp2IHdxjdW1hfY/view?usp=sharing"
+                target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                View Certificate
+              </a>
+              <a
+                href="https://learn.kodekloud.com/user/certificate/6424060a-495d-43f9-8110-55486b0f6a65"
+                target="_blank">
+                <i class="fas fa-badge-check"></i>
+                Verify
+              </a>
+            </div>
+          </div>
+          <!-- 5th certificate end -->
+
+          <!-- 6th certificate start -->
+          <div class="project-card">
+            <div class="project-header">
+              <i class="fas fa-certificate project-icon"></i>
+              <h3>AWS ECS</h3>
+            </div>
+            <div class="project-body">
+              <div class="certificate-image">
+                <img src="certificates/kodekloud-aws-ecs.png" alt="AWS Certificate" class="cert-img" />
+              </div>
+              <div class="project-tech">
+                <span class="tech-tag">Issued by: KodeKloud</span>
+                <span class="tech-tag">Issued on: 2025-02-18</span>
+                <!-- <span class="tech-tag">Validity: 3 years</span> -->
+              </div>
+            </div>
+            <div class="project-footer">
+              <a
+                href="https://drive.google.com/file/d/1N2TCq_HAI_q5dp4msecWVEWFrVOPYc1P/view?usp=sharing"
+                target="_blank">
+                <i class="fas fa-external-link-alt"></i>
+                View Certificate
+              </a>
+              <a
+                href="https://learn.kodekloud.com/user/certificate/c2c42cd4-8a94-48e5-ac91-8ab02b22076b"
+                target="_blank">
+                <i class="fas fa-badge-check"></i>
+                Verify
+              </a>
+            </div>
+          </div>
+          <!-- 6th certificate end -->
         </div>
+      </div>
     </section>
 
     <!-- Contact Section -->
     <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Get In Touch</h2>
-            <div class="contact-container">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h3>Email</h3>
-                            <p><a href="mailto:ahmedmshakil1@gmail.com">ahmedmshakil1@gmail.com</a></p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h3>Phone</h3>
-                            <p><a href="tel:880">880 130 **** 291</a></p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <h3>Location</h3>
-                            <p>Dhaka, Bangladesh</p>
-                        </div>
-                    </div>
-                    <div class="social-links">
-                        <a href="https://github.com/ahmedmshakil" target="_blank" class="social-link">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="https://linkedin.com/in/ahmedmshakil" target="_blank" class="social-link">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="https://codeforces.com/profile/shakil_13" target="_blank" class="social-link">
-                            <i class="fas fa-code"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="contact-form">
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject">Subject</label>
-                            <input type="text" id="subject" name="subject" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn primary-btn">Send Message</button>
-                    </form>
-                </div>
+      <div class="container">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="contact-container">
+          <div class="contact-info">
+            <div class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <div>
+                <h3>Email</h3>
+                <p><a href="mailto:ahmedmshakil1@gmail.com">ahmedmshakil1@gmail.com</a></p>
+              </div>
             </div>
+            <div class="contact-item">
+              <i class="fas fa-phone"></i>
+              <div>
+                <h3>Phone</h3>
+                <p><a href="tel:880">880 130 **** 291</a></p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div>
+                <h3>Location</h3>
+                <p>Dhaka, Bangladesh</p>
+              </div>
+            </div>
+            <div class="social-links">
+              <a href="https://github.com/ahmedmshakil" target="_blank" class="social-link">
+                <i class="fab fa-github"></i>
+              </a>
+              <a href="https://linkedin.com/in/ahmedmshakil" target="_blank" class="social-link">
+                <i class="fab fa-linkedin"></i>
+              </a>
+              <a href="https://codeforces.com/profile/shakil_13" target="_blank" class="social-link">
+                <i class="fas fa-code"></i>
+              </a>
+            </div>
+          </div>
+          <div class="contact-form">
+            <form id="contactForm">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required />
+              </div>
+              <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" required />
+              </div>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="btn primary-btn">Send Message</button>
+            </form>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <a href="#home">SK</a>
-                </div>
-                <p class="footer-copyright">&copy; 2026 Shakil Ahmed. All Rights Reserved.</p>
-                <div class="footer-social">
-                    <a href="https://github.com/ahmedmshakil" target="_blank">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <a href="https://linkedin.com/in/ahmedmshakil" target="_blank">
-                        <i class="fab fa-linkedin"></i>
-                    </a>
-                </div>
-            </div>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <a href="#home">SK</a>
+          </div>
+          <p class="footer-copyright">&copy; 2026 Shakil Ahmed. All Rights Reserved.</p>
+          <div class="footer-social">
+            <a href="https://github.com/ahmedmshakil" target="_blank">
+              <i class="fab fa-github"></i>
+            </a>
+            <a href="https://linkedin.com/in/ahmedmshakil" target="_blank">
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </div>
         </div>
+      </div>
     </footer>
 
     <script src="js/main.js"></script>
-</body>
+    <script src="alert/blog-alert.js"></script>
+  </body>
 </html>
