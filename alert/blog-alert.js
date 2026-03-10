@@ -145,7 +145,7 @@
         '<div class="blog-alert-msg">',
           '<span class="ba-cursor"></span>',
         '</div>',
-        '<a href="/blog/" class="blog-alert-btn" style="opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;">',
+        '<a href="https://blog.shakilahmed.tech" class="blog-alert-btn" style="opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;">',
           '~/blog &rarr;',
         '</a>',
       '</div>',
