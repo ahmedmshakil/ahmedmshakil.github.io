@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap"
+        rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
@@ -40,8 +43,10 @@
         .blog-wrapper {
             display: flex;
             position: fixed;
-            top: 50px;    /* below navbar */
-            bottom: 40px; /* above footer */
+            top: 50px;
+            /* below navbar */
+            bottom: 40px;
+            /* above footer */
             left: 0;
             right: 0;
         }
@@ -217,6 +222,7 @@
         .nav-link.active-page {
             color: var(--terminal-green);
         }
+
         .nav-link.active-page::after {
             width: 100%;
         }
@@ -276,6 +282,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation (same as portfolio) -->
     <nav class="navbar">
@@ -322,7 +329,8 @@
                 <div class="empty-icon">📝</div>
                 <span>Select an article from the sidebar</span>
             </div>
-            <iframe id="blog-iframe" style="display:none;" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+            <iframe id="blog-iframe" style="display:none;"
+                sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
         </div>
     </div>
 
@@ -486,4 +494,5 @@
         fetchIpInfo();
     </script>
 </body>
+
 </html>

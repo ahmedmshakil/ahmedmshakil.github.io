@@ -1,195 +1,706 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>SQL Joins</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#0d0d0d;--surface:#161616;--card:#1e1e1e;--border:#2a2a2a;--accent:#f5c518;--accent2:#ff6b35;--accent3:#4ecdc4;--text:#f0ece3;--muted:#7a7570;--green:#6bcb77;--red:#ff6b6b;}
-body{background:var(--bg);color:var(--text);font-family:'Lora',serif;min-height:100vh;overflow-x:hidden;}
-header{padding:60px 40px 40px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-header::before{content:'JOIN';position:absolute;right:-20px;top:-20px;font-family:'Syne',sans-serif;font-size:200px;font-weight:800;color:#ffffff06;pointer-events:none;letter-spacing:-10px;}
-.tag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);background:#f5c51815;border:1px solid #f5c51830;padding:4px 10px;display:inline-block;margin-bottom:20px;}
-h1{font-family:'Syne',sans-serif;font-size:clamp(36px,7vw,72px);font-weight:800;line-height:1;letter-spacing:-2px;max-width:760px;}
-h1 span{color:var(--accent);}
-.subtitle{font-style:italic;color:var(--muted);font-size:18px;margin-top:16px;max-width:520px;line-height:1.6;}
-main{max-width:1100px;margin:0 auto;padding:60px 40px;}
-section{margin-bottom:80px;}
-.section-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:24px;display:flex;align-items:center;gap:12px;}
-.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
-h2{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;margin-bottom:16px;}
-p{line-height:1.8;color:#c8c4bb;font-size:16px;}
-code{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent3);background:#0a0a0a;padding:2px 6px;border-radius:2px;}
-.join-explorer{margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-.topbar{background:#111;padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
-.dot{width:10px;height:10px;border-radius:50%;}.dot.r{background:var(--red);}.dot.y{background:var(--accent);}.dot.g{background:var(--green);}
-.topbar span{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-left:8px;}
-.explorer-body{padding:32px;}
-.join-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
-.jtab{font-family:'DM Mono',monospace;font-size:12px;padding:8px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;letter-spacing:1px;transition:all .2s;border-radius:2px;}
-.jtab:hover,.jtab.active{border-color:var(--accent);color:var(--accent);background:#f5c51810;}
-.join-content{display:none;animation:fadeIn .3s ease;}
-.join-content.visible{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.venn-row{display:flex;gap:32px;align-items:center;justify-content:center;margin:24px 0;flex-wrap:wrap;}
-.venn-svg{flex-shrink:0;}
-.join-result{flex:1;min-width:200px;}
-.jr-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:10px;}
-.result-table{border:1px solid var(--border);border-radius:2px;overflow:hidden;}
-.result-table table{width:100%;border-collapse:collapse;}
-.result-table th{background:var(--card);padding:8px 12px;text-align:left;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent3);border-bottom:1px solid var(--border);}
-.result-table td{padding:8px 12px;font-family:'DM Mono',monospace;font-size:11px;border-bottom:1px solid var(--border);color:#c8c4bb;}
-.result-table td.null{color:var(--muted);font-style:italic;}
-.result-table tr:last-child td{border-bottom:none;}
-.code-block{background:#0a0a0a;border:1px solid var(--border);border-radius:2px;padding:20px;font-family:'DM Mono',monospace;font-size:13px;line-height:2;overflow-x:auto;margin-top:16px;}
-.kw{color:var(--accent2);}.fn{color:var(--accent3);}.str{color:var(--green);}.num{color:var(--accent);}.comment{color:#4a4a4a;}
-.quiz-wrap{background:var(--surface);border:1px solid var(--border);padding:36px;margin-top:32px;border-radius:4px;}
-.quiz-q{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:24px;}
-.quiz-opts{display:flex;flex-direction:column;gap:10px;}
-.quiz-opt{padding:14px 18px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:'Lora',serif;font-size:15px;text-align:left;cursor:pointer;transition:all .15s;border-radius:2px;}
-.quiz-opt:hover{border-color:var(--accent);background:#f5c51808;}
-.quiz-opt.correct{border-color:var(--green);background:#6bcb7715;color:var(--green);}
-.quiz-opt.wrong{border-color:var(--red);background:#ff6b6b10;color:var(--red);}
-.quiz-feedback{margin-top:20px;font-style:italic;font-size:15px;min-height:28px;color:var(--muted);}
-.next-btn{margin-top:20px;padding:10px 24px;background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;display:none;transition:all .2s;}
-.next-btn:hover{background:var(--accent);color:#000;}
-.next-btn.show{display:inline-block;}
-.progress-dots{display:flex;gap:8px;margin-bottom:28px;}
-.progress-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s;}
-.progress-dot.done{background:var(--green);}.progress-dot.current{background:var(--accent);}
-.quiz-complete{text-align:center;padding:20px;display:none;}
-.quiz-complete h3{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);margin-bottom:12px;}
-.quiz-complete p{font-size:16px;color:var(--muted);}
-footer{border-top:1px solid var(--border);padding:40px;text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
-</style></head><body>
-<header>
-  <div class="tag">Database Concept — 05 of 15</div>
-  <h1>SQL <span>Joins</span></h1>
-  <p class="subtitle">Combining rows from two or more tables based on a related column — the heart of relational databases.</p>
-</header>
-<main>
-  <section>
-    <div class="section-label">01 — The Setup</div>
-    <h2>Two tables, one query</h2>
-    <p>Joins let you combine data from multiple tables using a shared key (like <code>customer_id</code>). Instead of duplicating data, you store it once and join it when needed. The type of join determines which rows are included.</p>
-  </section>
-  <section>
-    <div class="section-label">02 — Join Types Explorer</div>
-    <h2>See what each join returns</h2>
-    <p>Using <strong>Customers</strong> (Alice, Bob, Carol) and <strong>Orders</strong> (Alice & Bob have orders; Carol does not; Dave has an order but isn't a customer).</p>
-    <div class="join-explorer">
-      <div class="topbar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>sql-joins.visualizer</span></div>
-      <div class="explorer-body">
-        <div class="join-tabs">
-          <button class="jtab active" onclick="showJoin('inner',this)">INNER JOIN</button>
-          <button class="jtab" onclick="showJoin('left',this)">LEFT JOIN</button>
-          <button class="jtab" onclick="showJoin('right',this)">RIGHT JOIN</button>
-          <button class="jtab" onclick="showJoin('full',this)">FULL OUTER JOIN</button>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Joins</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --card: #1e1e1e;
+      --border: #2a2a2a;
+      --accent: #f5c518;
+      --accent2: #ff6b35;
+      --accent3: #4ecdc4;
+      --text: #f0ece3;
+      --muted: #7a7570;
+      --green: #6bcb77;
+      --red: #ff6b6b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Lora', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      padding: 60px 40px 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: 'JOIN';
+      position: absolute;
+      right: -20px;
+      top: -20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 200px;
+      font-weight: 800;
+      color: #ffffff06;
+      pointer-events: none;
+      letter-spacing: -10px;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: #f5c51815;
+      border: 1px solid #f5c51830;
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 7vw, 72px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px;
+      max-width: 760px;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 18px;
+      margin-top: 16px;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
+    section {
+      margin-bottom: 80px;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    p {
+      line-height: 1.8;
+      color: #c8c4bb;
+      font-size: 16px;
+    }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--accent3);
+      background: #0a0a0a;
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    .join-explorer {
+      margin-top: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .topbar {
+      background: #111;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.r {
+      background: var(--red);
+    }
+
+    .dot.y {
+      background: var(--accent);
+    }
+
+    .dot.g {
+      background: var(--green);
+    }
+
+    .topbar span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .explorer-body {
+      padding: 32px;
+    }
+
+    .join-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .jtab {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all .2s;
+      border-radius: 2px;
+    }
+
+    .jtab:hover,
+    .jtab.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: #f5c51810;
+    }
+
+    .join-content {
+      display: none;
+      animation: fadeIn .3s ease;
+    }
+
+    .join-content.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .venn-row {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      justify-content: center;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .venn-svg {
+      flex-shrink: 0;
+    }
+
+    .join-result {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .jr-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .result-table {
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .result-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .result-table th {
+      background: var(--card);
+      padding: 8px 12px;
+      text-align: left;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--accent3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .result-table td {
+      padding: 8px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      border-bottom: 1px solid var(--border);
+      color: #c8c4bb;
+    }
+
+    .result-table td.null {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .result-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .code-block {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    .kw {
+      color: var(--accent2);
+    }
+
+    .fn {
+      color: var(--accent3);
+    }
+
+    .str {
+      color: var(--green);
+    }
+
+    .num {
+      color: var(--accent);
+    }
+
+    .comment {
+      color: #4a4a4a;
+    }
+
+    .quiz-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 36px;
+      margin-top: 32px;
+      border-radius: 4px;
+    }
+
+    .quiz-q {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .quiz-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      text-align: left;
+      cursor: pointer;
+      transition: all .15s;
+      border-radius: 2px;
+    }
+
+    .quiz-opt:hover {
+      border-color: var(--accent);
+      background: #f5c51808;
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--green);
+      background: #6bcb7715;
+      color: var(--green);
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--red);
+      background: #ff6b6b10;
+      color: var(--red);
+    }
+
+    .quiz-feedback {
+      margin-top: 20px;
+      font-style: italic;
+      font-size: 15px;
+      min-height: 28px;
+      color: var(--muted);
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      padding: 10px 24px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      display: none;
+      transition: all .2s;
+    }
+
+    .next-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .next-btn.show {
+      display: inline-block;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background .3s;
+    }
+
+    .progress-dot.done {
+      background: var(--green);
+    }
+
+    .progress-dot.current {
+      background: var(--accent);
+    }
+
+    .quiz-complete {
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+
+    .quiz-complete h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .quiz-complete p {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="tag">Database Concept — 05 of 15</div>
+    <h1>SQL <span>Joins</span></h1>
+    <p class="subtitle">Combining rows from two or more tables based on a related column — the heart of relational
+      databases.</p>
+  </header>
+  <main>
+    <section>
+      <div class="section-label">01 — The Setup</div>
+      <h2>Two tables, one query</h2>
+      <p>Joins let you combine data from multiple tables using a shared key (like <code>customer_id</code>). Instead of
+        duplicating data, you store it once and join it when needed. The type of join determines which rows are
+        included.</p>
+    </section>
+    <section>
+      <div class="section-label">02 — Join Types Explorer</div>
+      <h2>See what each join returns</h2>
+      <p>Using <strong>Customers</strong> (Alice, Bob, Carol) and <strong>Orders</strong> (Alice & Bob have orders;
+        Carol does not; Dave has an order but isn't a customer).</p>
+      <div class="join-explorer">
+        <div class="topbar">
+          <div class="dot r"></div>
+          <div class="dot y"></div>
+          <div class="dot g"></div><span>sql-joins.visualizer</span>
         </div>
-        <div id="j-inner" class="join-content visible">
-          <div class="venn-row">
-            <svg class="venn-svg" width="180" height="120" viewBox="0 0 180 120">
-              <circle cx="70" cy="60" r="50" fill="#4ecdc420" stroke="#4ecdc4" stroke-width="2"/>
-              <circle cx="110" cy="60" r="50" fill="#f5c51820" stroke="#f5c518" stroke-width="2"/>
-              <ellipse cx="90" cy="60" rx="22" ry="44" fill="#f5c518" opacity=".5"/>
-              <text x="45" y="64" font-family="monospace" font-size="11" fill="#4ecdc4">Customers</text>
-              <text x="112" y="64" font-family="monospace" font-size="11" fill="#f5c518">Orders</text>
-            </svg>
-            <div class="join-result">
-              <div class="jr-label">Result: Only matching rows from BOTH tables</div>
-              <div class="result-table"><table>
-                <tr><th>customer_name</th><th>order_id</th><th>product</th></tr>
-                <tr><td>Alice</td><td>1001</td><td>Laptop</td></tr>
-                <tr><td>Bob</td><td>1002</td><td>Monitor</td></tr>
-              </table></div>
-            </div>
+        <div class="explorer-body">
+          <div class="join-tabs">
+            <button class="jtab active" onclick="showJoin('inner',this)">INNER JOIN</button>
+            <button class="jtab" onclick="showJoin('left',this)">LEFT JOIN</button>
+            <button class="jtab" onclick="showJoin('right',this)">RIGHT JOIN</button>
+            <button class="jtab" onclick="showJoin('full',this)">FULL OUTER JOIN</button>
           </div>
-          <div class="code-block"><span class="kw">SELECT</span> c.name, o.order_id, o.product<br><span class="kw">FROM</span> customers c<br><span class="kw">INNER JOIN</span> orders o <span class="kw">ON</span> c.id = o.customer_id;<br><span class="comment">-- Carol excluded (no orders). Dave excluded (not a customer).</span></div>
-        </div>
-        <div id="j-left" class="join-content">
-          <div class="venn-row">
-            <svg class="venn-svg" width="180" height="120" viewBox="0 0 180 120">
-              <circle cx="70" cy="60" r="50" fill="#4ecdc4" opacity=".4" stroke="#4ecdc4" stroke-width="2"/>
-              <circle cx="110" cy="60" r="50" fill="#f5c51820" stroke="#f5c518" stroke-width="2"/>
-              <text x="38" y="64" font-family="monospace" font-size="11" fill="#4ecdc4">Customers</text>
-              <text x="112" y="64" font-family="monospace" font-size="11" fill="#f5c518">Orders</text>
-            </svg>
-            <div class="join-result">
-              <div class="jr-label">Result: ALL left table rows + matching right rows (NULL if no match)</div>
-              <div class="result-table"><table>
-                <tr><th>customer_name</th><th>order_id</th><th>product</th></tr>
-                <tr><td>Alice</td><td>1001</td><td>Laptop</td></tr>
-                <tr><td>Bob</td><td>1002</td><td>Monitor</td></tr>
-                <tr><td>Carol</td><td class="null">NULL</td><td class="null">NULL</td></tr>
-              </table></div>
+          <div id="j-inner" class="join-content visible">
+            <div class="venn-row">
+              <svg class="venn-svg" width="180" height="120" viewBox="0 0 180 120">
+                <circle cx="70" cy="60" r="50" fill="#4ecdc420" stroke="#4ecdc4" stroke-width="2" />
+                <circle cx="110" cy="60" r="50" fill="#f5c51820" stroke="#f5c518" stroke-width="2" />
+                <ellipse cx="90" cy="60" rx="22" ry="44" fill="#f5c518" opacity=".5" />
+                <text x="45" y="64" font-family="monospace" font-size="11" fill="#4ecdc4">Customers</text>
+                <text x="112" y="64" font-family="monospace" font-size="11" fill="#f5c518">Orders</text>
+              </svg>
+              <div class="join-result">
+                <div class="jr-label">Result: Only matching rows from BOTH tables</div>
+                <div class="result-table">
+                  <table>
+                    <tr>
+                      <th>customer_name</th>
+                      <th>order_id</th>
+                      <th>product</th>
+                    </tr>
+                    <tr>
+                      <td>Alice</td>
+                      <td>1001</td>
+                      <td>Laptop</td>
+                    </tr>
+                    <tr>
+                      <td>Bob</td>
+                      <td>1002</td>
+                      <td>Monitor</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
             </div>
+            <div class="code-block"><span class="kw">SELECT</span> c.name, o.order_id, o.product<br><span
+                class="kw">FROM</span> customers c<br><span class="kw">INNER JOIN</span> orders o <span
+                class="kw">ON</span> c.id = o.customer_id;<br><span class="comment">-- Carol excluded (no orders). Dave
+                excluded (not a customer).</span></div>
           </div>
-          <div class="code-block"><span class="kw">SELECT</span> c.name, o.order_id, o.product<br><span class="kw">FROM</span> customers c<br><span class="kw">LEFT JOIN</span> orders o <span class="kw">ON</span> c.id = o.customer_id;<br><span class="comment">-- Carol included with NULL order — perfect for "find customers with NO orders"</span></div>
-        </div>
-        <div id="j-right" class="join-content">
-          <div class="venn-row">
-            <svg class="venn-svg" width="180" height="120" viewBox="0 0 180 120">
-              <circle cx="70" cy="60" r="50" fill="#4ecdc420" stroke="#4ecdc4" stroke-width="2"/>
-              <circle cx="110" cy="60" r="50" fill="#f5c518" opacity=".4" stroke="#f5c518" stroke-width="2"/>
-              <text x="38" y="64" font-family="monospace" font-size="11" fill="#4ecdc4">Customers</text>
-              <text x="112" y="64" font-family="monospace" font-size="11" fill="#f5c518">Orders</text>
-            </svg>
-            <div class="join-result">
-              <div class="jr-label">Result: ALL right table rows + matching left rows</div>
-              <div class="result-table"><table>
-                <tr><th>customer_name</th><th>order_id</th><th>product</th></tr>
-                <tr><td>Alice</td><td>1001</td><td>Laptop</td></tr>
-                <tr><td>Bob</td><td>1002</td><td>Monitor</td></tr>
-                <tr><td class="null">NULL</td><td>1003</td><td>Keyboard</td></tr>
-              </table></div>
+          <div id="j-left" class="join-content">
+            <div class="venn-row">
+              <svg class="venn-svg" width="180" height="120" viewBox="0 0 180 120">
+                <circle cx="70" cy="60" r="50" fill="#4ecdc4" opacity=".4" stroke="#4ecdc4" stroke-width="2" />
+                <circle cx="110" cy="60" r="50" fill="#f5c51820" stroke="#f5c518" stroke-width="2" />
+                <text x="38" y="64" font-family="monospace" font-size="11" fill="#4ecdc4">Customers</text>
+                <text x="112" y="64" font-family="monospace" font-size="11" fill="#f5c518">Orders</text>
+              </svg>
+              <div class="join-result">
+                <div class="jr-label">Result: ALL left table rows + matching right rows (NULL if no match)</div>
+                <div class="result-table">
+                  <table>
+                    <tr>
+                      <th>customer_name</th>
+                      <th>order_id</th>
+                      <th>product</th>
+                    </tr>
+                    <tr>
+                      <td>Alice</td>
+                      <td>1001</td>
+                      <td>Laptop</td>
+                    </tr>
+                    <tr>
+                      <td>Bob</td>
+                      <td>1002</td>
+                      <td>Monitor</td>
+                    </tr>
+                    <tr>
+                      <td>Carol</td>
+                      <td class="null">NULL</td>
+                      <td class="null">NULL</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
             </div>
+            <div class="code-block"><span class="kw">SELECT</span> c.name, o.order_id, o.product<br><span
+                class="kw">FROM</span> customers c<br><span class="kw">LEFT JOIN</span> orders o <span
+                class="kw">ON</span> c.id = o.customer_id;<br><span class="comment">-- Carol included with NULL order —
+                perfect for "find customers with NO orders"</span></div>
           </div>
-          <div class="code-block"><span class="kw">SELECT</span> c.name, o.order_id, o.product<br><span class="kw">FROM</span> customers c<br><span class="kw">RIGHT JOIN</span> orders o <span class="kw">ON</span> c.id = o.customer_id;<br><span class="comment">-- Dave's orphan order shows with NULL customer — find orders with no matching customer</span></div>
-        </div>
-        <div id="j-full" class="join-content">
-          <div class="venn-row">
-            <svg class="venn-svg" width="180" height="120" viewBox="0 0 180 120">
-              <circle cx="70" cy="60" r="50" fill="#4ecdc4" opacity=".4" stroke="#4ecdc4" stroke-width="2"/>
-              <circle cx="110" cy="60" r="50" fill="#f5c518" opacity=".4" stroke="#f5c518" stroke-width="2"/>
-              <text x="38" y="64" font-family="monospace" font-size="11" fill="#4ecdc4">Customers</text>
-              <text x="112" y="64" font-family="monospace" font-size="11" fill="#f5c518">Orders</text>
-            </svg>
-            <div class="join-result">
-              <div class="jr-label">Result: ALL rows from BOTH tables — NULL where no match</div>
-              <div class="result-table"><table>
-                <tr><th>customer_name</th><th>order_id</th><th>product</th></tr>
-                <tr><td>Alice</td><td>1001</td><td>Laptop</td></tr>
-                <tr><td>Bob</td><td>1002</td><td>Monitor</td></tr>
-                <tr><td>Carol</td><td class="null">NULL</td><td class="null">NULL</td></tr>
-                <tr><td class="null">NULL</td><td>1003</td><td>Keyboard</td></tr>
-              </table></div>
+          <div id="j-right" class="join-content">
+            <div class="venn-row">
+              <svg class="venn-svg" width="180" height="120" viewBox="0 0 180 120">
+                <circle cx="70" cy="60" r="50" fill="#4ecdc420" stroke="#4ecdc4" stroke-width="2" />
+                <circle cx="110" cy="60" r="50" fill="#f5c518" opacity=".4" stroke="#f5c518" stroke-width="2" />
+                <text x="38" y="64" font-family="monospace" font-size="11" fill="#4ecdc4">Customers</text>
+                <text x="112" y="64" font-family="monospace" font-size="11" fill="#f5c518">Orders</text>
+              </svg>
+              <div class="join-result">
+                <div class="jr-label">Result: ALL right table rows + matching left rows</div>
+                <div class="result-table">
+                  <table>
+                    <tr>
+                      <th>customer_name</th>
+                      <th>order_id</th>
+                      <th>product</th>
+                    </tr>
+                    <tr>
+                      <td>Alice</td>
+                      <td>1001</td>
+                      <td>Laptop</td>
+                    </tr>
+                    <tr>
+                      <td>Bob</td>
+                      <td>1002</td>
+                      <td>Monitor</td>
+                    </tr>
+                    <tr>
+                      <td class="null">NULL</td>
+                      <td>1003</td>
+                      <td>Keyboard</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
             </div>
+            <div class="code-block"><span class="kw">SELECT</span> c.name, o.order_id, o.product<br><span
+                class="kw">FROM</span> customers c<br><span class="kw">RIGHT JOIN</span> orders o <span
+                class="kw">ON</span> c.id = o.customer_id;<br><span class="comment">-- Dave's orphan order shows with
+                NULL customer — find orders with no matching customer</span></div>
           </div>
-          <div class="code-block"><span class="kw">SELECT</span> c.name, o.order_id, o.product<br><span class="kw">FROM</span> customers c<br><span class="kw">FULL OUTER JOIN</span> orders o <span class="kw">ON</span> c.id = o.customer_id;<br><span class="comment">-- Everything from both tables — useful for reconciliation and auditing</span></div>
+          <div id="j-full" class="join-content">
+            <div class="venn-row">
+              <svg class="venn-svg" width="180" height="120" viewBox="0 0 180 120">
+                <circle cx="70" cy="60" r="50" fill="#4ecdc4" opacity=".4" stroke="#4ecdc4" stroke-width="2" />
+                <circle cx="110" cy="60" r="50" fill="#f5c518" opacity=".4" stroke="#f5c518" stroke-width="2" />
+                <text x="38" y="64" font-family="monospace" font-size="11" fill="#4ecdc4">Customers</text>
+                <text x="112" y="64" font-family="monospace" font-size="11" fill="#f5c518">Orders</text>
+              </svg>
+              <div class="join-result">
+                <div class="jr-label">Result: ALL rows from BOTH tables — NULL where no match</div>
+                <div class="result-table">
+                  <table>
+                    <tr>
+                      <th>customer_name</th>
+                      <th>order_id</th>
+                      <th>product</th>
+                    </tr>
+                    <tr>
+                      <td>Alice</td>
+                      <td>1001</td>
+                      <td>Laptop</td>
+                    </tr>
+                    <tr>
+                      <td>Bob</td>
+                      <td>1002</td>
+                      <td>Monitor</td>
+                    </tr>
+                    <tr>
+                      <td>Carol</td>
+                      <td class="null">NULL</td>
+                      <td class="null">NULL</td>
+                    </tr>
+                    <tr>
+                      <td class="null">NULL</td>
+                      <td>1003</td>
+                      <td>Keyboard</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="code-block"><span class="kw">SELECT</span> c.name, o.order_id, o.product<br><span
+                class="kw">FROM</span> customers c<br><span class="kw">FULL OUTER JOIN</span> orders o <span
+                class="kw">ON</span> c.id = o.customer_id;<br><span class="comment">-- Everything from both tables —
+                useful for reconciliation and auditing</span></div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-  <section>
-    <div class="section-label">03 — Quiz</div>
-    <h2>Test your understanding</h2>
-    <div class="quiz-wrap">
-      <div class="progress-dots" id="progress-dots"></div>
-      <div id="quiz-container"></div>
-      <div class="quiz-complete" id="quiz-complete"><h3>🎉 Joins mastered!</h3><p>Next: Query Optimization.</p></div>
-    </div>
-  </section>
-</main>
-<footer><p>Joins: the relational model's superpower.</p></footer>
-<script>
-function showJoin(id,el){document.querySelectorAll('.join-content').forEach(e=>e.classList.remove('visible'));document.querySelectorAll('.jtab').forEach(t=>t.classList.remove('active'));document.getElementById('j-'+id).classList.add('visible');el.classList.add('active');}
-const questions=[
-  {q:"You want to find all customers who have NEVER placed an order. Which join type is most appropriate?",opts:["INNER JOIN","RIGHT JOIN","LEFT JOIN (then filter WHERE order_id IS NULL)","FULL OUTER JOIN"],correct:2,feedback:"LEFT JOIN returns all customers including those with no orders. Filter WHERE o.id IS NULL to get only customers with no orders."},
-  {q:"INNER JOIN returns...",opts:["All rows from the left table","All rows from both tables","Only rows where there is a match in BOTH tables","All rows from the right table"],correct:2,feedback:"INNER JOIN returns only rows where the join condition matches in both tables. Non-matching rows from either table are excluded."},
-  {q:"Which join would you use to find orders that have no matching customer (orphaned orders)?",opts:["INNER JOIN","LEFT JOIN","RIGHT JOIN (filter WHERE customer_id IS NULL)","CROSS JOIN"],correct:2,feedback:"RIGHT JOIN returns all orders (right table). Filter WHERE c.id IS NULL to find orders with no matching customer record."}
-];
-let cur=0,ans=false;
-function buildDots(){document.getElementById('progress-dots').innerHTML=questions.map((_,i)=>`<div class="progress-dot ${i===0?'current':''}" id="dot-${i}"></div>`).join('');}
-function renderQ(){ans=false;const q=questions[cur];document.getElementById('quiz-container').innerHTML=`<div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="quiz-feedback" id="qf"></div><button class="next-btn" id="nb" onclick="nextQ()">${cur===questions.length-1?'SEE RESULTS →':'NEXT →'}</button>`;}
-function answer(idx){if(ans)return;ans=true;const q=questions[cur];document.querySelectorAll('.quiz-opt').forEach((o,i)=>{if(i===idx)o.classList.add(i===q.correct?'correct':'wrong');if(i===q.correct)o.classList.add('correct');o.disabled=true;});document.getElementById('qf').textContent=q.feedback;document.getElementById('nb').classList.add('show');document.getElementById(`dot-${cur}`).classList.replace('current','done');}
-function nextQ(){cur++;if(cur>=questions.length){document.getElementById('quiz-container').style.display='none';document.getElementById('quiz-complete').style.display='block';}else{document.getElementById(`dot-${cur}`).classList.add('current');renderQ();}}
-buildDots();renderQ();
-</script>
-</body></html>
+    </section>
+    <section>
+      <div class="section-label">03 — Quiz</div>
+      <h2>Test your understanding</h2>
+      <div class="quiz-wrap">
+        <div class="progress-dots" id="progress-dots"></div>
+        <div id="quiz-container"></div>
+        <div class="quiz-complete" id="quiz-complete">
+          <h3>🎉 Joins mastered!</h3>
+          <p>Next: Query Optimization.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>Joins: the relational model's superpower.</p>
+  </footer>
+  <script>
+    function showJoin(id, el) { document.querySelectorAll('.join-content').forEach(e => e.classList.remove('visible')); document.querySelectorAll('.jtab').forEach(t => t.classList.remove('active')); document.getElementById('j-' + id).classList.add('visible'); el.classList.add('active'); }
+    const questions = [
+      { q: "You want to find all customers who have NEVER placed an order. Which join type is most appropriate?", opts: ["INNER JOIN", "RIGHT JOIN", "LEFT JOIN (then filter WHERE order_id IS NULL)", "FULL OUTER JOIN"], correct: 2, feedback: "LEFT JOIN returns all customers including those with no orders. Filter WHERE o.id IS NULL to get only customers with no orders." },
+      { q: "INNER JOIN returns...", opts: ["All rows from the left table", "All rows from both tables", "Only rows where there is a match in BOTH tables", "All rows from the right table"], correct: 2, feedback: "INNER JOIN returns only rows where the join condition matches in both tables. Non-matching rows from either table are excluded." },
+      { q: "Which join would you use to find orders that have no matching customer (orphaned orders)?", opts: ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN (filter WHERE customer_id IS NULL)", "CROSS JOIN"], correct: 2, feedback: "RIGHT JOIN returns all orders (right table). Filter WHERE c.id IS NULL to find orders with no matching customer record." }
+    ];
+    let cur = 0, ans = false;
+    function buildDots() { document.getElementById('progress-dots').innerHTML = questions.map((_, i) => `<div class="progress-dot ${i === 0 ? 'current' : ''}" id="dot-${i}"></div>`).join(''); }
+    function renderQ() { ans = false; const q = questions[cur]; document.getElementById('quiz-container').innerHTML = `<div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="quiz-feedback" id="qf"></div><button class="next-btn" id="nb" onclick="nextQ()">${cur === questions.length - 1 ? 'SEE RESULTS →' : 'NEXT →'}</button>`; }
+    function answer(idx) { if (ans) return; ans = true; const q = questions[cur]; document.querySelectorAll('.quiz-opt').forEach((o, i) => { if (i === idx) o.classList.add(i === q.correct ? 'correct' : 'wrong'); if (i === q.correct) o.classList.add('correct'); o.disabled = true; }); document.getElementById('qf').textContent = q.feedback; document.getElementById('nb').classList.add('show'); document.getElementById(`dot-${cur}`).classList.replace('current', 'done'); }
+    function nextQ() { cur++; if (cur >= questions.length) { document.getElementById('quiz-container').style.display = 'none'; document.getElementById('quiz-complete').style.display = 'block'; } else { document.getElementById(`dot-${cur}`).classList.add('current'); renderQ(); } }
+    buildDots(); renderQ();
+  </script>
+</body>
+
+</html>

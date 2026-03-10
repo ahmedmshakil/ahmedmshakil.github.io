@@ -1,538 +1,1161 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>What is Recursion?</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0d0d0d; --surface: #161616; --card: #1e1e1e; --border: #2a2a2a;
-    --accent: #f5c518; --accent2: #ff6b35; --accent3: #4ecdc4;
-    --text: #f0ece3; --muted: #7a7570; --green: #6bcb77; --red: #ff6b6b;
-  }
-  body { background: var(--bg); color: var(--text); font-family: 'Lora', serif; min-height: 100vh; overflow-x: hidden; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is Recursion?</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  header { padding: 60px 40px 40px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
-  header::before { content: 'REC'; position: absolute; right: -20px; top: -20px; font-family: 'Syne', sans-serif; font-size: 220px; font-weight: 800; color: #ffffff06; pointer-events: none; letter-spacing: -10px; }
-  .tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); background: #f5c51815; border: 1px solid #f5c51830; padding: 4px 10px; display: inline-block; margin-bottom: 20px; }
-  h1 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 7vw, 72px); font-weight: 800; line-height: 1; letter-spacing: -2px; max-width: 760px; }
-  h1 span { color: var(--accent); }
-  .subtitle { font-style: italic; color: var(--muted); font-size: 18px; margin-top: 16px; max-width: 500px; line-height: 1.6; }
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --card: #1e1e1e;
+      --border: #2a2a2a;
+      --accent: #f5c518;
+      --accent2: #ff6b35;
+      --accent3: #4ecdc4;
+      --text: #f0ece3;
+      --muted: #7a7570;
+      --green: #6bcb77;
+      --red: #ff6b6b;
+    }
 
-  main { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
-  section { margin-bottom: 80px; }
-  .section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
-  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 16px; }
-  p { line-height: 1.8; color: #c8c4bb; font-size: 16px; }
-  code { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent3); background: #0a0a0a; padding: 2px 6px; border-radius: 2px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Lora', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-  /* ANALOGY */
-  .analogy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 32px; }
-  @media(max-width:600px){ .analogy-grid { grid-template-columns: 1fr; } }
-  .analogy-card { background: var(--card); padding: 32px; }
-  .analogy-card .icon { font-size: 36px; margin-bottom: 12px; }
-  .analogy-card .role { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .analogy-card h3 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
-  .analogy-card p { font-size: 14px; }
+    header {
+      padding: 60px 40px 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
 
-  /* CALL STACK VISUALIZER */
-  .stack-viz { margin-top: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-  .viz-topbar { background: #111; padding: 12px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
-  .dot { width: 10px; height: 10px; border-radius: 50%; }
-  .dot.r { background: var(--red); } .dot.y { background: var(--accent); } .dot.g { background: var(--green); }
-  .viz-topbar span { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-left: 8px; }
-  .viz-body { padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  @media(max-width:700px){ .viz-body { grid-template-columns: 1fr; } }
+    header::before {
+      content: 'REC';
+      position: absolute;
+      right: -20px;
+      top: -20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 220px;
+      font-weight: 800;
+      color: #ffffff06;
+      pointer-events: none;
+      letter-spacing: -10px;
+    }
 
-  .viz-controls { display: flex; flex-direction: column; gap: 12px; }
-  .viz-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-  .n-selector { display: flex; gap: 8px; flex-wrap: wrap; }
-  .n-btn { font-family: 'DM Mono', monospace; font-size: 13px; padding: 8px 16px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; border-radius: 2px; }
-  .n-btn:hover, .n-btn.active { border-color: var(--accent); color: var(--accent); background: #f5c51810; }
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: #f5c51815;
+      border: 1px solid #f5c51830;
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
 
-  .run-btn { padding: 14px; background: var(--accent); color: #000; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.2s; }
-  .run-btn:hover { background: #ffd740; transform: translateY(-1px); }
-  .run-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 7vw, 72px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px;
+      max-width: 760px;
+    }
 
-  .stack-display { min-height: 300px; display: flex; flex-direction: column; gap: 0; justify-content: flex-end; }
-  .stack-frame { padding: 14px 18px; border: 1px solid var(--border); border-radius: 2px; margin-top: 4px; font-family: 'DM Mono', monospace; font-size: 13px; transition: all 0.4s; opacity: 0; transform: translateX(20px); position: relative; }
-  .stack-frame.visible { opacity: 1; transform: translateX(0); }
-  .stack-frame.calling { background: #f5c51815; border-color: var(--accent); }
-  .stack-frame.returning { background: #6bcb7710; border-color: var(--green); }
-  .stack-frame.base { background: #ff6b3520; border-color: var(--accent2); }
-  .frame-fn { color: var(--accent3); }
-  .frame-arg { color: var(--accent); }
-  .frame-tag { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 10px; letter-spacing: 2px; }
-  .tag-call { color: var(--accent); }
-  .tag-base { color: var(--accent2); }
-  .tag-ret { color: var(--green); }
+    h1 span {
+      color: var(--accent);
+    }
 
-  .step-info { background: #0a0a0a; border: 1px solid var(--border); border-radius: 2px; padding: 16px; font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.8; min-height: 80px; margin-top: 12px; }
-  .step-info .si { color: var(--accent3); }
-  .step-info .sv { color: var(--accent); }
-  .step-info .ss { color: var(--green); }
+    .subtitle {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 18px;
+      margin-top: 16px;
+      max-width: 500px;
+      line-height: 1.6;
+    }
 
-  /* CODE PANEL */
-  .code-block { background: #0a0a0a; border: 1px solid var(--border); border-radius: 2px; padding: 24px; font-family: 'DM Mono', monospace; font-size: 13px; line-height: 2; overflow-x: auto; }
-  .code-block .comment { color: #4a4a4a; }
-  .code-block .kw { color: var(--accent2); }
-  .code-block .fn { color: var(--accent3); }
-  .code-block .num { color: var(--accent); }
-  .code-block .str { color: var(--green); }
-  .code-block .hl { background: #f5c51815; border-left: 3px solid var(--accent); padding-left: 8px; display: block; }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
 
-  /* EXAMPLES TABS */
-  .examples-box { margin-top: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-  .ex-tabs { display: flex; border-bottom: 1px solid var(--border); background: #111; }
-  .ex-tab { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 12px 20px; cursor: pointer; color: var(--muted); border-right: 1px solid var(--border); transition: all 0.2s; }
-  .ex-tab:hover, .ex-tab.active { color: var(--accent); background: #f5c51808; }
-  .ex-content { display: none; padding: 28px; animation: fadeIn 0.3s ease; }
-  .ex-content.visible { display: block; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-  .ex-desc { margin-bottom: 16px; font-size: 14px; }
+    section {
+      margin-bottom: 80px;
+    }
 
-  /* DANGER BOX */
-  .danger-box { margin-top: 32px; background: #ff6b6b08; border: 1px solid #ff6b6b30; border-radius: 4px; padding: 28px; }
-  .danger-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-  .danger-box p { font-size: 14px; margin-bottom: 12px; }
-  .danger-box:last-child { margin-bottom: 0; }
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-  /* CONCEPTS */
-  .concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px; margin-top: 32px; }
-  .concept-card { background: var(--card); padding: 24px; border-left: 3px solid transparent; transition: border-color 0.2s; }
-  .concept-card:hover { border-left-color: var(--accent); }
-  .concept-icon { font-size: 24px; margin-bottom: 12px; }
-  .concept-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-  .concept-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent2); margin-bottom: 8px; display: block; }
-  .concept-card p { font-size: 13px; }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
 
-  /* QUIZ */
-  .quiz-wrap { background: var(--surface); border: 1px solid var(--border); padding: 36px; margin-top: 32px; border-radius: 4px; }
-  .quiz-q { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 24px; }
-  .quiz-opts { display: flex; flex-direction: column; gap: 10px; }
-  .quiz-opt { padding: 14px 18px; border: 1px solid var(--border); background: transparent; color: var(--text); font-family: 'Lora', serif; font-size: 15px; text-align: left; cursor: pointer; transition: all 0.15s; border-radius: 2px; }
-  .quiz-opt:hover { border-color: var(--accent); background: #f5c51808; }
-  .quiz-opt.correct { border-color: var(--green); background: #6bcb7715; color: var(--green); }
-  .quiz-opt.wrong { border-color: var(--red); background: #ff6b6b10; color: var(--red); }
-  .quiz-feedback { margin-top: 20px; font-style: italic; font-size: 15px; min-height: 28px; color: var(--muted); }
-  .next-btn { margin-top: 20px; padding: 10px 24px; background: transparent; border: 1px solid var(--accent); color: var(--accent); font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 2px; cursor: pointer; display: none; transition: all 0.2s; }
-  .next-btn:hover { background: var(--accent); color: #000; }
-  .next-btn.show { display: inline-block; }
-  .progress-dots { display: flex; gap: 8px; margin-bottom: 28px; }
-  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
-  .progress-dot.done { background: var(--green); }
-  .progress-dot.current { background: var(--accent); }
-  .quiz-complete { text-align: center; padding: 20px; display: none; }
-  .quiz-complete h3 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent); margin-bottom: 12px; }
-  .quiz-complete p { font-size: 16px; color: var(--muted); }
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
 
-  footer { border-top: 1px solid var(--border); padding: 40px; text-align: center; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 1px; }
-</style>
+    p {
+      line-height: 1.8;
+      color: #c8c4bb;
+      font-size: 16px;
+    }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--accent3);
+      background: #0a0a0a;
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    /* ANALOGY */
+    .analogy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 32px;
+    }
+
+    @media(max-width:600px) {
+      .analogy-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .analogy-card {
+      background: var(--card);
+      padding: 32px;
+    }
+
+    .analogy-card .icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .analogy-card .role {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .analogy-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .analogy-card p {
+      font-size: 14px;
+    }
+
+    /* CALL STACK VISUALIZER */
+    .stack-viz {
+      margin-top: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .viz-topbar {
+      background: #111;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.r {
+      background: var(--red);
+    }
+
+    .dot.y {
+      background: var(--accent);
+    }
+
+    .dot.g {
+      background: var(--green);
+    }
+
+    .viz-topbar span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .viz-body {
+      padding: 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media(max-width:700px) {
+      .viz-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .viz-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .viz-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .n-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .n-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 2px;
+    }
+
+    .n-btn:hover,
+    .n-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: #f5c51810;
+    }
+
+    .run-btn {
+      padding: 14px;
+      background: var(--accent);
+      color: #000;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .run-btn:hover {
+      background: #ffd740;
+      transform: translateY(-1px);
+    }
+
+    .run-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .stack-display {
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      justify-content: flex-end;
+    }
+
+    .stack-frame {
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      margin-top: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      transition: all 0.4s;
+      opacity: 0;
+      transform: translateX(20px);
+      position: relative;
+    }
+
+    .stack-frame.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .stack-frame.calling {
+      background: #f5c51815;
+      border-color: var(--accent);
+    }
+
+    .stack-frame.returning {
+      background: #6bcb7710;
+      border-color: var(--green);
+    }
+
+    .stack-frame.base {
+      background: #ff6b3520;
+      border-color: var(--accent2);
+    }
+
+    .frame-fn {
+      color: var(--accent3);
+    }
+
+    .frame-arg {
+      color: var(--accent);
+    }
+
+    .frame-tag {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    .tag-call {
+      color: var(--accent);
+    }
+
+    .tag-base {
+      color: var(--accent2);
+    }
+
+    .tag-ret {
+      color: var(--green);
+    }
+
+    .step-info {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      min-height: 80px;
+      margin-top: 12px;
+    }
+
+    .step-info .si {
+      color: var(--accent3);
+    }
+
+    .step-info .sv {
+      color: var(--accent);
+    }
+
+    .step-info .ss {
+      color: var(--green);
+    }
+
+    /* CODE PANEL */
+    .code-block {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 24px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+      overflow-x: auto;
+    }
+
+    .code-block .comment {
+      color: #4a4a4a;
+    }
+
+    .code-block .kw {
+      color: var(--accent2);
+    }
+
+    .code-block .fn {
+      color: var(--accent3);
+    }
+
+    .code-block .num {
+      color: var(--accent);
+    }
+
+    .code-block .str {
+      color: var(--green);
+    }
+
+    .code-block .hl {
+      background: #f5c51815;
+      border-left: 3px solid var(--accent);
+      padding-left: 8px;
+      display: block;
+    }
+
+    /* EXAMPLES TABS */
+    .examples-box {
+      margin-top: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .ex-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: #111;
+    }
+
+    .ex-tab {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 12px 20px;
+      cursor: pointer;
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .ex-tab:hover,
+    .ex-tab.active {
+      color: var(--accent);
+      background: #f5c51808;
+    }
+
+    .ex-content {
+      display: none;
+      padding: 28px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .ex-content.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .ex-desc {
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    /* DANGER BOX */
+    .danger-box {
+      margin-top: 32px;
+      background: #ff6b6b08;
+      border: 1px solid #ff6b6b30;
+      border-radius: 4px;
+      padding: 28px;
+    }
+
+    .danger-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .danger-box p {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .danger-box:last-child {
+      margin-bottom: 0;
+    }
+
+    /* CONCEPTS */
+    .concepts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2px;
+      margin-top: 32px;
+    }
+
+    .concept-card {
+      background: var(--card);
+      padding: 24px;
+      border-left: 3px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .concept-card:hover {
+      border-left-color: var(--accent);
+    }
+
+    .concept-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .concept-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .concept-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--accent2);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .concept-card p {
+      font-size: 13px;
+    }
+
+    /* QUIZ */
+    .quiz-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 36px;
+      margin-top: 32px;
+      border-radius: 4px;
+    }
+
+    .quiz-q {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .quiz-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 2px;
+    }
+
+    .quiz-opt:hover {
+      border-color: var(--accent);
+      background: #f5c51808;
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--green);
+      background: #6bcb7715;
+      color: var(--green);
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--red);
+      background: #ff6b6b10;
+      color: var(--red);
+    }
+
+    .quiz-feedback {
+      margin-top: 20px;
+      font-style: italic;
+      font-size: 15px;
+      min-height: 28px;
+      color: var(--muted);
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      padding: 10px 24px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      display: none;
+      transition: all 0.2s;
+    }
+
+    .next-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .next-btn.show {
+      display: inline-block;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .progress-dot.done {
+      background: var(--green);
+    }
+
+    .progress-dot.current {
+      background: var(--accent);
+    }
+
+    .quiz-complete {
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+
+    .quiz-complete h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .quiz-complete p {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="tag">C++ Concept Explainer — 1 of 3</div>
-  <h1>What is <span>Recursion</span>?</h1>
-  <p class="subtitle">A function that calls itself — and why that's incredibly powerful.</p>
-</header>
+  <header>
+    <div class="tag">C++ Concept Explainer — 1 of 3</div>
+    <h1>What is <span>Recursion</span>?</h1>
+    <p class="subtitle">A function that calls itself — and why that's incredibly powerful.</p>
+  </header>
 
-<main>
+  <main>
 
-  <!-- 01: ANALOGY -->
-  <section>
-    <div class="section-label">01 — The Idea</div>
-    <h2>Think of it like Russian nesting dolls</h2>
-    <p>Recursion is when a function <strong>calls itself</strong> to solve a smaller version of the same problem — until it hits a case so simple it can answer directly. That simple stopping point is called the <strong>base case</strong>.</p>
+    <!-- 01: ANALOGY -->
+    <section>
+      <div class="section-label">01 — The Idea</div>
+      <h2>Think of it like Russian nesting dolls</h2>
+      <p>Recursion is when a function <strong>calls itself</strong> to solve a smaller version of the same problem —
+        until it hits a case so simple it can answer directly. That simple stopping point is called the <strong>base
+          case</strong>.</p>
 
-    <div class="analogy-grid" style="margin-top:32px;">
-      <div class="analogy-card">
-        <div class="icon">🪆</div>
-        <div class="role">The Analogy</div>
-        <h3>Nesting Dolls</h3>
-        <p>To open a nesting doll, you open the outer one, then ask: "is there a smaller one inside?" If yes, open that. Keep going until you reach the smallest doll — that's your <strong>base case</strong>.</p>
-      </div>
-      <div class="analogy-card">
-        <div class="icon">🪞</div>
-        <div class="role">In Code</div>
-        <h3>Function mirrors itself</h3>
-        <p>A recursive function says: "I can't solve the whole problem — but I can solve ONE step, then ask myself to handle the rest." It delegates the hard work… to itself.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 02: THE STRUCTURE -->
-  <section>
-    <div class="section-label">02 — The Structure</div>
-    <h2>Every recursive function has exactly 2 parts</h2>
-    <p>No exceptions. Miss either one and your program will either give wrong answers — or crash with a stack overflow.</p>
-
-    <div class="code-block" style="margin-top:28px;">
-      <span class="comment">// Factorial: n! = n × (n-1) × (n-2) × ... × 1</span><br>
-      <span class="comment">// Example: 5! = 5 × 4 × 3 × 2 × 1 = 120</span><br><br>
-      <span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span><br>
-      <span class="kw">using namespace</span> std;<br><br>
-      <span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {<br>
-      <span class="hl">  <span class="comment">// ① BASE CASE — the stopping condition</span></span>
-      <span class="hl">  <span class="kw">if</span> (n == <span class="num">0</span> || n == <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;</span>
-      <br>
-      <span class="hl">  <span class="comment">// ② RECURSIVE CASE — call itself with a SMALLER input</span></span>
-      <span class="hl">  <span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="num">1</span>);</span>
-      }<br><br>
-      <span class="kw">int</span> <span class="fn">main</span>() {<br>
-      &nbsp;&nbsp;cout &lt;&lt; <span class="fn">factorial</span>(<span class="num">5</span>) &lt;&lt; endl; <span class="comment">// Output: 120</span><br>
-      &nbsp;&nbsp;<span class="kw">return</span> <span class="num">0</span>;<br>
-      }
-    </div>
-  </section>
-
-  <!-- 03: CALL STACK VISUALIZER -->
-  <section>
-    <div class="section-label">03 — The Call Stack</div>
-    <h2>Watch factorial(n) build up & unwind</h2>
-    <p>When a recursive function runs, calls <strong>stack up</strong> in memory — then <strong>unwind</strong> one by one as each returns. Pick a number and watch it happen step-by-step.</p>
-
-    <div class="stack-viz">
-      <div class="viz-topbar">
-        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-        <span>call-stack.visualizer — factorial(n)</span>
-      </div>
-      <div class="viz-body">
-        <div class="viz-controls">
-          <div>
-            <div class="viz-label">Choose n:</div>
-            <div class="n-selector">
-              <button class="n-btn active" onclick="selectN(1, this)">n = 1</button>
-              <button class="n-btn" onclick="selectN(3, this)">n = 3</button>
-              <button class="n-btn" onclick="selectN(4, this)">n = 4</button>
-              <button class="n-btn" onclick="selectN(5, this)">n = 5</button>
-            </div>
-          </div>
-          <button class="run-btn" id="run-btn" onclick="runStack()">▶ RUN ANIMATION</button>
-          <div class="step-info" id="step-info">
-            <span class="si">// Click RUN to watch the call stack in action</span><br>
-            <span class="si">// Each frame = one function call in memory</span>
-          </div>
+      <div class="analogy-grid" style="margin-top:32px;">
+        <div class="analogy-card">
+          <div class="icon">🪆</div>
+          <div class="role">The Analogy</div>
+          <h3>Nesting Dolls</h3>
+          <p>To open a nesting doll, you open the outer one, then ask: "is there a smaller one inside?" If yes, open
+            that. Keep going until you reach the smallest doll — that's your <strong>base case</strong>.</p>
         </div>
-        <div>
-          <div class="viz-label" style="margin-bottom:12px;">Call Stack (top = most recent)</div>
-          <div class="stack-display" id="stack-display">
-            <div style="text-align:center; color:var(--muted); font-family:'DM Mono',monospace; font-size:12px; padding:40px;">
-              — stack is empty —
-            </div>
-          </div>
+        <div class="analogy-card">
+          <div class="icon">🪞</div>
+          <div class="role">In Code</div>
+          <h3>Function mirrors itself</h3>
+          <p>A recursive function says: "I can't solve the whole problem — but I can solve ONE step, then ask myself to
+            handle the rest." It delegates the hard work… to itself.</p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 04: MORE EXAMPLES -->
-  <section>
-    <div class="section-label">04 — More C++ Examples</div>
-    <h2>Recursion in the wild</h2>
-    <p>Recursion isn't just for factorial — it shows up everywhere. Click each tab to see a real C++ example.</p>
+    <!-- 02: THE STRUCTURE -->
+    <section>
+      <div class="section-label">02 — The Structure</div>
+      <h2>Every recursive function has exactly 2 parts</h2>
+      <p>No exceptions. Miss either one and your program will either give wrong answers — or crash with a stack
+        overflow.</p>
 
-    <div class="examples-box">
-      <div class="ex-tabs">
-        <div class="ex-tab active" onclick="showEx('fibonacci')">Fibonacci</div>
-        <div class="ex-tab" onclick="showEx('sum')">Array Sum</div>
-        <div class="ex-tab" onclick="showEx('binary')">Binary Search</div>
-        <div class="ex-tab" onclick="showEx('power')">Power</div>
-      </div>
-
-      <div id="ex-fibonacci" class="ex-content visible">
-        <p class="ex-desc">Fibonacci: each number is the sum of the two before it. <strong>0, 1, 1, 2, 3, 5, 8, 13…</strong></p>
-        <div class="code-block">
-          <span class="kw">int</span> <span class="fn">fibonacci</span>(<span class="kw">int</span> n) {<br>
-          &nbsp;&nbsp;<span class="comment">// Base cases</span><br>
-          &nbsp;&nbsp;<span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span> <span class="num">0</span>;<br>
-          &nbsp;&nbsp;<span class="kw">if</span> (n == <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;<br><br>
-          &nbsp;&nbsp;<span class="comment">// Recursive case — calls itself TWICE!</span><br>
-          &nbsp;&nbsp;<span class="kw">return</span> <span class="fn">fibonacci</span>(n - <span class="num">1</span>) + <span class="fn">fibonacci</span>(n - <span class="num">2</span>);<br>
-          }<br><br>
-          <span class="comment">// fibonacci(6) = 8</span><br>
-          <span class="comment">// Tree: fib(6) → fib(5)+fib(4) → fib(4)+fib(3)+fib(3)+fib(2) → ...</span>
-        </div>
-      </div>
-
-      <div id="ex-sum" class="ex-content">
-        <p class="ex-desc">Sum all elements of an array recursively — no loops needed.</p>
-        <div class="code-block">
-          <span class="kw">int</span> <span class="fn">arraySum</span>(<span class="kw">int</span> arr[], <span class="kw">int</span> size) {<br>
-          &nbsp;&nbsp;<span class="comment">// Base case: empty array = 0</span><br>
-          &nbsp;&nbsp;<span class="kw">if</span> (size == <span class="num">0</span>) <span class="kw">return</span> <span class="num">0</span>;<br><br>
-          &nbsp;&nbsp;<span class="comment">// Take first element + sum of the rest</span><br>
-          &nbsp;&nbsp;<span class="kw">return</span> arr[<span class="num">0</span>] + <span class="fn">arraySum</span>(arr + <span class="num">1</span>, size - <span class="num">1</span>);<br>
-          }<br><br>
-          <span class="kw">int</span> <span class="fn">main</span>() {<br>
-          &nbsp;&nbsp;<span class="kw">int</span> nums[] = {<span class="num">2</span>, <span class="num">4</span>, <span class="num">6</span>, <span class="num">8</span>};<br>
-          &nbsp;&nbsp;cout &lt;&lt; <span class="fn">arraySum</span>(nums, <span class="num">4</span>); <span class="comment">// Output: 20</span><br>
-          }
-        </div>
-      </div>
-
-      <div id="ex-binary" class="ex-content">
-        <p class="ex-desc">Binary search: keep splitting the array in half until you find the target.</p>
-        <div class="code-block">
-          <span class="kw">int</span> <span class="fn">binarySearch</span>(<span class="kw">int</span> arr[], <span class="kw">int</span> low, <span class="kw">int</span> high, <span class="kw">int</span> target) {<br>
-          &nbsp;&nbsp;<span class="comment">// Base case: not found</span><br>
-          &nbsp;&nbsp;<span class="kw">if</span> (low &gt; high) <span class="kw">return</span> <span class="num">-1</span>;<br><br>
-          &nbsp;&nbsp;<span class="kw">int</span> mid = (low + high) / <span class="num">2</span>;<br><br>
-          &nbsp;&nbsp;<span class="kw">if</span> (arr[mid] == target) <span class="kw">return</span> mid;      <span class="comment">// Found!</span><br>
-          &nbsp;&nbsp;<span class="kw">if</span> (arr[mid] &gt; target)<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="fn">binarySearch</span>(arr, low, mid-<span class="num">1</span>, target); <span class="comment">// search left</span><br>
-          &nbsp;&nbsp;<span class="kw">return</span> <span class="fn">binarySearch</span>(arr, mid+<span class="num">1</span>, high, target);   <span class="comment">// search right</span><br>
-          }
-        </div>
-      </div>
-
-      <div id="ex-power" class="ex-content">
-        <p class="ex-desc">Compute x raised to the power n — efficiently using recursion.</p>
-        <div class="code-block">
-          <span class="kw">double</span> <span class="fn">power</span>(<span class="kw">double</span> x, <span class="kw">int</span> n) {<br>
-          &nbsp;&nbsp;<span class="comment">// Base case</span><br>
-          &nbsp;&nbsp;<span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span> <span class="num">1</span>;<br><br>
-          &nbsp;&nbsp;<span class="comment">// Optimization: even powers use half the calls</span><br>
-          &nbsp;&nbsp;<span class="kw">if</span> (n % <span class="num">2</span> == <span class="num">0</span>) {<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">double</span> half = <span class="fn">power</span>(x, n / <span class="num">2</span>);<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> half * half;<br>
-          &nbsp;&nbsp;}<br>
-          &nbsp;&nbsp;<span class="kw">return</span> x * <span class="fn">power</span>(x, n - <span class="num">1</span>);<br>
-          }<br><br>
-          <span class="comment">// power(2, 10) = 1024  — only 4 recursive calls!</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 05: DANGER -->
-  <section>
-    <div class="section-label">05 — Watch Out</div>
-    <h2>The one thing that kills recursion</h2>
-    <p>Forget your base case — or make it unreachable — and your function calls itself forever. The call stack fills up and your program crashes with a <strong>Stack Overflow</strong>.</p>
-
-    <div class="danger-box">
-      <div class="danger-title">💥 Infinite Recursion — Stack Overflow</div>
-      <div class="code-block" style="background:#0d0d0d;">
-        <span class="comment">// ❌ WRONG — no base case!</span><br>
+      <div class="code-block" style="margin-top:28px;">
+        <span class="comment">// Factorial: n! = n × (n-1) × (n-2) × ... × 1</span><br>
+        <span class="comment">// Example: 5! = 5 × 4 × 3 × 2 × 1 = 120</span><br><br>
+        <span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span><br>
+        <span class="kw">using namespace</span> std;<br><br>
         <span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {<br>
-        &nbsp;&nbsp;<span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="num">1</span>); <span class="comment">// calls forever → CRASH</span><br>
+        <span class="hl"> <span class="comment">// ① BASE CASE — the stopping condition</span></span>
+        <span class="hl"> <span class="kw">if</span> (n == <span class="num">0</span> || n == <span
+            class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;</span>
+        <br>
+        <span class="hl"> <span class="comment">// ② RECURSIVE CASE — call itself with a SMALLER input</span></span>
+        <span class="hl"> <span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span
+            class="num">1</span>);</span>
         }<br><br>
-        <span class="comment">// ❌ ALSO WRONG — base case unreachable for negative n</span><br>
-        <span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {<br>
-        &nbsp;&nbsp;<span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span> <span class="num">1</span>;<br>
-        &nbsp;&nbsp;<span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="num">1</span>); <span class="comment">// factorial(-1), (-2)... forever</span><br>
-        }<br><br>
-        <span class="comment">// ✅ CORRECT — always reaches base case</span><br>
-        <span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {<br>
-        &nbsp;&nbsp;<span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>; <span class="comment">// handles 0, 1, AND negatives</span><br>
-        &nbsp;&nbsp;<span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="num">1</span>);<br>
+        <span class="kw">int</span> <span class="fn">main</span>() {<br>
+        &nbsp;&nbsp;cout &lt;&lt; <span class="fn">factorial</span>(<span class="num">5</span>) &lt;&lt; endl; <span
+          class="comment">// Output: 120</span><br>
+        &nbsp;&nbsp;<span class="kw">return</span> <span class="num">0</span>;<br>
         }
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 06: KEY CONCEPTS -->
-  <section>
-    <div class="section-label">06 — Key Concepts</div>
-    <h2>The vocabulary you need</h2>
-    <div class="concepts">
-      <div class="concept-card">
-        <div class="concept-icon">🛑</div>
-        <span class="concept-tag">Essential</span>
-        <div class="concept-title">Base Case</div>
-        <p>The condition that <em>stops</em> the recursion. Without it, you get infinite calls and a crash. Always define this first.</p>
+    <!-- 03: CALL STACK VISUALIZER -->
+    <section>
+      <div class="section-label">03 — The Call Stack</div>
+      <h2>Watch factorial(n) build up & unwind</h2>
+      <p>When a recursive function runs, calls <strong>stack up</strong> in memory — then <strong>unwind</strong> one by
+        one as each returns. Pick a number and watch it happen step-by-step.</p>
+
+      <div class="stack-viz">
+        <div class="viz-topbar">
+          <div class="dot r"></div>
+          <div class="dot y"></div>
+          <div class="dot g"></div>
+          <span>call-stack.visualizer — factorial(n)</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-controls">
+            <div>
+              <div class="viz-label">Choose n:</div>
+              <div class="n-selector">
+                <button class="n-btn active" onclick="selectN(1, this)">n = 1</button>
+                <button class="n-btn" onclick="selectN(3, this)">n = 3</button>
+                <button class="n-btn" onclick="selectN(4, this)">n = 4</button>
+                <button class="n-btn" onclick="selectN(5, this)">n = 5</button>
+              </div>
+            </div>
+            <button class="run-btn" id="run-btn" onclick="runStack()">▶ RUN ANIMATION</button>
+            <div class="step-info" id="step-info">
+              <span class="si">// Click RUN to watch the call stack in action</span><br>
+              <span class="si">// Each frame = one function call in memory</span>
+            </div>
+          </div>
+          <div>
+            <div class="viz-label" style="margin-bottom:12px;">Call Stack (top = most recent)</div>
+            <div class="stack-display" id="stack-display">
+              <div
+                style="text-align:center; color:var(--muted); font-family:'DM Mono',monospace; font-size:12px; padding:40px;">
+                — stack is empty —
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">🔁</div>
-        <span class="concept-tag">Core</span>
-        <div class="concept-title">Recursive Case</div>
-        <p>The part that calls the function again — with a <em>smaller or simpler</em> input, always moving toward the base case.</p>
+    </section>
+
+    <!-- 04: MORE EXAMPLES -->
+    <section>
+      <div class="section-label">04 — More C++ Examples</div>
+      <h2>Recursion in the wild</h2>
+      <p>Recursion isn't just for factorial — it shows up everywhere. Click each tab to see a real C++ example.</p>
+
+      <div class="examples-box">
+        <div class="ex-tabs">
+          <div class="ex-tab active" onclick="showEx('fibonacci')">Fibonacci</div>
+          <div class="ex-tab" onclick="showEx('sum')">Array Sum</div>
+          <div class="ex-tab" onclick="showEx('binary')">Binary Search</div>
+          <div class="ex-tab" onclick="showEx('power')">Power</div>
+        </div>
+
+        <div id="ex-fibonacci" class="ex-content visible">
+          <p class="ex-desc">Fibonacci: each number is the sum of the two before it. <strong>0, 1, 1, 2, 3, 5, 8,
+              13…</strong></p>
+          <div class="code-block">
+            <span class="kw">int</span> <span class="fn">fibonacci</span>(<span class="kw">int</span> n) {<br>
+            &nbsp;&nbsp;<span class="comment">// Base cases</span><br>
+            &nbsp;&nbsp;<span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span>
+            <span class="num">0</span>;<br>
+            &nbsp;&nbsp;<span class="kw">if</span> (n == <span class="num">1</span>) <span class="kw">return</span>
+            <span class="num">1</span>;<br><br>
+            &nbsp;&nbsp;<span class="comment">// Recursive case — calls itself TWICE!</span><br>
+            &nbsp;&nbsp;<span class="kw">return</span> <span class="fn">fibonacci</span>(n - <span class="num">1</span>)
+            + <span class="fn">fibonacci</span>(n - <span class="num">2</span>);<br>
+            }<br><br>
+            <span class="comment">// fibonacci(6) = 8</span><br>
+            <span class="comment">// Tree: fib(6) → fib(5)+fib(4) → fib(4)+fib(3)+fib(3)+fib(2) → ...</span>
+          </div>
+        </div>
+
+        <div id="ex-sum" class="ex-content">
+          <p class="ex-desc">Sum all elements of an array recursively — no loops needed.</p>
+          <div class="code-block">
+            <span class="kw">int</span> <span class="fn">arraySum</span>(<span class="kw">int</span> arr[], <span
+              class="kw">int</span> size) {<br>
+            &nbsp;&nbsp;<span class="comment">// Base case: empty array = 0</span><br>
+            &nbsp;&nbsp;<span class="kw">if</span> (size == <span class="num">0</span>) <span class="kw">return</span>
+            <span class="num">0</span>;<br><br>
+            &nbsp;&nbsp;<span class="comment">// Take first element + sum of the rest</span><br>
+            &nbsp;&nbsp;<span class="kw">return</span> arr[<span class="num">0</span>] + <span
+              class="fn">arraySum</span>(arr + <span class="num">1</span>, size - <span class="num">1</span>);<br>
+            }<br><br>
+            <span class="kw">int</span> <span class="fn">main</span>() {<br>
+            &nbsp;&nbsp;<span class="kw">int</span> nums[] = {<span class="num">2</span>, <span class="num">4</span>,
+            <span class="num">6</span>, <span class="num">8</span>};<br>
+            &nbsp;&nbsp;cout &lt;&lt; <span class="fn">arraySum</span>(nums, <span class="num">4</span>); <span
+              class="comment">// Output: 20</span><br>
+            }
+          </div>
+        </div>
+
+        <div id="ex-binary" class="ex-content">
+          <p class="ex-desc">Binary search: keep splitting the array in half until you find the target.</p>
+          <div class="code-block">
+            <span class="kw">int</span> <span class="fn">binarySearch</span>(<span class="kw">int</span> arr[], <span
+              class="kw">int</span> low, <span class="kw">int</span> high, <span class="kw">int</span> target) {<br>
+            &nbsp;&nbsp;<span class="comment">// Base case: not found</span><br>
+            &nbsp;&nbsp;<span class="kw">if</span> (low &gt; high) <span class="kw">return</span> <span
+              class="num">-1</span>;<br><br>
+            &nbsp;&nbsp;<span class="kw">int</span> mid = (low + high) / <span class="num">2</span>;<br><br>
+            &nbsp;&nbsp;<span class="kw">if</span> (arr[mid] == target) <span class="kw">return</span> mid; <span
+              class="comment">// Found!</span><br>
+            &nbsp;&nbsp;<span class="kw">if</span> (arr[mid] &gt; target)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="fn">binarySearch</span>(arr, low,
+            mid-<span class="num">1</span>, target); <span class="comment">// search left</span><br>
+            &nbsp;&nbsp;<span class="kw">return</span> <span class="fn">binarySearch</span>(arr, mid+<span
+              class="num">1</span>, high, target); <span class="comment">// search right</span><br>
+            }
+          </div>
+        </div>
+
+        <div id="ex-power" class="ex-content">
+          <p class="ex-desc">Compute x raised to the power n — efficiently using recursion.</p>
+          <div class="code-block">
+            <span class="kw">double</span> <span class="fn">power</span>(<span class="kw">double</span> x, <span
+              class="kw">int</span> n) {<br>
+            &nbsp;&nbsp;<span class="comment">// Base case</span><br>
+            &nbsp;&nbsp;<span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span>
+            <span class="num">1</span>;<br><br>
+            &nbsp;&nbsp;<span class="comment">// Optimization: even powers use half the calls</span><br>
+            &nbsp;&nbsp;<span class="kw">if</span> (n % <span class="num">2</span> == <span class="num">0</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">double</span> half = <span class="fn">power</span>(x, n / <span
+              class="num">2</span>);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> half * half;<br>
+            &nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;<span class="kw">return</span> x * <span class="fn">power</span>(x, n - <span
+              class="num">1</span>);<br>
+            }<br><br>
+            <span class="comment">// power(2, 10) = 1024 — only 4 recursive calls!</span>
+          </div>
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">📚</div>
-        <span class="concept-tag">Memory</span>
-        <div class="concept-title">Call Stack</div>
-        <p>Each function call takes up memory. Recursive calls pile up on the stack — then unwind as each one returns.</p>
+    </section>
+
+    <!-- 05: DANGER -->
+    <section>
+      <div class="section-label">05 — Watch Out</div>
+      <h2>The one thing that kills recursion</h2>
+      <p>Forget your base case — or make it unreachable — and your function calls itself forever. The call stack fills
+        up and your program crashes with a <strong>Stack Overflow</strong>.</p>
+
+      <div class="danger-box">
+        <div class="danger-title">💥 Infinite Recursion — Stack Overflow</div>
+        <div class="code-block" style="background:#0d0d0d;">
+          <span class="comment">// ❌ WRONG — no base case!</span><br>
+          <span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {<br>
+          &nbsp;&nbsp;<span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span
+            class="num">1</span>); <span class="comment">// calls forever → CRASH</span><br>
+          }<br><br>
+          <span class="comment">// ❌ ALSO WRONG — base case unreachable for negative n</span><br>
+          <span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {<br>
+          &nbsp;&nbsp;<span class="kw">if</span> (n == <span class="num">0</span>) <span class="kw">return</span> <span
+            class="num">1</span>;<br>
+          &nbsp;&nbsp;<span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span
+            class="num">1</span>); <span class="comment">// factorial(-1), (-2)... forever</span><br>
+          }<br><br>
+          <span class="comment">// ✅ CORRECT — always reaches base case</span><br>
+          <span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {<br>
+          &nbsp;&nbsp;<span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span>
+          <span class="num">1</span>; <span class="comment">// handles 0, 1, AND negatives</span><br>
+          &nbsp;&nbsp;<span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span
+            class="num">1</span>);<br>
+          }
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">💥</div>
-        <span class="concept-tag">Error</span>
-        <div class="concept-title">Stack Overflow</div>
-        <p>Too many recursive calls = stack runs out of memory = crash. Always ensure your recursion terminates.</p>
+    </section>
+
+    <!-- 06: KEY CONCEPTS -->
+    <section>
+      <div class="section-label">06 — Key Concepts</div>
+      <h2>The vocabulary you need</h2>
+      <div class="concepts">
+        <div class="concept-card">
+          <div class="concept-icon">🛑</div>
+          <span class="concept-tag">Essential</span>
+          <div class="concept-title">Base Case</div>
+          <p>The condition that <em>stops</em> the recursion. Without it, you get infinite calls and a crash. Always
+            define this first.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🔁</div>
+          <span class="concept-tag">Core</span>
+          <div class="concept-title">Recursive Case</div>
+          <p>The part that calls the function again — with a <em>smaller or simpler</em> input, always moving toward the
+            base case.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">📚</div>
+          <span class="concept-tag">Memory</span>
+          <div class="concept-title">Call Stack</div>
+          <p>Each function call takes up memory. Recursive calls pile up on the stack — then unwind as each one returns.
+          </p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">💥</div>
+          <span class="concept-tag">Error</span>
+          <div class="concept-title">Stack Overflow</div>
+          <p>Too many recursive calls = stack runs out of memory = crash. Always ensure your recursion terminates.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">⚡</div>
+          <span class="concept-tag">Optimization</span>
+          <div class="concept-title">Memoization</div>
+          <p>Cache results of expensive recursive calls. Fibonacci with memoization goes from O(2ⁿ) to O(n).</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🔄</div>
+          <span class="concept-tag">Alternative</span>
+          <div class="concept-title">vs Iteration</div>
+          <p>Any recursion can be rewritten as a loop. Recursion is often cleaner; loops are often faster. Know both.
+          </p>
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">⚡</div>
-        <span class="concept-tag">Optimization</span>
-        <div class="concept-title">Memoization</div>
-        <p>Cache results of expensive recursive calls. Fibonacci with memoization goes from O(2ⁿ) to O(n).</p>
+    </section>
+
+    <!-- 07: QUIZ -->
+    <section>
+      <div class="section-label">07 — Check Your Understanding</div>
+      <h2>Quick quiz</h2>
+      <p>Three questions to lock it in.</p>
+      <div class="quiz-wrap">
+        <div class="progress-dots" id="progress-dots"></div>
+        <div id="quiz-container"></div>
+        <div class="quiz-complete" id="quiz-complete">
+          <h3>🎉 Recursion unlocked!</h3>
+          <p>Next up: <strong>Pointers in C++</strong> — another concept that trips everyone up at first.</p>
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">🔄</div>
-        <span class="concept-tag">Alternative</span>
-        <div class="concept-title">vs Iteration</div>
-        <p>Any recursion can be rewritten as a loop. Recursion is often cleaner; loops are often faster. Know both.</p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 07: QUIZ -->
-  <section>
-    <div class="section-label">07 — Check Your Understanding</div>
-    <h2>Quick quiz</h2>
-    <p>Three questions to lock it in.</p>
-    <div class="quiz-wrap">
-      <div class="progress-dots" id="progress-dots"></div>
-      <div id="quiz-container"></div>
-      <div class="quiz-complete" id="quiz-complete">
-        <h3>🎉 Recursion unlocked!</h3>
-        <p>Next up: <strong>Pointers in C++</strong> — another concept that trips everyone up at first.</p>
-      </div>
-    </div>
-  </section>
+  </main>
+  <footer>
+    <p>Recursion: to understand it, you must first understand recursion.</p>
+  </footer>
 
-</main>
-<footer><p>Recursion: to understand it, you must first understand recursion.</p></footer>
-
-<script>
-// --- Example tabs ---
-function showEx(id) {
-  document.querySelectorAll('.ex-content').forEach(e => e.classList.remove('visible'));
-  document.querySelectorAll('.ex-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('ex-' + id).classList.add('visible');
-  event.target.classList.add('active');
-}
-
-// --- Stack visualizer ---
-let selectedN = 1;
-let animating = false;
-
-function selectN(n, el) {
-  selectedN = n;
-  document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  resetStack();
-}
-
-function resetStack() {
-  document.getElementById('stack-display').innerHTML = `<div style="text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;padding:40px;">— stack is empty —</div>`;
-  document.getElementById('step-info').innerHTML = `<span class="si">// Click RUN to watch the call stack in action</span><br><span class="si">// Each frame = one function call in memory</span>`;
-}
-
-function runStack() {
-  if (animating) return;
-  animating = true;
-  const btn = document.getElementById('run-btn');
-  btn.disabled = true;
-
-  const n = selectedN;
-  const display = document.getElementById('stack-display');
-  const info = document.getElementById('step-info');
-  display.innerHTML = '';
-
-  // Build call sequence
-  let steps = [];
-  // Phase 1: calling down
-  for (let i = n; i >= 1; i--) {
-    const isBase = (i <= 1);
-    steps.push({ type: isBase ? 'base' : 'call', n: i, phase: 'calling' });
-  }
-  // Phase 2: returning up
-  let result = 1;
-  for (let i = 1; i <= n; i++) {
-    result *= i;
-    steps.push({ type: 'return', n: i, result: result, phase: 'returning' });
-  }
-
-  let frames = [];
-  let stepIdx = 0;
-
-  function nextStep() {
-    if (stepIdx >= steps.length) {
-      animating = false;
-      btn.disabled = false;
-      btn.textContent = '▶ RUN AGAIN';
-      info.innerHTML = `<span class="ss">✓ factorial(${n}) = ${result}</span><br><span class="si">// All frames returned. Stack is empty again.</span>`;
-      return;
+  <script>
+    // --- Example tabs ---
+    function showEx(id) {
+      document.querySelectorAll('.ex-content').forEach(e => e.classList.remove('visible'));
+      document.querySelectorAll('.ex-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('ex-' + id).classList.add('visible');
+      event.target.classList.add('active');
     }
 
-    const step = steps[stepIdx];
-    stepIdx++;
+    // --- Stack visualizer ---
+    let selectedN = 1;
+    let animating = false;
 
-    if (step.phase === 'calling') {
-      // Push frame
-      const frame = document.createElement('div');
-      frame.className = 'stack-frame ' + (step.type === 'base' ? 'base' : 'calling');
-      frame.innerHTML = `<span class="frame-fn">factorial</span>(<span class="frame-arg">${step.n}</span>)` +
-        `<span class="frame-tag ${step.type === 'base' ? 'tag-base' : 'tag-call'}">${step.type === 'base' ? 'BASE' : 'CALL'}</span>`;
-      display.insertBefore(frame, display.firstChild);
-      frames.unshift(frame);
-      setTimeout(() => frame.classList.add('visible'), 10);
-
-      if (step.type === 'base') {
-        info.innerHTML = `<span class="si">// Base case reached!</span><br><span class="sv">factorial(1) = 1</span><br><span class="si">// Now we start returning back up...</span>`;
-      } else {
-        info.innerHTML = `<span class="si">// Calling factorial(${step.n})</span><br><span class="si">// Can't compute yet — need factorial(${step.n - 1}) first</span><br><span class="si">// Pushed onto stack. Waiting...</span>`;
-      }
-    } else {
-      // Pop frame (returning)
-      if (frames.length > 0) {
-        const frame = frames[0];
-        frame.className = 'stack-frame returning visible';
-        frame.innerHTML = `<span class="frame-fn">factorial</span>(<span class="frame-arg">${step.n}</span>) <span style="color:var(--muted)">→</span> <span style="color:var(--green)">${step.result}</span>` +
-          `<span class="frame-tag tag-ret">RETURN</span>`;
-        setTimeout(() => {
-          frame.style.opacity = '0';
-          frame.style.transform = 'translateX(-20px)';
-          setTimeout(() => { if(frame.parentNode) frame.parentNode.removeChild(frame); }, 300);
-          frames.shift();
-        }, 350);
-        info.innerHTML = `<span class="ss">← factorial(${step.n}) returns ${step.result}</span><br>` +
-          (step.n < n ? `<span class="si">// ${step.n + 1} × ${step.result / step.n} = ${step.result} will be passed up</span>` : `<span class="ss">// Final answer: ${step.result} ✓</span>`);
-      }
+    function selectN(n, el) {
+      selectedN = n;
+      document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      resetStack();
     }
 
-    setTimeout(nextStep, 700);
-  }
+    function resetStack() {
+      document.getElementById('stack-display').innerHTML = `<div style="text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;padding:40px;">— stack is empty —</div>`;
+      document.getElementById('step-info').innerHTML = `<span class="si">// Click RUN to watch the call stack in action</span><br><span class="si">// Each frame = one function call in memory</span>`;
+    }
 
-  nextStep();
-}
+    function runStack() {
+      if (animating) return;
+      animating = true;
+      const btn = document.getElementById('run-btn');
+      btn.disabled = true;
 
-// --- Quiz ---
-const questions = [
-  { q: "What is the purpose of the base case in a recursive function?", opts: ["To make the function run faster", "To stop the recursion and prevent infinite calls", "To call the function with a larger input", "To store the result in memory"], correct: 1, feedback: "Exactly! The base case is the stopping condition — without it, the function calls itself forever and crashes." },
-  { q: "What happens if you call factorial(-1) in C++ without proper base case handling?", opts: ["It returns 0", "It returns -1", "It causes infinite recursion and a stack overflow", "The compiler catches the error automatically"], correct: 2, feedback: "Right — the recursion would go -1, -2, -3... forever. Always handle edge cases in your base condition." },
-  { q: "In a recursive C++ function, what must be true about the recursive call's argument?", opts: ["It must be the same as the original argument", "It must be larger than the original", "It must move closer to the base case (e.g., smaller)", "It must be a negative number"], correct: 2, feedback: "Correct! Each recursive call must bring us closer to the base case — otherwise we never stop." }
-];
+      const n = selectedN;
+      const display = document.getElementById('stack-display');
+      const info = document.getElementById('step-info');
+      display.innerHTML = '';
 
-let current = 0, answered = false;
-function buildDots() { document.getElementById('progress-dots').innerHTML = questions.map((_,i) => `<div class="progress-dot ${i===0?'current':''}" id="dot-${i}"></div>`).join(''); }
-function renderQuestion() {
-  answered = false;
-  const q = questions[current];
-  document.getElementById('quiz-container').innerHTML = `
+      // Build call sequence
+      let steps = [];
+      // Phase 1: calling down
+      for (let i = n; i >= 1; i--) {
+        const isBase = (i <= 1);
+        steps.push({ type: isBase ? 'base' : 'call', n: i, phase: 'calling' });
+      }
+      // Phase 2: returning up
+      let result = 1;
+      for (let i = 1; i <= n; i++) {
+        result *= i;
+        steps.push({ type: 'return', n: i, result: result, phase: 'returning' });
+      }
+
+      let frames = [];
+      let stepIdx = 0;
+
+      function nextStep() {
+        if (stepIdx >= steps.length) {
+          animating = false;
+          btn.disabled = false;
+          btn.textContent = '▶ RUN AGAIN';
+          info.innerHTML = `<span class="ss">✓ factorial(${n}) = ${result}</span><br><span class="si">// All frames returned. Stack is empty again.</span>`;
+          return;
+        }
+
+        const step = steps[stepIdx];
+        stepIdx++;
+
+        if (step.phase === 'calling') {
+          // Push frame
+          const frame = document.createElement('div');
+          frame.className = 'stack-frame ' + (step.type === 'base' ? 'base' : 'calling');
+          frame.innerHTML = `<span class="frame-fn">factorial</span>(<span class="frame-arg">${step.n}</span>)` +
+            `<span class="frame-tag ${step.type === 'base' ? 'tag-base' : 'tag-call'}">${step.type === 'base' ? 'BASE' : 'CALL'}</span>`;
+          display.insertBefore(frame, display.firstChild);
+          frames.unshift(frame);
+          setTimeout(() => frame.classList.add('visible'), 10);
+
+          if (step.type === 'base') {
+            info.innerHTML = `<span class="si">// Base case reached!</span><br><span class="sv">factorial(1) = 1</span><br><span class="si">// Now we start returning back up...</span>`;
+          } else {
+            info.innerHTML = `<span class="si">// Calling factorial(${step.n})</span><br><span class="si">// Can't compute yet — need factorial(${step.n - 1}) first</span><br><span class="si">// Pushed onto stack. Waiting...</span>`;
+          }
+        } else {
+          // Pop frame (returning)
+          if (frames.length > 0) {
+            const frame = frames[0];
+            frame.className = 'stack-frame returning visible';
+            frame.innerHTML = `<span class="frame-fn">factorial</span>(<span class="frame-arg">${step.n}</span>) <span style="color:var(--muted)">→</span> <span style="color:var(--green)">${step.result}</span>` +
+              `<span class="frame-tag tag-ret">RETURN</span>`;
+            setTimeout(() => {
+              frame.style.opacity = '0';
+              frame.style.transform = 'translateX(-20px)';
+              setTimeout(() => { if (frame.parentNode) frame.parentNode.removeChild(frame); }, 300);
+              frames.shift();
+            }, 350);
+            info.innerHTML = `<span class="ss">← factorial(${step.n}) returns ${step.result}</span><br>` +
+              (step.n < n ? `<span class="si">// ${step.n + 1} × ${step.result / step.n} = ${step.result} will be passed up</span>` : `<span class="ss">// Final answer: ${step.result} ✓</span>`);
+          }
+        }
+
+        setTimeout(nextStep, 700);
+      }
+
+      nextStep();
+    }
+
+    // --- Quiz ---
+    const questions = [
+      { q: "What is the purpose of the base case in a recursive function?", opts: ["To make the function run faster", "To stop the recursion and prevent infinite calls", "To call the function with a larger input", "To store the result in memory"], correct: 1, feedback: "Exactly! The base case is the stopping condition — without it, the function calls itself forever and crashes." },
+      { q: "What happens if you call factorial(-1) in C++ without proper base case handling?", opts: ["It returns 0", "It returns -1", "It causes infinite recursion and a stack overflow", "The compiler catches the error automatically"], correct: 2, feedback: "Right — the recursion would go -1, -2, -3... forever. Always handle edge cases in your base condition." },
+      { q: "In a recursive C++ function, what must be true about the recursive call's argument?", opts: ["It must be the same as the original argument", "It must be larger than the original", "It must move closer to the base case (e.g., smaller)", "It must be a negative number"], correct: 2, feedback: "Correct! Each recursive call must bring us closer to the base case — otherwise we never stop." }
+    ];
+
+    let current = 0, answered = false;
+    function buildDots() { document.getElementById('progress-dots').innerHTML = questions.map((_, i) => `<div class="progress-dot ${i === 0 ? 'current' : ''}" id="dot-${i}"></div>`).join(''); }
+    function renderQuestion() {
+      answered = false;
+      const q = questions[current];
+      document.getElementById('quiz-container').innerHTML = `
     <div class="quiz-q">${q.q}</div>
-    <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div>
+    <div class="quiz-opts">${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div>
     <div class="quiz-feedback" id="quiz-feedback"></div>
-    <button class="next-btn" id="next-btn" onclick="nextQuestion()">${current===questions.length-1?'SEE RESULTS →':'NEXT QUESTION →'}</button>`;
-}
-function answer(idx) {
-  if (answered) return; answered = true;
-  const q = questions[current];
-  document.querySelectorAll('.quiz-opt').forEach((o,i) => { if(i===idx) o.classList.add(i===q.correct?'correct':'wrong'); if(i===q.correct) o.classList.add('correct'); o.disabled=true; });
-  document.getElementById('quiz-feedback').textContent = q.feedback;
-  document.getElementById('next-btn').classList.add('show');
-  document.getElementById(`dot-${current}`).classList.replace('current','done');
-}
-function nextQuestion() {
-  current++;
-  if (current >= questions.length) { document.getElementById('quiz-container').style.display='none'; document.getElementById('quiz-complete').style.display='block'; }
-  else { document.getElementById(`dot-${current}`).classList.add('current'); renderQuestion(); }
-}
-buildDots(); renderQuestion();
-</script>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">${current === questions.length - 1 ? 'SEE RESULTS →' : 'NEXT QUESTION →'}</button>`;
+    }
+    function answer(idx) {
+      if (answered) return; answered = true;
+      const q = questions[current];
+      document.querySelectorAll('.quiz-opt').forEach((o, i) => { if (i === idx) o.classList.add(i === q.correct ? 'correct' : 'wrong'); if (i === q.correct) o.classList.add('correct'); o.disabled = true; });
+      document.getElementById('quiz-feedback').textContent = q.feedback;
+      document.getElementById('next-btn').classList.add('show');
+      document.getElementById(`dot-${current}`).classList.replace('current', 'done');
+    }
+    function nextQuestion() {
+      current++;
+      if (current >= questions.length) { document.getElementById('quiz-container').style.display = 'none'; document.getElementById('quiz-complete').style.display = 'block'; }
+      else { document.getElementById(`dot-${current}`).classList.add('current'); renderQuestion(); }
+    }
+    buildDots(); renderQuestion();
+  </script>
 </body>
+
 </html>

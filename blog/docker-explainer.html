@@ -1,680 +1,1559 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>What is Docker?</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
-<style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  :root{--bg:#0d0d0d;--surface:#161616;--card:#1e1e1e;--border:#2a2a2a;--accent:#f5c518;--accent2:#ff6b35;--accent3:#4ecdc4;--text:#f0ece3;--muted:#7a7570;--green:#6bcb77;--red:#ff6b6b;}
-  body{background:var(--bg);color:var(--text);font-family:'Lora',serif;min-height:100vh;overflow-x:hidden;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is Docker?</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  header{padding:60px 40px 40px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-  header::before{content:'DOCK';position:absolute;right:-20px;top:-20px;font-family:'Syne',sans-serif;font-size:200px;font-weight:800;color:#ffffff06;pointer-events:none;letter-spacing:-10px;}
-  .tag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);background:#f5c51815;border:1px solid #f5c51830;padding:4px 10px;display:inline-block;margin-bottom:20px;}
-  h1{font-family:'Syne',sans-serif;font-size:clamp(36px,7vw,72px);font-weight:800;line-height:1;letter-spacing:-2px;max-width:760px;}
-  h1 span{color:var(--accent);}
-  .subtitle{font-style:italic;color:var(--muted);font-size:18px;margin-top:16px;max-width:520px;line-height:1.6;}
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --card: #1e1e1e;
+      --border: #2a2a2a;
+      --accent: #f5c518;
+      --accent2: #ff6b35;
+      --accent3: #4ecdc4;
+      --text: #f0ece3;
+      --muted: #7a7570;
+      --green: #6bcb77;
+      --red: #ff6b6b;
+    }
 
-  main{max-width:1100px;margin:0 auto;padding:60px 40px;}
-  section{margin-bottom:80px;}
-  .section-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:24px;display:flex;align-items:center;gap:12px;}
-  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
-  h2{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;margin-bottom:16px;}
-  p{line-height:1.8;color:#c8c4bb;font-size:16px;}
-  code{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent3);background:#0a0a0a;padding:2px 6px;border-radius:2px;}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Lora', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-  /* ANALOGY */
-  .three-col{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;margin-top:36px;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-  @media(max-width:700px){.three-col{grid-template-columns:1fr;}}
-  .col-card{background:var(--card);padding:28px 24px;}
-  .col-divider{background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 10px;gap:6px;border-left:1px solid var(--border);border-right:1px solid var(--border);}
-  .col-divider .arrow{color:var(--accent);font-size:22px;animation:pulse 1.5s ease-in-out infinite;}
-  @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
-  .col-divider .lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;writing-mode:vertical-rl;}
-  .col-card .icon{font-size:34px;margin-bottom:10px;}
-  .col-card .role{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
-  .col-card h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;}
-  .col-card p{font-size:14px;}
+    header {
+      padding: 60px 40px 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
 
-  /* ARCHITECTURE VISUAL */
-  .arch-box{margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-  .arch-topbar{background:#111;padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
-  .dot{width:10px;height:10px;border-radius:50%;} .dot.r{background:var(--red);} .dot.y{background:var(--accent);} .dot.g{background:var(--green);}
-  .arch-topbar span{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-left:8px;}
-  .arch-body{padding:32px;}
+    header::before {
+      content: 'DOCK';
+      position: absolute;
+      right: -20px;
+      top: -20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 200px;
+      font-weight: 800;
+      color: #ffffff06;
+      pointer-events: none;
+      letter-spacing: -10px;
+    }
 
-  .arch-layers{display:flex;flex-direction:column;gap:2px;}
-  .arch-layer{padding:18px 24px;border-radius:2px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;border:1px solid transparent;}
-  .arch-layer:hover{transform:translateX(4px);}
-  .arch-layer.host{background:#1a1a2e;border-color:#2a2a4a;}
-  .arch-layer.engine{background:#1a2a1a;border-color:#2a4a2a;}
-  .arch-layer.container{background:#2a1a0a;border-color:#4a3a1a;}
-  .arch-layer.container2{background:#1a2a2a;border-color:#2a4a4a;}
-  .arch-layer.container3{background:#2a1a2a;border-color:#4a2a4a;}
-  .arch-layer.image{background:#1e1e10;border-color:#3a3a20;}
-  .layer-icon{font-size:24px;flex-shrink:0;}
-  .layer-info{flex:1;}
-  .layer-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:3px;}
-  .layer-desc{font-size:13px;color:var(--muted);}
-  .layer-badge{font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:2px;letter-spacing:2px;flex-shrink:0;}
-  .badge-blue{background:#4ecdc420;color:var(--accent3);border:1px solid #4ecdc430;}
-  .badge-green{background:#6bcb7720;color:var(--green);border:1px solid #6bcb7730;}
-  .badge-yellow{background:#f5c51820;color:var(--accent);border:1px solid #f5c51830;}
-  .badge-orange{background:#ff6b3520;color:var(--accent2);border:1px solid #ff6b3530;}
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: #f5c51815;
+      border: 1px solid #f5c51830;
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
 
-  .arch-detail{margin-top:16px;background:#0a0a0a;border:1px solid var(--border);border-radius:2px;padding:18px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.9;display:none;animation:fadeIn .3s ease;}
-  .arch-detail.show{display:block;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-  .ad-k{color:var(--accent3);} .ad-v{color:var(--accent);} .ad-g{color:var(--green);} .ad-c{color:#4a4a4a;}
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 7vw, 72px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px;
+      max-width: 760px;
+    }
 
-  /* VM vs DOCKER */
-  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:32px;}
-  @media(max-width:600px){.compare-grid{grid-template-columns:1fr;}}
-  .cmp-col{background:var(--card);padding:28px;}
-  .cmp-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
-  .cmp-rows{display:flex;flex-direction:column;gap:2px;}
-  .cmp-row{padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
-  .cmp-row.heavy{background:#ff6b6b08;border-left:2px solid #ff6b6b40;}
-  .cmp-row.light{background:#6bcb7708;border-left:2px solid #6bcb7740;}
-  .cmp-label{color:var(--muted);}
-  .cmp-val-bad{color:var(--red);}
-  .cmp-val-good{color:var(--green);}
+    h1 span {
+      color: var(--accent);
+    }
 
-  /* CODE */
-  .code-block{background:#0a0a0a;border:1px solid var(--border);border-radius:2px;padding:24px;font-family:'DM Mono',monospace;font-size:13px;line-height:2;overflow-x:auto;margin-top:24px;}
-  .comment{color:#4a4a4a;} .kw{color:var(--accent2);} .fn{color:var(--accent3);} .num{color:var(--accent);} .str{color:var(--green);}
-  .hl{background:#f5c51815;border-left:3px solid var(--accent);padding-left:8px;display:block;}
+    .subtitle {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 18px;
+      margin-top: 16px;
+      max-width: 520px;
+      line-height: 1.6;
+    }
 
-  /* DOCKERFILE BUILDER */
-  .df-builder{margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-  .df-topbar{background:#111;padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
-  .df-topbar span{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-left:8px;}
-  .df-body{display:grid;grid-template-columns:1fr 1fr;}
-  @media(max-width:640px){.df-body{grid-template-columns:1fr;}}
-  .df-left{padding:24px;border-right:1px solid var(--border);}
-  .df-right{padding:24px;}
-  .df-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
-  .df-instructions{display:flex;flex-direction:column;gap:6px;}
-  .df-instr{font-family:'DM Mono',monospace;font-size:12px;padding:10px 14px;background:#0a0a0a;border:1px solid var(--border);cursor:pointer;transition:all .2s;border-radius:2px;display:flex;gap:10px;align-items:flex-start;}
-  .df-instr:hover{border-color:var(--accent3);color:var(--text);}
-  .df-instr .instr-kw{color:var(--accent2);font-weight:700;min-width:60px;flex-shrink:0;}
-  .df-instr .instr-desc{color:var(--muted);font-size:11px;}
-  .df-output{background:#060606;border:1px solid var(--border);border-radius:2px;min-height:280px;padding:16px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.9;}
-  .df-line{animation:fadeIn .25s ease;}
-  .df-line .kw{color:var(--accent2);}
-  .df-line .str{color:var(--green);}
-  .df-line .cmt{color:#4a4a4a;}
-  .df-line .val{color:var(--accent);}
-  .clear-btn{margin-top:10px;padding:8px 16px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;transition:all .2s;border-radius:2px;}
-  .clear-btn:hover{border-color:var(--red);color:var(--red);}
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
 
-  /* TERMINAL SIMULATOR */
-  .term-sim{margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-  .term-bar{background:#111;padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
-  .term-bar span{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-left:8px;}
-  .term-sim-body{display:grid;grid-template-columns:1fr 1fr;}
-  @media(max-width:600px){.term-sim-body{grid-template-columns:1fr;}}
-  .term-left{padding:24px;border-right:1px solid var(--border);}
-  .term-right{padding:24px;}
-  .term-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
-  .cmd-list{display:flex;flex-direction:column;gap:6px;}
-  .cmd-item{font-family:'DM Mono',monospace;font-size:12px;padding:10px 14px;background:#0a0a0a;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;border-radius:2px;}
-  .cmd-item::before{content:'$ ';color:var(--accent);}
-  .cmd-item:hover{border-color:var(--accent3);color:var(--text);}
-  .terminal{background:#060606;border:1px solid var(--border);border-radius:2px;padding:16px;min-height:280px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.9;overflow-y:auto;max-height:340px;}
-  .tl{animation:fadeIn .2s ease;}
-  .tp{color:var(--accent);} .tv{color:var(--green);} .ti{color:var(--accent3);} .te{color:var(--red);} .tm{color:var(--muted);}
-  .cursor{display:inline-block;width:8px;height:14px;background:var(--accent);animation:blink 1s step-end infinite;vertical-align:middle;}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    section {
+      margin-bottom: 80px;
+    }
 
-  /* CONCEPTS */
-  .concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px;margin-top:32px;}
-  .concept-card{background:var(--card);padding:24px;border-left:3px solid transparent;transition:border-color .2s;}
-  .concept-card:hover{border-left-color:var(--accent);}
-  .concept-icon{font-size:24px;margin-bottom:12px;}
-  .concept-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;}
-  .concept-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--accent2);margin-bottom:8px;display:block;}
-  .concept-card p{font-size:13px;}
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-  /* QUIZ */
-  .quiz-wrap{background:var(--surface);border:1px solid var(--border);padding:36px;margin-top:32px;border-radius:4px;}
-  .quiz-q{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:24px;}
-  .quiz-opts{display:flex;flex-direction:column;gap:10px;}
-  .quiz-opt{padding:14px 18px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:'Lora',serif;font-size:15px;text-align:left;cursor:pointer;transition:all .15s;border-radius:2px;}
-  .quiz-opt:hover{border-color:var(--accent);background:#f5c51808;}
-  .quiz-opt.correct{border-color:var(--green);background:#6bcb7715;color:var(--green);}
-  .quiz-opt.wrong{border-color:var(--red);background:#ff6b6b10;color:var(--red);}
-  .quiz-feedback{margin-top:20px;font-style:italic;font-size:15px;min-height:28px;color:var(--muted);}
-  .next-btn{margin-top:20px;padding:10px 24px;background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;display:none;transition:all .2s;}
-  .next-btn:hover{background:var(--accent);color:#000;}
-  .next-btn.show{display:inline-block;}
-  .progress-dots{display:flex;gap:8px;margin-bottom:28px;}
-  .progress-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s;}
-  .progress-dot.done{background:var(--green);}
-  .progress-dot.current{background:var(--accent);}
-  .quiz-complete{text-align:center;padding:20px;display:none;}
-  .quiz-complete h3{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);margin-bottom:12px;}
-  .quiz-complete p{font-size:16px;color:var(--muted);}
-  footer{border-top:1px solid var(--border);padding:40px;text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
-</style>
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    p {
+      line-height: 1.8;
+      color: #c8c4bb;
+      font-size: 16px;
+    }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--accent3);
+      background: #0a0a0a;
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    /* ANALOGY */
+    .three-col {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 0;
+      margin-top: 36px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    @media(max-width:700px) {
+      .three-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .col-card {
+      background: var(--card);
+      padding: 28px 24px;
+    }
+
+    .col-divider {
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 10px;
+      gap: 6px;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+
+    .col-divider .arrow {
+      color: var(--accent);
+      font-size: 22px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: .4
+      }
+
+      50% {
+        opacity: 1
+      }
+    }
+
+    .col-divider .lbl {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+    }
+
+    .col-card .icon {
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+
+    .col-card .role {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .col-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .col-card p {
+      font-size: 14px;
+    }
+
+    /* ARCHITECTURE VISUAL */
+    .arch-box {
+      margin-top: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .arch-topbar {
+      background: #111;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.r {
+      background: var(--red);
+    }
+
+    .dot.y {
+      background: var(--accent);
+    }
+
+    .dot.g {
+      background: var(--green);
+    }
+
+    .arch-topbar span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .arch-body {
+      padding: 32px;
+    }
+
+    .arch-layers {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .arch-layer {
+      padding: 18px 24px;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .arch-layer:hover {
+      transform: translateX(4px);
+    }
+
+    .arch-layer.host {
+      background: #1a1a2e;
+      border-color: #2a2a4a;
+    }
+
+    .arch-layer.engine {
+      background: #1a2a1a;
+      border-color: #2a4a2a;
+    }
+
+    .arch-layer.container {
+      background: #2a1a0a;
+      border-color: #4a3a1a;
+    }
+
+    .arch-layer.container2 {
+      background: #1a2a2a;
+      border-color: #2a4a4a;
+    }
+
+    .arch-layer.container3 {
+      background: #2a1a2a;
+      border-color: #4a2a4a;
+    }
+
+    .arch-layer.image {
+      background: #1e1e10;
+      border-color: #3a3a20;
+    }
+
+    .layer-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .layer-info {
+      flex: 1;
+    }
+
+    .layer-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .layer-desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .layer-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 2px;
+      letter-spacing: 2px;
+      flex-shrink: 0;
+    }
+
+    .badge-blue {
+      background: #4ecdc420;
+      color: var(--accent3);
+      border: 1px solid #4ecdc430;
+    }
+
+    .badge-green {
+      background: #6bcb7720;
+      color: var(--green);
+      border: 1px solid #6bcb7730;
+    }
+
+    .badge-yellow {
+      background: #f5c51820;
+      color: var(--accent);
+      border: 1px solid #f5c51830;
+    }
+
+    .badge-orange {
+      background: #ff6b3520;
+      color: var(--accent2);
+      border: 1px solid #ff6b3530;
+    }
+
+    .arch-detail {
+      margin-top: 16px;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 18px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.9;
+      display: none;
+      animation: fadeIn .3s ease;
+    }
+
+    .arch-detail.show {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .ad-k {
+      color: var(--accent3);
+    }
+
+    .ad-v {
+      color: var(--accent);
+    }
+
+    .ad-g {
+      color: var(--green);
+    }
+
+    .ad-c {
+      color: #4a4a4a;
+    }
+
+    /* VM vs DOCKER */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 32px;
+    }
+
+    @media(max-width:600px) {
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cmp-col {
+      background: var(--card);
+      padding: 28px;
+    }
+
+    .cmp-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cmp-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cmp-row {
+      padding: 10px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cmp-row.heavy {
+      background: #ff6b6b08;
+      border-left: 2px solid #ff6b6b40;
+    }
+
+    .cmp-row.light {
+      background: #6bcb7708;
+      border-left: 2px solid #6bcb7740;
+    }
+
+    .cmp-label {
+      color: var(--muted);
+    }
+
+    .cmp-val-bad {
+      color: var(--red);
+    }
+
+    .cmp-val-good {
+      color: var(--green);
+    }
+
+    /* CODE */
+    .code-block {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 24px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+      overflow-x: auto;
+      margin-top: 24px;
+    }
+
+    .comment {
+      color: #4a4a4a;
+    }
+
+    .kw {
+      color: var(--accent2);
+    }
+
+    .fn {
+      color: var(--accent3);
+    }
+
+    .num {
+      color: var(--accent);
+    }
+
+    .str {
+      color: var(--green);
+    }
+
+    .hl {
+      background: #f5c51815;
+      border-left: 3px solid var(--accent);
+      padding-left: 8px;
+      display: block;
+    }
+
+    /* DOCKERFILE BUILDER */
+    .df-builder {
+      margin-top: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .df-topbar {
+      background: #111;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .df-topbar span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .df-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media(max-width:640px) {
+      .df-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .df-left {
+      padding: 24px;
+      border-right: 1px solid var(--border);
+    }
+
+    .df-right {
+      padding: 24px;
+    }
+
+    .df-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .df-instructions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .df-instr {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 10px 14px;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all .2s;
+      border-radius: 2px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .df-instr:hover {
+      border-color: var(--accent3);
+      color: var(--text);
+    }
+
+    .df-instr .instr-kw {
+      color: var(--accent2);
+      font-weight: 700;
+      min-width: 60px;
+      flex-shrink: 0;
+    }
+
+    .df-instr .instr-desc {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .df-output {
+      background: #060606;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      min-height: 280px;
+      padding: 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.9;
+    }
+
+    .df-line {
+      animation: fadeIn .25s ease;
+    }
+
+    .df-line .kw {
+      color: var(--accent2);
+    }
+
+    .df-line .str {
+      color: var(--green);
+    }
+
+    .df-line .cmt {
+      color: #4a4a4a;
+    }
+
+    .df-line .val {
+      color: var(--accent);
+    }
+
+    .clear-btn {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all .2s;
+      border-radius: 2px;
+    }
+
+    .clear-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* TERMINAL SIMULATOR */
+    .term-sim {
+      margin-top: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .term-bar {
+      background: #111;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .term-bar span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .term-sim-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media(max-width:600px) {
+      .term-sim-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .term-left {
+      padding: 24px;
+      border-right: 1px solid var(--border);
+    }
+
+    .term-right {
+      padding: 24px;
+    }
+
+    .term-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .cmd-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .cmd-item {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 10px 14px;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+      border-radius: 2px;
+    }
+
+    .cmd-item::before {
+      content: '$ ';
+      color: var(--accent);
+    }
+
+    .cmd-item:hover {
+      border-color: var(--accent3);
+      color: var(--text);
+    }
+
+    .terminal {
+      background: #060606;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 16px;
+      min-height: 280px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.9;
+      overflow-y: auto;
+      max-height: 340px;
+    }
+
+    .tl {
+      animation: fadeIn .2s ease;
+    }
+
+    .tp {
+      color: var(--accent);
+    }
+
+    .tv {
+      color: var(--green);
+    }
+
+    .ti {
+      color: var(--accent3);
+    }
+
+    .te {
+      color: var(--red);
+    }
+
+    .tm {
+      color: var(--muted);
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--accent);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    /* CONCEPTS */
+    .concepts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2px;
+      margin-top: 32px;
+    }
+
+    .concept-card {
+      background: var(--card);
+      padding: 24px;
+      border-left: 3px solid transparent;
+      transition: border-color .2s;
+    }
+
+    .concept-card:hover {
+      border-left-color: var(--accent);
+    }
+
+    .concept-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .concept-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .concept-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--accent2);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .concept-card p {
+      font-size: 13px;
+    }
+
+    /* QUIZ */
+    .quiz-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 36px;
+      margin-top: 32px;
+      border-radius: 4px;
+    }
+
+    .quiz-q {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .quiz-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      text-align: left;
+      cursor: pointer;
+      transition: all .15s;
+      border-radius: 2px;
+    }
+
+    .quiz-opt:hover {
+      border-color: var(--accent);
+      background: #f5c51808;
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--green);
+      background: #6bcb7715;
+      color: var(--green);
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--red);
+      background: #ff6b6b10;
+      color: var(--red);
+    }
+
+    .quiz-feedback {
+      margin-top: 20px;
+      font-style: italic;
+      font-size: 15px;
+      min-height: 28px;
+      color: var(--muted);
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      padding: 10px 24px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      display: none;
+      transition: all .2s;
+    }
+
+    .next-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .next-btn.show {
+      display: inline-block;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background .3s;
+    }
+
+    .progress-dot.done {
+      background: var(--green);
+    }
+
+    .progress-dot.current {
+      background: var(--accent);
+    }
+
+    .quiz-complete {
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+
+    .quiz-complete h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .quiz-complete p {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="tag">Tech Concept Explainer</div>
-  <h1>What is <span>Docker</span>?</h1>
-  <p class="subtitle">Package your app and everything it needs into a portable box — runs anywhere, every time.</p>
-</header>
+  <header>
+    <div class="tag">Tech Concept Explainer</div>
+    <h1>What is <span>Docker</span>?</h1>
+    <p class="subtitle">Package your app and everything it needs into a portable box — runs anywhere, every time.</p>
+  </header>
 
-<main>
+  <main>
 
-  <!-- 01: ANALOGY -->
-  <section>
-    <div class="section-label">01 — The Idea</div>
-    <h2>Think of it like a shipping container</h2>
-    <p>Before shipping containers, loading a ship was chaos — every cargo needed different handling. The container standardized everything. Docker does the same for software: it wraps your app, its dependencies, and its config into one <strong>container</strong> that runs identically everywhere.</p>
+    <!-- 01: ANALOGY -->
+    <section>
+      <div class="section-label">01 — The Idea</div>
+      <h2>Think of it like a shipping container</h2>
+      <p>Before shipping containers, loading a ship was chaos — every cargo needed different handling. The container
+        standardized everything. Docker does the same for software: it wraps your app, its dependencies, and its config
+        into one <strong>container</strong> that runs identically everywhere.</p>
 
-    <div class="three-col">
-      <div class="col-card">
-        <div class="icon">😩</div>
-        <div class="role">The old problem</div>
-        <h3>"Works on my machine"</h3>
-        <p>Your app runs fine locally but crashes on your teammate's laptop or the production server — different OS, different Python version, missing library.</p>
+      <div class="three-col">
+        <div class="col-card">
+          <div class="icon">😩</div>
+          <div class="role">The old problem</div>
+          <h3>"Works on my machine"</h3>
+          <p>Your app runs fine locally but crashes on your teammate's laptop or the production server — different OS,
+            different Python version, missing library.</p>
+        </div>
+        <div class="col-divider">
+          <div class="arrow">→</div>
+          <div class="lbl">Docker</div>
+          <div class="arrow">→</div>
+        </div>
+        <div class="col-card">
+          <div class="icon">📦</div>
+          <div class="role">The Docker solution</div>
+          <h3>One container, runs everywhere</h3>
+          <p>Your app, runtime, libraries, env variables — all packed into one image. Run it on any machine, any OS, any
+            cloud. Always identical.</p>
+        </div>
+        <div class="col-divider" style="border-right:none;">
+          <div class="arrow">→</div>
+          <div class="lbl">Result</div>
+          <div class="arrow">→</div>
+        </div>
+        <div class="col-card">
+          <div class="icon">🚀</div>
+          <div class="role">The outcome</div>
+          <h3>"Works everywhere"</h3>
+          <p>Dev laptop, CI/CD pipeline, staging server, AWS, Google Cloud — same container, same behavior. Ship with
+            confidence.</p>
+        </div>
       </div>
-      <div class="col-divider">
-        <div class="arrow">→</div>
-        <div class="lbl">Docker</div>
-        <div class="arrow">→</div>
-      </div>
-      <div class="col-card">
-        <div class="icon">📦</div>
-        <div class="role">The Docker solution</div>
-        <h3>One container, runs everywhere</h3>
-        <p>Your app, runtime, libraries, env variables — all packed into one image. Run it on any machine, any OS, any cloud. Always identical.</p>
-      </div>
-      <div class="col-divider" style="border-right:none;">
-        <div class="arrow">→</div>
-        <div class="lbl">Result</div>
-        <div class="arrow">→</div>
-      </div>
-      <div class="col-card">
-        <div class="icon">🚀</div>
-        <div class="role">The outcome</div>
-        <h3>"Works everywhere"</h3>
-        <p>Dev laptop, CI/CD pipeline, staging server, AWS, Google Cloud — same container, same behavior. Ship with confidence.</p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 02: ARCHITECTURE -->
-  <section>
-    <div class="section-label">02 — Architecture</div>
-    <h2>What's actually inside Docker</h2>
-    <p>Docker has a few key building blocks. Click each layer to understand what it does.</p>
+    <!-- 02: ARCHITECTURE -->
+    <section>
+      <div class="section-label">02 — Architecture</div>
+      <h2>What's actually inside Docker</h2>
+      <p>Docker has a few key building blocks. Click each layer to understand what it does.</p>
 
-    <div class="arch-box">
-      <div class="arch-topbar">
-        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-        <span>docker-architecture.interactive</span>
-      </div>
-      <div class="arch-body">
-        <div class="arch-layers">
-          <div class="arch-layer host" onclick="showLayer('host')">
-            <div class="layer-icon">🖥️</div>
-            <div class="layer-info">
-              <div class="layer-name">Host Machine (Your Computer / Server)</div>
-              <div class="layer-desc">Linux, macOS, or Windows — Docker runs on top of this</div>
+      <div class="arch-box">
+        <div class="arch-topbar">
+          <div class="dot r"></div>
+          <div class="dot y"></div>
+          <div class="dot g"></div>
+          <span>docker-architecture.interactive</span>
+        </div>
+        <div class="arch-body">
+          <div class="arch-layers">
+            <div class="arch-layer host" onclick="showLayer('host')">
+              <div class="layer-icon">🖥️</div>
+              <div class="layer-info">
+                <div class="layer-name">Host Machine (Your Computer / Server)</div>
+                <div class="layer-desc">Linux, macOS, or Windows — Docker runs on top of this</div>
+              </div>
+              <div class="layer-badge badge-blue">FOUNDATION</div>
             </div>
-            <div class="layer-badge badge-blue">FOUNDATION</div>
-          </div>
-          <div class="arch-layer engine" onclick="showLayer('engine')">
-            <div class="layer-icon">⚙️</div>
-            <div class="layer-info">
-              <div class="layer-name">Docker Engine (Daemon)</div>
-              <div class="layer-desc">The background service that builds images and runs containers</div>
+            <div class="arch-layer engine" onclick="showLayer('engine')">
+              <div class="layer-icon">⚙️</div>
+              <div class="layer-info">
+                <div class="layer-name">Docker Engine (Daemon)</div>
+                <div class="layer-desc">The background service that builds images and runs containers</div>
+              </div>
+              <div class="layer-badge badge-green">ENGINE</div>
             </div>
-            <div class="layer-badge badge-green">ENGINE</div>
-          </div>
-          <div class="arch-layer image" onclick="showLayer('image')">
-            <div class="layer-icon">🖼️</div>
-            <div class="layer-info">
-              <div class="layer-name">Docker Image</div>
-              <div class="layer-desc">A read-only blueprint — like a recipe or a class definition</div>
+            <div class="arch-layer image" onclick="showLayer('image')">
+              <div class="layer-icon">🖼️</div>
+              <div class="layer-info">
+                <div class="layer-name">Docker Image</div>
+                <div class="layer-desc">A read-only blueprint — like a recipe or a class definition</div>
+              </div>
+              <div class="layer-badge badge-yellow">BLUEPRINT</div>
             </div>
-            <div class="layer-badge badge-yellow">BLUEPRINT</div>
-          </div>
-          <div class="arch-layer container" onclick="showLayer('c1')">
-            <div class="layer-icon">📦</div>
-            <div class="layer-info">
-              <div class="layer-name">Container: web-app (port 3000)</div>
-              <div class="layer-desc">Running instance of the Node.js image — isolated process</div>
+            <div class="arch-layer container" onclick="showLayer('c1')">
+              <div class="layer-icon">📦</div>
+              <div class="layer-info">
+                <div class="layer-name">Container: web-app (port 3000)</div>
+                <div class="layer-desc">Running instance of the Node.js image — isolated process</div>
+              </div>
+              <div class="layer-badge badge-orange">CONTAINER</div>
             </div>
-            <div class="layer-badge badge-orange">CONTAINER</div>
-          </div>
-          <div class="arch-layer container2" onclick="showLayer('c2')">
-            <div class="layer-icon">🗄️</div>
-            <div class="layer-info">
-              <div class="layer-name">Container: postgres-db (port 5432)</div>
-              <div class="layer-desc">Postgres database running in its own isolated container</div>
+            <div class="arch-layer container2" onclick="showLayer('c2')">
+              <div class="layer-icon">🗄️</div>
+              <div class="layer-info">
+                <div class="layer-name">Container: postgres-db (port 5432)</div>
+                <div class="layer-desc">Postgres database running in its own isolated container</div>
+              </div>
+              <div class="layer-badge badge-orange">CONTAINER</div>
             </div>
-            <div class="layer-badge badge-orange">CONTAINER</div>
-          </div>
-          <div class="arch-layer container3" onclick="showLayer('c3')">
-            <div class="layer-icon">⚡</div>
-            <div class="layer-info">
-              <div class="layer-name">Container: redis-cache (port 6379)</div>
-              <div class="layer-desc">Redis cache — completely isolated from the other containers</div>
+            <div class="arch-layer container3" onclick="showLayer('c3')">
+              <div class="layer-icon">⚡</div>
+              <div class="layer-info">
+                <div class="layer-name">Container: redis-cache (port 6379)</div>
+                <div class="layer-desc">Redis cache — completely isolated from the other containers</div>
+              </div>
+              <div class="layer-badge badge-orange">CONTAINER</div>
             </div>
-            <div class="layer-badge badge-orange">CONTAINER</div>
+          </div>
+
+          <div class="arch-detail" id="arch-detail">click a layer above</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03: VM vs DOCKER -->
+    <section>
+      <div class="section-label">03 — Docker vs Virtual Machines</div>
+      <h2>Why not just use a VM?</h2>
+      <p>VMs and containers both isolate apps — but the approach is completely different. Containers are like apartments
+        in one building; VMs are like separate houses with separate foundations.</p>
+
+      <div class="compare-grid">
+        <div class="cmp-col">
+          <div class="cmp-title">🏚️ <span>Virtual Machine</span></div>
+          <div class="cmp-rows">
+            <div class="cmp-row heavy"><span class="cmp-label">Startup time</span><span
+                class="cmp-val-bad">Minutes</span></div>
+            <div class="cmp-row heavy"><span class="cmp-label">Size</span><span class="cmp-val-bad">GBs (full OS)</span>
+            </div>
+            <div class="cmp-row heavy"><span class="cmp-label">RAM usage</span><span class="cmp-val-bad">Very
+                heavy</span></div>
+            <div class="cmp-row heavy"><span class="cmp-label">Includes</span><span class="cmp-val-bad">Full OS
+                kernel</span></div>
+            <div class="cmp-row heavy"><span class="cmp-label">Portability</span><span class="cmp-val-bad">Hard to
+                move</span></div>
+            <div class="cmp-row heavy"><span class="cmp-label">Isolation</span><span class="cmp-val-bad">Full but
+                heavy</span></div>
           </div>
         </div>
-
-        <div class="arch-detail" id="arch-detail">click a layer above</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 03: VM vs DOCKER -->
-  <section>
-    <div class="section-label">03 — Docker vs Virtual Machines</div>
-    <h2>Why not just use a VM?</h2>
-    <p>VMs and containers both isolate apps — but the approach is completely different. Containers are like apartments in one building; VMs are like separate houses with separate foundations.</p>
-
-    <div class="compare-grid">
-      <div class="cmp-col">
-        <div class="cmp-title">🏚️ <span>Virtual Machine</span></div>
-        <div class="cmp-rows">
-          <div class="cmp-row heavy"><span class="cmp-label">Startup time</span><span class="cmp-val-bad">Minutes</span></div>
-          <div class="cmp-row heavy"><span class="cmp-label">Size</span><span class="cmp-val-bad">GBs (full OS)</span></div>
-          <div class="cmp-row heavy"><span class="cmp-label">RAM usage</span><span class="cmp-val-bad">Very heavy</span></div>
-          <div class="cmp-row heavy"><span class="cmp-label">Includes</span><span class="cmp-val-bad">Full OS kernel</span></div>
-          <div class="cmp-row heavy"><span class="cmp-label">Portability</span><span class="cmp-val-bad">Hard to move</span></div>
-          <div class="cmp-row heavy"><span class="cmp-label">Isolation</span><span class="cmp-val-bad">Full but heavy</span></div>
-        </div>
-      </div>
-      <div class="cmp-col">
-        <div class="cmp-title">📦 <span>Docker Container</span></div>
-        <div class="cmp-rows">
-          <div class="cmp-row light"><span class="cmp-label">Startup time</span><span class="cmp-val-good">Milliseconds</span></div>
-          <div class="cmp-row light"><span class="cmp-label">Size</span><span class="cmp-val-good">MBs (just app)</span></div>
-          <div class="cmp-row light"><span class="cmp-label">RAM usage</span><span class="cmp-val-good">Very light</span></div>
-          <div class="cmp-row light"><span class="cmp-label">Includes</span><span class="cmp-val-good">Shares host kernel</span></div>
-          <div class="cmp-row light"><span class="cmp-label">Portability</span><span class="cmp-val-good">Push/pull like Git</span></div>
-          <div class="cmp-row light"><span class="cmp-label">Isolation</span><span class="cmp-val-good">Process-level</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 04: DOCKERFILE BUILDER -->
-  <section>
-    <div class="section-label">04 — The Dockerfile</div>
-    <h2>Build your Dockerfile — instruction by instruction</h2>
-    <p>A <strong>Dockerfile</strong> is a recipe that tells Docker how to build your image. Click instructions on the left to add them to your Dockerfile.</p>
-
-    <div class="df-builder">
-      <div class="df-topbar">
-        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-        <span>Dockerfile.builder — click instructions to add</span>
-      </div>
-      <div class="df-body">
-        <div class="df-left">
-          <div class="df-label">Available Instructions</div>
-          <div class="df-instructions">
-            <div class="df-instr" onclick="addInstr('from')"><span class="instr-kw">FROM</span><span class="instr-desc">Set the base image</span></div>
-            <div class="df-instr" onclick="addInstr('workdir')"><span class="instr-kw">WORKDIR</span><span class="instr-desc">Set working directory inside container</span></div>
-            <div class="df-instr" onclick="addInstr('copy')"><span class="instr-kw">COPY</span><span class="instr-desc">Copy files from host into image</span></div>
-            <div class="df-instr" onclick="addInstr('run')"><span class="instr-kw">RUN</span><span class="instr-desc">Execute a shell command during build</span></div>
-            <div class="df-instr" onclick="addInstr('env')"><span class="instr-kw">ENV</span><span class="instr-desc">Set environment variables</span></div>
-            <div class="df-instr" onclick="addInstr('expose')"><span class="instr-kw">EXPOSE</span><span class="instr-desc">Declare which port the app uses</span></div>
-            <div class="df-instr" onclick="addInstr('cmd')"><span class="instr-kw">CMD</span><span class="instr-desc">Default command to run when container starts</span></div>
-          </div>
-        </div>
-        <div class="df-right">
-          <div class="df-label">Your Dockerfile</div>
-          <div class="df-output" id="df-output">
-            <span style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;"># Click instructions on the left to build your Dockerfile</span>
-          </div>
-          <button class="clear-btn" onclick="clearDf()">✕ CLEAR</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 05: TERMINAL SIM -->
-  <section>
-    <div class="section-label">05 — Common Commands</div>
-    <h2>Run Docker commands — see the output</h2>
-    <p>Click any Docker command to see what it does and what the terminal would show you.</p>
-
-    <div class="term-sim">
-      <div class="term-bar">
-        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-        <span>docker-terminal.simulator</span>
-      </div>
-      <div class="term-sim-body">
-        <div class="term-left">
-          <div class="term-label">Commands</div>
-          <div class="cmd-list">
-            <div class="cmd-item" onclick="runCmd('build')">docker build -t my-app .</div>
-            <div class="cmd-item" onclick="runCmd('run')">docker run -p 3000:3000 my-app</div>
-            <div class="cmd-item" onclick="runCmd('ps')">docker ps</div>
-            <div class="cmd-item" onclick="runCmd('images')">docker images</div>
-            <div class="cmd-item" onclick="runCmd('stop')">docker stop web-app</div>
-            <div class="cmd-item" onclick="runCmd('pull')">docker pull nginx</div>
-            <div class="cmd-item" onclick="runCmd('logs')">docker logs web-app</div>
-            <div class="cmd-item" onclick="runCmd('exec')">docker exec -it web-app bash</div>
-            <div class="cmd-item" onclick="runCmd('compose')">docker-compose up -d</div>
-            <div class="cmd-item" onclick="runCmd('prune')">docker system prune</div>
-          </div>
-        </div>
-        <div class="term-right">
-          <div class="term-label">Terminal Output</div>
-          <div class="terminal" id="terminal">
-            <div class="tl"><span class="ti">// Click a command on the left to run it</span></div>
-            <div class="tl"><span class="tm">Each command shows you what Docker actually outputs.</span></div>
-            <div class="tl">&nbsp;</div>
-            <div class="tl"><span class="tp">~$</span> <span class="cursor"></span></div>
+        <div class="cmp-col">
+          <div class="cmp-title">📦 <span>Docker Container</span></div>
+          <div class="cmp-rows">
+            <div class="cmp-row light"><span class="cmp-label">Startup time</span><span
+                class="cmp-val-good">Milliseconds</span></div>
+            <div class="cmp-row light"><span class="cmp-label">Size</span><span class="cmp-val-good">MBs (just
+                app)</span></div>
+            <div class="cmp-row light"><span class="cmp-label">RAM usage</span><span class="cmp-val-good">Very
+                light</span></div>
+            <div class="cmp-row light"><span class="cmp-label">Includes</span><span class="cmp-val-good">Shares host
+                kernel</span></div>
+            <div class="cmp-row light"><span class="cmp-label">Portability</span><span class="cmp-val-good">Push/pull
+                like Git</span></div>
+            <div class="cmp-row light"><span class="cmp-label">Isolation</span><span
+                class="cmp-val-good">Process-level</span></div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 06: KEY CONCEPTS -->
-  <section>
-    <div class="section-label">06 — Key Concepts</div>
-    <h2>The vocabulary you need</h2>
-    <p>Know these 6 terms and you can read any Docker documentation or job description.</p>
-    <div class="concepts">
-      <div class="concept-card">
-        <div class="concept-icon">🖼️</div>
-        <span class="concept-tag">Blueprint</span>
-        <div class="concept-title">Image</div>
-        <p>A read-only snapshot — the "recipe." Built from a Dockerfile. One image can spawn many containers. Stored on Docker Hub.</p>
+    <!-- 04: DOCKERFILE BUILDER -->
+    <section>
+      <div class="section-label">04 — The Dockerfile</div>
+      <h2>Build your Dockerfile — instruction by instruction</h2>
+      <p>A <strong>Dockerfile</strong> is a recipe that tells Docker how to build your image. Click instructions on the
+        left to add them to your Dockerfile.</p>
+
+      <div class="df-builder">
+        <div class="df-topbar">
+          <div class="dot r"></div>
+          <div class="dot y"></div>
+          <div class="dot g"></div>
+          <span>Dockerfile.builder — click instructions to add</span>
+        </div>
+        <div class="df-body">
+          <div class="df-left">
+            <div class="df-label">Available Instructions</div>
+            <div class="df-instructions">
+              <div class="df-instr" onclick="addInstr('from')"><span class="instr-kw">FROM</span><span
+                  class="instr-desc">Set the base image</span></div>
+              <div class="df-instr" onclick="addInstr('workdir')"><span class="instr-kw">WORKDIR</span><span
+                  class="instr-desc">Set working directory inside container</span></div>
+              <div class="df-instr" onclick="addInstr('copy')"><span class="instr-kw">COPY</span><span
+                  class="instr-desc">Copy files from host into image</span></div>
+              <div class="df-instr" onclick="addInstr('run')"><span class="instr-kw">RUN</span><span
+                  class="instr-desc">Execute a shell command during build</span></div>
+              <div class="df-instr" onclick="addInstr('env')"><span class="instr-kw">ENV</span><span
+                  class="instr-desc">Set environment variables</span></div>
+              <div class="df-instr" onclick="addInstr('expose')"><span class="instr-kw">EXPOSE</span><span
+                  class="instr-desc">Declare which port the app uses</span></div>
+              <div class="df-instr" onclick="addInstr('cmd')"><span class="instr-kw">CMD</span><span
+                  class="instr-desc">Default command to run when container starts</span></div>
+            </div>
+          </div>
+          <div class="df-right">
+            <div class="df-label">Your Dockerfile</div>
+            <div class="df-output" id="df-output">
+              <span style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;"># Click instructions on
+                the left to build your Dockerfile</span>
+            </div>
+            <button class="clear-btn" onclick="clearDf()">✕ CLEAR</button>
+          </div>
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">📦</div>
-        <span class="concept-tag">Running Instance</span>
-        <div class="concept-title">Container</div>
-        <p>A live, running instance of an image. Like a class (image) vs an object (container). Isolated process with its own filesystem.</p>
+    </section>
+
+    <!-- 05: TERMINAL SIM -->
+    <section>
+      <div class="section-label">05 — Common Commands</div>
+      <h2>Run Docker commands — see the output</h2>
+      <p>Click any Docker command to see what it does and what the terminal would show you.</p>
+
+      <div class="term-sim">
+        <div class="term-bar">
+          <div class="dot r"></div>
+          <div class="dot y"></div>
+          <div class="dot g"></div>
+          <span>docker-terminal.simulator</span>
+        </div>
+        <div class="term-sim-body">
+          <div class="term-left">
+            <div class="term-label">Commands</div>
+            <div class="cmd-list">
+              <div class="cmd-item" onclick="runCmd('build')">docker build -t my-app .</div>
+              <div class="cmd-item" onclick="runCmd('run')">docker run -p 3000:3000 my-app</div>
+              <div class="cmd-item" onclick="runCmd('ps')">docker ps</div>
+              <div class="cmd-item" onclick="runCmd('images')">docker images</div>
+              <div class="cmd-item" onclick="runCmd('stop')">docker stop web-app</div>
+              <div class="cmd-item" onclick="runCmd('pull')">docker pull nginx</div>
+              <div class="cmd-item" onclick="runCmd('logs')">docker logs web-app</div>
+              <div class="cmd-item" onclick="runCmd('exec')">docker exec -it web-app bash</div>
+              <div class="cmd-item" onclick="runCmd('compose')">docker-compose up -d</div>
+              <div class="cmd-item" onclick="runCmd('prune')">docker system prune</div>
+            </div>
+          </div>
+          <div class="term-right">
+            <div class="term-label">Terminal Output</div>
+            <div class="terminal" id="terminal">
+              <div class="tl"><span class="ti">// Click a command on the left to run it</span></div>
+              <div class="tl"><span class="tm">Each command shows you what Docker actually outputs.</span></div>
+              <div class="tl">&nbsp;</div>
+              <div class="tl"><span class="tp">~$</span> <span class="cursor"></span></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">📋</div>
-        <span class="concept-tag">Recipe File</span>
-        <div class="concept-title">Dockerfile</div>
-        <p>A text file with instructions for building an image. FROM, RUN, COPY, CMD — each line adds a layer to the image.</p>
+    </section>
+
+    <!-- 06: KEY CONCEPTS -->
+    <section>
+      <div class="section-label">06 — Key Concepts</div>
+      <h2>The vocabulary you need</h2>
+      <p>Know these 6 terms and you can read any Docker documentation or job description.</p>
+      <div class="concepts">
+        <div class="concept-card">
+          <div class="concept-icon">🖼️</div>
+          <span class="concept-tag">Blueprint</span>
+          <div class="concept-title">Image</div>
+          <p>A read-only snapshot — the "recipe." Built from a Dockerfile. One image can spawn many containers. Stored
+            on Docker Hub.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">📦</div>
+          <span class="concept-tag">Running Instance</span>
+          <div class="concept-title">Container</div>
+          <p>A live, running instance of an image. Like a class (image) vs an object (container). Isolated process with
+            its own filesystem.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">📋</div>
+          <span class="concept-tag">Recipe File</span>
+          <div class="concept-title">Dockerfile</div>
+          <p>A text file with instructions for building an image. FROM, RUN, COPY, CMD — each line adds a layer to the
+            image.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">☁️</div>
+          <span class="concept-tag">Registry</span>
+          <div class="concept-title">Docker Hub</div>
+          <p>The "GitHub for images." Push your images there, pull official ones (nginx, postgres, node). Public and
+            private repos.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🎼</div>
+          <span class="concept-tag">Orchestration</span>
+          <div class="concept-title">Docker Compose</div>
+          <p>Define and run multi-container apps with one YAML file. Start your whole stack (app + db + cache) with one
+            command.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">🔒</div>
+          <span class="concept-tag">Core Feature</span>
+          <div class="concept-title">Isolation</div>
+          <p>Each container has its own filesystem, network, and processes. Containers can't see each other unless you
+            explicitly connect them.</p>
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">☁️</div>
-        <span class="concept-tag">Registry</span>
-        <div class="concept-title">Docker Hub</div>
-        <p>The "GitHub for images." Push your images there, pull official ones (nginx, postgres, node). Public and private repos.</p>
+    </section>
+
+    <!-- 07: QUIZ -->
+    <section>
+      <div class="section-label">07 — Check Your Understanding</div>
+      <h2>Quick quiz</h2>
+      <p>Three questions to lock it in.</p>
+      <div class="quiz-wrap">
+        <div class="progress-dots" id="progress-dots"></div>
+        <div id="quiz-container"></div>
+        <div class="quiz-complete" id="quiz-complete">
+          <h3>🎉 Docker unlocked!</h3>
+          <p>You now understand Docker better than most developers who haven't used it.<br><br>
+            Next step: install Docker and run <code>docker run hello-world</code> — your first container in under a
+            minute!</p>
+        </div>
       </div>
-      <div class="concept-card">
-        <div class="concept-icon">🎼</div>
-        <span class="concept-tag">Orchestration</span>
-        <div class="concept-title">Docker Compose</div>
-        <p>Define and run multi-container apps with one YAML file. Start your whole stack (app + db + cache) with one command.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">🔒</div>
-        <span class="concept-tag">Core Feature</span>
-        <div class="concept-title">Isolation</div>
-        <p>Each container has its own filesystem, network, and processes. Containers can't see each other unless you explicitly connect them.</p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 07: QUIZ -->
-  <section>
-    <div class="section-label">07 — Check Your Understanding</div>
-    <h2>Quick quiz</h2>
-    <p>Three questions to lock it in.</p>
-    <div class="quiz-wrap">
-      <div class="progress-dots" id="progress-dots"></div>
-      <div id="quiz-container"></div>
-      <div class="quiz-complete" id="quiz-complete">
-        <h3>🎉 Docker unlocked!</h3>
-        <p>You now understand Docker better than most developers who haven't used it.<br><br>
-        Next step: install Docker and run <code>docker run hello-world</code> — your first container in under a minute!</p>
-      </div>
-    </div>
-  </section>
+  </main>
+  <footer>
+    <p>Docker: build once, run anywhere — the shipping container of software.</p>
+  </footer>
 
-</main>
-<footer><p>Docker: build once, run anywhere — the shipping container of software.</p></footer>
+  <script>
+    // --- Architecture layers ---
+    const layerInfo = {
+      host: `<span class="ad-k">Host Machine</span><br><span class="ad-c">// Your physical or virtual server. Docker runs on top of the OS kernel.</span><br><span class="ad-c">// Docker uses Linux kernel features (namespaces, cgroups) for isolation.</span><br><span class="ad-c">// On macOS/Windows: Docker Desktop runs a lightweight Linux VM underneath.</span>`,
+      engine: `<span class="ad-k">Docker Engine (dockerd)</span><br><span class="ad-c">// A background daemon process — always listening for Docker commands.</span><br><span class="ad-v">$ docker build ...</span>  → Engine builds the image from Dockerfile<br><span class="ad-v">$ docker run ...</span>   → Engine creates & starts a container<br><span class="ad-c">// The Docker CLI talks to the Engine via a REST API socket.</span>`,
+      image: `<span class="ad-k">Docker Image</span><br><span class="ad-c">// Read-only. Built layer by layer — each Dockerfile instruction = one layer.</span><br><span class="ad-c">// Layers are cached: if COPY hasn't changed, Docker reuses the cached layer.</span><br><span class="ad-g">// Think: Image = Class definition. Container = instance of that class.</span><br><span class="ad-c">// Images are stored locally and pushed to Docker Hub (like GitHub for images).</span>`,
+      c1: `<span class="ad-k">Container: web-app</span><br><span class="ad-c">// A running Node.js app. Completely isolated process.</span><br><span class="ad-v">Port mapping: 3000:3000</span>  → host:3000 routes to container:3000<br><span class="ad-c">// Has its own filesystem, network interface, and process tree.</span><br><span class="ad-c">// Can be stopped, restarted, or killed without affecting other containers.</span>`,
+      c2: `<span class="ad-k">Container: postgres-db</span><br><span class="ad-c">// PostgreSQL database running in isolation.</span><br><span class="ad-v">Port mapping: 5432:5432</span>  → only exposed if you choose<br><span class="ad-c">// Data persists via Docker Volumes — survives container restarts.</span><br><span class="ad-g">// No Postgres install needed on the host machine at all!</span>`,
+      c3: `<span class="ad-k">Container: redis-cache</span><br><span class="ad-c">// Redis in-memory store. Starts in milliseconds.</span><br><span class="ad-v">Port mapping: 6379:6379</span><br><span class="ad-c">// web-app can reach redis-cache via Docker's internal network.</span><br><span class="ad-c">// docker-compose links these containers automatically by name.</span>`
+    };
 
-<script>
-// --- Architecture layers ---
-const layerInfo = {
-  host: `<span class="ad-k">Host Machine</span><br><span class="ad-c">// Your physical or virtual server. Docker runs on top of the OS kernel.</span><br><span class="ad-c">// Docker uses Linux kernel features (namespaces, cgroups) for isolation.</span><br><span class="ad-c">// On macOS/Windows: Docker Desktop runs a lightweight Linux VM underneath.</span>`,
-  engine: `<span class="ad-k">Docker Engine (dockerd)</span><br><span class="ad-c">// A background daemon process — always listening for Docker commands.</span><br><span class="ad-v">$ docker build ...</span>  → Engine builds the image from Dockerfile<br><span class="ad-v">$ docker run ...</span>   → Engine creates & starts a container<br><span class="ad-c">// The Docker CLI talks to the Engine via a REST API socket.</span>`,
-  image: `<span class="ad-k">Docker Image</span><br><span class="ad-c">// Read-only. Built layer by layer — each Dockerfile instruction = one layer.</span><br><span class="ad-c">// Layers are cached: if COPY hasn't changed, Docker reuses the cached layer.</span><br><span class="ad-g">// Think: Image = Class definition. Container = instance of that class.</span><br><span class="ad-c">// Images are stored locally and pushed to Docker Hub (like GitHub for images).</span>`,
-  c1: `<span class="ad-k">Container: web-app</span><br><span class="ad-c">// A running Node.js app. Completely isolated process.</span><br><span class="ad-v">Port mapping: 3000:3000</span>  → host:3000 routes to container:3000<br><span class="ad-c">// Has its own filesystem, network interface, and process tree.</span><br><span class="ad-c">// Can be stopped, restarted, or killed without affecting other containers.</span>`,
-  c2: `<span class="ad-k">Container: postgres-db</span><br><span class="ad-c">// PostgreSQL database running in isolation.</span><br><span class="ad-v">Port mapping: 5432:5432</span>  → only exposed if you choose<br><span class="ad-c">// Data persists via Docker Volumes — survives container restarts.</span><br><span class="ad-g">// No Postgres install needed on the host machine at all!</span>`,
-  c3: `<span class="ad-k">Container: redis-cache</span><br><span class="ad-c">// Redis in-memory store. Starts in milliseconds.</span><br><span class="ad-v">Port mapping: 6379:6379</span><br><span class="ad-c">// web-app can reach redis-cache via Docker's internal network.</span><br><span class="ad-c">// docker-compose links these containers automatically by name.</span>`
-};
+    function showLayer(id) {
+      const detail = document.getElementById('arch-detail');
+      detail.innerHTML = layerInfo[id];
+      detail.className = 'arch-detail show';
+    }
 
-function showLayer(id) {
-  const detail = document.getElementById('arch-detail');
-  detail.innerHTML = layerInfo[id];
-  detail.className = 'arch-detail show';
-}
+    // --- Dockerfile builder ---
+    const instrLines = {
+      from: { html: `<span class="kw">FROM</span> <span class="str">node:18-alpine</span>  <span class="cmt"># start from official Node.js 18 image</span>` },
+      workdir: { html: `<span class="kw">WORKDIR</span> <span class="str">/app</span>          <span class="cmt"># all commands run from /app inside container</span>` },
+      copy: { html: `<span class="kw">COPY</span> package*.json ./  <span class="cmt"># copy dependency files first (for caching)</span>` },
+      run: { html: `<span class="kw">RUN</span> npm install       <span class="cmt"># install dependencies (runs at build time)</span>` },
+      env: { html: `<span class="kw">ENV</span> <span class="val">NODE_ENV</span>=<span class="str">production</span>  <span class="cmt"># set environment variable</span>` },
+      expose: { html: `<span class="kw">EXPOSE</span> <span class="val">3000</span>           <span class="cmt"># document that app listens on port 3000</span>` },
+      cmd: { html: `<span class="kw">CMD</span> [<span class="str">"node"</span>, <span class="str">"server.js"</span>]  <span class="cmt"># command to run when container starts</span>` },
+    };
+    let dfLines = [];
 
-// --- Dockerfile builder ---
-const instrLines = {
-  from:    { html: `<span class="kw">FROM</span> <span class="str">node:18-alpine</span>  <span class="cmt"># start from official Node.js 18 image</span>` },
-  workdir: { html: `<span class="kw">WORKDIR</span> <span class="str">/app</span>          <span class="cmt"># all commands run from /app inside container</span>` },
-  copy:    { html: `<span class="kw">COPY</span> package*.json ./  <span class="cmt"># copy dependency files first (for caching)</span>` },
-  run:     { html: `<span class="kw">RUN</span> npm install       <span class="cmt"># install dependencies (runs at build time)</span>` },
-  env:     { html: `<span class="kw">ENV</span> <span class="val">NODE_ENV</span>=<span class="str">production</span>  <span class="cmt"># set environment variable</span>` },
-  expose:  { html: `<span class="kw">EXPOSE</span> <span class="val">3000</span>           <span class="cmt"># document that app listens on port 3000</span>` },
-  cmd:     { html: `<span class="kw">CMD</span> [<span class="str">"node"</span>, <span class="str">"server.js"</span>]  <span class="cmt"># command to run when container starts</span>` },
-};
-let dfLines = [];
+    function addInstr(key) {
+      if (dfLines.length === 0) document.getElementById('df-output').innerHTML = '';
+      dfLines.push(key);
+      const line = document.createElement('div');
+      line.className = 'df-line';
+      line.innerHTML = instrLines[key].html;
+      document.getElementById('df-output').appendChild(line);
+    }
 
-function addInstr(key) {
-  if (dfLines.length === 0) document.getElementById('df-output').innerHTML = '';
-  dfLines.push(key);
-  const line = document.createElement('div');
-  line.className = 'df-line';
-  line.innerHTML = instrLines[key].html;
-  document.getElementById('df-output').appendChild(line);
-}
+    function clearDf() {
+      dfLines = [];
+      document.getElementById('df-output').innerHTML = `<span style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;"># Click instructions on the left to build your Dockerfile</span>`;
+    }
 
-function clearDf() {
-  dfLines = [];
-  document.getElementById('df-output').innerHTML = `<span style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;"># Click instructions on the left to build your Dockerfile</span>`;
-}
+    // --- Terminal simulator ---
+    const cmds = {
+      build: {
+        cmd: 'docker build -t my-app .',
+        lines: [
+          { c: 'ti', t: '// Building image from Dockerfile in current directory...' },
+          { c: 'tm', t: '[+] Building 12.4s (8/8) FINISHED' },
+          { c: 'tm', t: ' => [internal] load .dockerignore' },
+          { c: 'tm', t: ' => [1/5] FROM node:18-alpine' },
+          { c: 'tm', t: ' => [2/5] WORKDIR /app' },
+          { c: 'tm', t: ' => [3/5] COPY package*.json ./' },
+          { c: 'tm', t: ' => [4/5] RUN npm install  → 124 packages' },
+          { c: 'tv', t: ' => [5/5] COPY . .' },
+          { c: 'tv', t: 'Successfully built d4f3e2a1b9c0' },
+          { c: 'tv', t: 'Successfully tagged my-app:latest ✓' },
+          { c: 'ti', t: '// Image is ready. Run it with: docker run my-app' },
+        ]
+      },
+      run: {
+        cmd: 'docker run -p 3000:3000 my-app',
+        lines: [
+          { c: 'ti', t: '// Starting container from my-app image...' },
+          { c: 'ti', t: '// -p 3000:3000 → map host port 3000 to container port 3000' },
+          { c: 'tv', t: '> my-app@1.0.0 start' },
+          { c: 'tv', t: '> node server.js' },
+          { c: 'tv', t: '' },
+          { c: 'tv', t: '🚀 Server running on http://localhost:3000' },
+          { c: 'ti', t: '// Container is live. Visit localhost:3000 in your browser.' },
+        ]
+      },
+      ps: {
+        cmd: 'docker ps',
+        lines: [
+          { c: 'ti', t: '// Lists all currently RUNNING containers' },
+          { c: 'tm', t: 'CONTAINER ID   IMAGE        STATUS         PORTS                  NAMES' },
+          { c: 'tv', t: 'a1b2c3d4e5f6   my-app       Up 3 minutes   0.0.0.0:3000->3000/tcp web-app' },
+          { c: 'tv', t: 'f6e5d4c3b2a1   postgres:15  Up 5 minutes   0.0.0.0:5432->5432/tcp postgres-db' },
+          { c: 'tv', t: '1a2b3c4d5e6f   redis:7      Up 5 minutes   0.0.0.0:6379->6379/tcp redis-cache' },
+        ]
+      },
+      images: {
+        cmd: 'docker images',
+        lines: [
+          { c: 'ti', t: '// Lists all images stored locally on your machine' },
+          { c: 'tm', t: 'REPOSITORY   TAG       IMAGE ID       CREATED        SIZE' },
+          { c: 'tv', t: 'my-app       latest    d4f3e2a1b9c0   2 minutes ago  142MB' },
+          { c: 'tv', t: 'node         18-alpine 9a8b7c6d5e4f   3 days ago     127MB' },
+          { c: 'tv', t: 'postgres     15        1b2c3d4e5f6a   2 weeks ago    412MB' },
+          { c: 'tv', t: 'redis        7         2c3d4e5f6a1b   2 weeks ago    38MB' },
+          { c: 'ti', t: '// Notice: containers are MBs, not GBs like VMs!' },
+        ]
+      },
+      stop: {
+        cmd: 'docker stop web-app',
+        lines: [
+          { c: 'ti', t: '// Gracefully stops a running container (sends SIGTERM)' },
+          { c: 'tv', t: 'web-app' },
+          { c: 'ti', t: '// Container stopped. Data is NOT deleted.' },
+          { c: 'ti', t: '// Restart it with: docker start web-app' },
+          { c: 'ti', t: '// Delete it with:  docker rm web-app' },
+        ]
+      },
+      pull: {
+        cmd: 'docker pull nginx',
+        lines: [
+          { c: 'ti', t: '// Downloads the nginx image from Docker Hub' },
+          { c: 'tm', t: 'Using default tag: latest' },
+          { c: 'tm', t: 'latest: Pulling from library/nginx' },
+          { c: 'tm', t: 'a480a496ba95: Pull complete' },
+          { c: 'tm', t: 'f3ace1b8ce45: Pull complete' },
+          { c: 'tv', t: 'Digest: sha256:af296b188c7b7df99...' },
+          { c: 'tv', t: 'Status: Downloaded newer image for nginx:latest ✓' },
+          { c: 'ti', t: '// Now run it: docker run -p 80:80 nginx' },
+        ]
+      },
+      logs: {
+        cmd: 'docker logs web-app',
+        lines: [
+          { c: 'ti', t: '// Shows stdout/stderr output from a container' },
+          { c: 'tv', t: '2025-01-10T09:00:01Z Server starting...' },
+          { c: 'tv', t: '2025-01-10T09:00:02Z Database connected' },
+          { c: 'tv', t: '2025-01-10T09:00:02Z 🚀 Listening on port 3000' },
+          { c: 'tv', t: '2025-01-10T09:01:15Z GET /api/users → 200 OK (12ms)' },
+          { c: 'tv', t: '2025-01-10T09:02:40Z GET /api/posts → 200 OK (8ms)' },
+          { c: 'ti', t: '// Use -f flag to follow live: docker logs -f web-app' },
+        ]
+      },
+      exec: {
+        cmd: 'docker exec -it web-app bash',
+        lines: [
+          { c: 'ti', t: '// Opens an interactive bash shell INSIDE the running container' },
+          { c: 'tv', t: 'root@a1b2c3d4e5f6:/app#' },
+          { c: 'ti', t: '// You are now INSIDE the container! Try:' },
+          { c: 'tm', t: 'root@.../app# ls' },
+          { c: 'tv', t: 'node_modules  package.json  server.js  src/' },
+          { c: 'tm', t: 'root@.../app# cat /etc/os-release' },
+          { c: 'tv', t: 'NAME="Alpine Linux"  ← the container\'s OS, not your host!' },
+        ]
+      },
+      compose: {
+        cmd: 'docker-compose up -d',
+        lines: [
+          { c: 'ti', t: '// Reads docker-compose.yml and starts ALL services' },
+          { c: 'ti', t: '// -d = detached mode (runs in background)' },
+          { c: 'tm', t: 'Creating network "myapp_default" with driver "bridge"' },
+          { c: 'tv', t: 'Creating myapp_postgres_1 ... done' },
+          { c: 'tv', t: 'Creating myapp_redis_1    ... done' },
+          { c: 'tv', t: 'Creating myapp_web_1      ... done' },
+          { c: 'tv', t: '' },
+          { c: 'tv', t: '✓ 3 containers running. Your full stack is live!' },
+          { c: 'ti', t: '// Stop everything with: docker-compose down' },
+        ]
+      },
+      prune: {
+        cmd: 'docker system prune',
+        lines: [
+          { c: 'ti', t: '// Removes ALL stopped containers, unused images, build cache' },
+          { c: 'tm', t: 'WARNING! This will remove:' },
+          { c: 'tm', t: '  - all stopped containers' },
+          { c: 'tm', t: '  - all dangling images' },
+          { c: 'tm', t: '  - all build cache' },
+          { c: 'tv', t: 'Total reclaimed space: 2.34GB ← freed up!' },
+          { c: 'ti', t: '// Use when Docker is eating your disk space 🧹' },
+        ]
+      }
+    };
 
-// --- Terminal simulator ---
-const cmds = {
-  build: {
-    cmd: 'docker build -t my-app .',
-    lines: [
-      {c:'ti', t:'// Building image from Dockerfile in current directory...'},
-      {c:'tm', t:'[+] Building 12.4s (8/8) FINISHED'},
-      {c:'tm', t:' => [internal] load .dockerignore'},
-      {c:'tm', t:' => [1/5] FROM node:18-alpine'},
-      {c:'tm', t:' => [2/5] WORKDIR /app'},
-      {c:'tm', t:' => [3/5] COPY package*.json ./'},
-      {c:'tm', t:' => [4/5] RUN npm install  → 124 packages'},
-      {c:'tv', t:' => [5/5] COPY . .'},
-      {c:'tv', t:'Successfully built d4f3e2a1b9c0'},
-      {c:'tv', t:'Successfully tagged my-app:latest ✓'},
-      {c:'ti', t:'// Image is ready. Run it with: docker run my-app'},
-    ]
-  },
-  run: {
-    cmd: 'docker run -p 3000:3000 my-app',
-    lines: [
-      {c:'ti', t:'// Starting container from my-app image...'},
-      {c:'ti', t:'// -p 3000:3000 → map host port 3000 to container port 3000'},
-      {c:'tv', t:'> my-app@1.0.0 start'},
-      {c:'tv', t:'> node server.js'},
-      {c:'tv', t:''},
-      {c:'tv', t:'🚀 Server running on http://localhost:3000'},
-      {c:'ti', t:'// Container is live. Visit localhost:3000 in your browser.'},
-    ]
-  },
-  ps: {
-    cmd: 'docker ps',
-    lines: [
-      {c:'ti', t:'// Lists all currently RUNNING containers'},
-      {c:'tm', t:'CONTAINER ID   IMAGE        STATUS         PORTS                  NAMES'},
-      {c:'tv', t:'a1b2c3d4e5f6   my-app       Up 3 minutes   0.0.0.0:3000->3000/tcp web-app'},
-      {c:'tv', t:'f6e5d4c3b2a1   postgres:15  Up 5 minutes   0.0.0.0:5432->5432/tcp postgres-db'},
-      {c:'tv', t:'1a2b3c4d5e6f   redis:7      Up 5 minutes   0.0.0.0:6379->6379/tcp redis-cache'},
-    ]
-  },
-  images: {
-    cmd: 'docker images',
-    lines: [
-      {c:'ti', t:'// Lists all images stored locally on your machine'},
-      {c:'tm', t:'REPOSITORY   TAG       IMAGE ID       CREATED        SIZE'},
-      {c:'tv', t:'my-app       latest    d4f3e2a1b9c0   2 minutes ago  142MB'},
-      {c:'tv', t:'node         18-alpine 9a8b7c6d5e4f   3 days ago     127MB'},
-      {c:'tv', t:'postgres     15        1b2c3d4e5f6a   2 weeks ago    412MB'},
-      {c:'tv', t:'redis        7         2c3d4e5f6a1b   2 weeks ago    38MB'},
-      {c:'ti', t:'// Notice: containers are MBs, not GBs like VMs!'},
-    ]
-  },
-  stop: {
-    cmd: 'docker stop web-app',
-    lines: [
-      {c:'ti', t:'// Gracefully stops a running container (sends SIGTERM)'},
-      {c:'tv', t:'web-app'},
-      {c:'ti', t:'// Container stopped. Data is NOT deleted.'},
-      {c:'ti', t:'// Restart it with: docker start web-app'},
-      {c:'ti', t:'// Delete it with:  docker rm web-app'},
-    ]
-  },
-  pull: {
-    cmd: 'docker pull nginx',
-    lines: [
-      {c:'ti', t:'// Downloads the nginx image from Docker Hub'},
-      {c:'tm', t:'Using default tag: latest'},
-      {c:'tm', t:'latest: Pulling from library/nginx'},
-      {c:'tm', t:'a480a496ba95: Pull complete'},
-      {c:'tm', t:'f3ace1b8ce45: Pull complete'},
-      {c:'tv', t:'Digest: sha256:af296b188c7b7df99...'},
-      {c:'tv', t:'Status: Downloaded newer image for nginx:latest ✓'},
-      {c:'ti', t:'// Now run it: docker run -p 80:80 nginx'},
-    ]
-  },
-  logs: {
-    cmd: 'docker logs web-app',
-    lines: [
-      {c:'ti', t:'// Shows stdout/stderr output from a container'},
-      {c:'tv', t:'2025-01-10T09:00:01Z Server starting...'},
-      {c:'tv', t:'2025-01-10T09:00:02Z Database connected'},
-      {c:'tv', t:'2025-01-10T09:00:02Z 🚀 Listening on port 3000'},
-      {c:'tv', t:'2025-01-10T09:01:15Z GET /api/users → 200 OK (12ms)'},
-      {c:'tv', t:'2025-01-10T09:02:40Z GET /api/posts → 200 OK (8ms)'},
-      {c:'ti', t:'// Use -f flag to follow live: docker logs -f web-app'},
-    ]
-  },
-  exec: {
-    cmd: 'docker exec -it web-app bash',
-    lines: [
-      {c:'ti', t:'// Opens an interactive bash shell INSIDE the running container'},
-      {c:'tv', t:'root@a1b2c3d4e5f6:/app#'},
-      {c:'ti', t:'// You are now INSIDE the container! Try:'},
-      {c:'tm', t:'root@.../app# ls'},
-      {c:'tv', t:'node_modules  package.json  server.js  src/'},
-      {c:'tm', t:'root@.../app# cat /etc/os-release'},
-      {c:'tv', t:'NAME="Alpine Linux"  ← the container\'s OS, not your host!'},
-    ]
-  },
-  compose: {
-    cmd: 'docker-compose up -d',
-    lines: [
-      {c:'ti', t:'// Reads docker-compose.yml and starts ALL services'},
-      {c:'ti', t:'// -d = detached mode (runs in background)'},
-      {c:'tm', t:'Creating network "myapp_default" with driver "bridge"'},
-      {c:'tv', t:'Creating myapp_postgres_1 ... done'},
-      {c:'tv', t:'Creating myapp_redis_1    ... done'},
-      {c:'tv', t:'Creating myapp_web_1      ... done'},
-      {c:'tv', t:''},
-      {c:'tv', t:'✓ 3 containers running. Your full stack is live!'},
-      {c:'ti', t:'// Stop everything with: docker-compose down'},
-    ]
-  },
-  prune: {
-    cmd: 'docker system prune',
-    lines: [
-      {c:'ti', t:'// Removes ALL stopped containers, unused images, build cache'},
-      {c:'tm', t:'WARNING! This will remove:'},
-      {c:'tm', t:'  - all stopped containers'},
-      {c:'tm', t:'  - all dangling images'},
-      {c:'tm', t:'  - all build cache'},
-      {c:'tv', t:'Total reclaimed space: 2.34GB ← freed up!'},
-      {c:'ti', t:'// Use when Docker is eating your disk space 🧹'},
-    ]
-  }
-};
+    function runCmd(key) {
+      const term = document.getElementById('terminal');
+      const data = cmds[key];
+      term.innerHTML = '';
+      const prompt = document.createElement('div');
+      prompt.className = 'tl';
+      prompt.innerHTML = `<span class="tp">~$</span> <span style="color:var(--text)">${data.cmd}</span>`;
+      term.appendChild(prompt);
+      data.lines.forEach((line, i) => {
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'tl';
+          el.innerHTML = `<span class="${line.c}">${line.t}</span>`;
+          term.appendChild(el);
+          term.scrollTop = term.scrollHeight;
+        }, (i + 1) * 130);
+      });
+      setTimeout(() => {
+        const cur = document.createElement('div');
+        cur.className = 'tl';
+        cur.innerHTML = `<span class="tp">~$</span> <span class="cursor"></span>`;
+        term.appendChild(cur);
+        term.scrollTop = term.scrollHeight;
+      }, (data.lines.length + 1) * 130);
+    }
 
-function runCmd(key) {
-  const term = document.getElementById('terminal');
-  const data = cmds[key];
-  term.innerHTML = '';
-  const prompt = document.createElement('div');
-  prompt.className='tl';
-  prompt.innerHTML=`<span class="tp">~$</span> <span style="color:var(--text)">${data.cmd}</span>`;
-  term.appendChild(prompt);
-  data.lines.forEach((line,i)=>{
-    setTimeout(()=>{
-      const el=document.createElement('div');
-      el.className='tl';
-      el.innerHTML=`<span class="${line.c}">${line.t}</span>`;
-      term.appendChild(el);
-      term.scrollTop=term.scrollHeight;
-    },(i+1)*130);
-  });
-  setTimeout(()=>{
-    const cur=document.createElement('div');
-    cur.className='tl';
-    cur.innerHTML=`<span class="tp">~$</span> <span class="cursor"></span>`;
-    term.appendChild(cur);
-    term.scrollTop=term.scrollHeight;
-  },(data.lines.length+1)*130);
-}
+    // --- Quiz ---
+    const questions = [
+      { q: "What is the difference between a Docker Image and a Docker Container?", opts: ["They are the same thing", "An image is a running process; a container is a stored file", "An image is a read-only blueprint; a container is a live running instance of that image", "A container is larger than an image"], correct: 2, feedback: "Exactly! Image = recipe (static, read-only). Container = the actual meal being cooked (running process). One image → many containers." },
+      { q: "What does `docker build -t my-app .` do?", opts: ["Downloads the my-app image from Docker Hub", "Runs a container called my-app", "Reads the Dockerfile in the current directory and builds an image tagged 'my-app'", "Stops all running containers"], correct: 2, feedback: "Right! The `.` means 'use Dockerfile in current directory'. `-t my-app` gives the resulting image a name (tag)." },
+      { q: "Why are Docker containers preferred over Virtual Machines for most app deployments?", opts: ["Containers are more secure than VMs", "Containers include a full OS, making them more reliable", "Containers start in milliseconds, use far less memory, and share the host kernel", "Containers support Windows only, which is more common in production"], correct: 2, feedback: "Correct — containers are lightweight because they share the host OS kernel. A container can start in under a second vs minutes for a VM." }
+    ];
 
-// --- Quiz ---
-const questions = [
-  { q:"What is the difference between a Docker Image and a Docker Container?", opts:["They are the same thing","An image is a running process; a container is a stored file","An image is a read-only blueprint; a container is a live running instance of that image","A container is larger than an image"], correct:2, feedback:"Exactly! Image = recipe (static, read-only). Container = the actual meal being cooked (running process). One image → many containers." },
-  { q:"What does `docker build -t my-app .` do?", opts:["Downloads the my-app image from Docker Hub","Runs a container called my-app","Reads the Dockerfile in the current directory and builds an image tagged 'my-app'","Stops all running containers"], correct:2, feedback:"Right! The `.` means 'use Dockerfile in current directory'. `-t my-app` gives the resulting image a name (tag)." },
-  { q:"Why are Docker containers preferred over Virtual Machines for most app deployments?", opts:["Containers are more secure than VMs","Containers include a full OS, making them more reliable","Containers start in milliseconds, use far less memory, and share the host kernel","Containers support Windows only, which is more common in production"], correct:2, feedback:"Correct — containers are lightweight because they share the host OS kernel. A container can start in under a second vs minutes for a VM." }
-];
-
-let current=0,answered=false;
-function buildDots(){document.getElementById('progress-dots').innerHTML=questions.map((_,i)=>`<div class="progress-dot ${i===0?'current':''}" id="dot-${i}"></div>`).join('');}
-function renderQuestion(){
-  answered=false;
-  const q=questions[current];
-  document.getElementById('quiz-container').innerHTML=`
+    let current = 0, answered = false;
+    function buildDots() { document.getElementById('progress-dots').innerHTML = questions.map((_, i) => `<div class="progress-dot ${i === 0 ? 'current' : ''}" id="dot-${i}"></div>`).join(''); }
+    function renderQuestion() {
+      answered = false;
+      const q = questions[current];
+      document.getElementById('quiz-container').innerHTML = `
     <div class="quiz-q">${q.q}</div>
-    <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div>
+    <div class="quiz-opts">${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div>
     <div class="quiz-feedback" id="quiz-feedback"></div>
-    <button class="next-btn" id="next-btn" onclick="nextQuestion()">${current===questions.length-1?'SEE RESULTS →':'NEXT QUESTION →'}</button>`;
-}
-function answer(idx){
-  if(answered)return;answered=true;
-  const q=questions[current];
-  document.querySelectorAll('.quiz-opt').forEach((o,i)=>{if(i===idx)o.classList.add(i===q.correct?'correct':'wrong');if(i===q.correct)o.classList.add('correct');o.disabled=true;});
-  document.getElementById('quiz-feedback').textContent=q.feedback;
-  document.getElementById('next-btn').classList.add('show');
-  document.getElementById(`dot-${current}`).classList.replace('current','done');
-}
-function nextQuestion(){
-  current++;
-  if(current>=questions.length){document.getElementById('quiz-container').style.display='none';document.getElementById('quiz-complete').style.display='block';}
-  else{document.getElementById(`dot-${current}`).classList.add('current');renderQuestion();}
-}
-buildDots();renderQuestion();
-</script>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">${current === questions.length - 1 ? 'SEE RESULTS →' : 'NEXT QUESTION →'}</button>`;
+    }
+    function answer(idx) {
+      if (answered) return; answered = true;
+      const q = questions[current];
+      document.querySelectorAll('.quiz-opt').forEach((o, i) => { if (i === idx) o.classList.add(i === q.correct ? 'correct' : 'wrong'); if (i === q.correct) o.classList.add('correct'); o.disabled = true; });
+      document.getElementById('quiz-feedback').textContent = q.feedback;
+      document.getElementById('next-btn').classList.add('show');
+      document.getElementById(`dot-${current}`).classList.replace('current', 'done');
+    }
+    function nextQuestion() {
+      current++;
+      if (current >= questions.length) { document.getElementById('quiz-container').style.display = 'none'; document.getElementById('quiz-complete').style.display = 'block'; }
+      else { document.getElementById(`dot-${current}`).classList.add('current'); renderQuestion(); }
+    }
+    buildDots(); renderQuestion();
+  </script>
 </body>
+
 </html>

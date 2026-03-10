@@ -1,208 +1,769 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Database Transactions</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#0d0d0d;--surface:#161616;--card:#1e1e1e;--border:#2a2a2a;--accent:#f5c518;--accent2:#ff6b35;--accent3:#4ecdc4;--text:#f0ece3;--muted:#7a7570;--green:#6bcb77;--red:#ff6b6b;}
-body{background:var(--bg);color:var(--text);font-family:'Lora',serif;min-height:100vh;overflow-x:hidden;}
-header{padding:60px 40px 40px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-header::before{content:'TXN';position:absolute;right:-20px;top:-20px;font-family:'Syne',sans-serif;font-size:200px;font-weight:800;color:#ffffff06;pointer-events:none;letter-spacing:-10px;}
-.tag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);background:#f5c51815;border:1px solid #f5c51830;padding:4px 10px;display:inline-block;margin-bottom:20px;}
-h1{font-family:'Syne',sans-serif;font-size:clamp(36px,7vw,72px);font-weight:800;line-height:1;letter-spacing:-2px;max-width:760px;}
-h1 span{color:var(--accent);}
-.subtitle{font-style:italic;color:var(--muted);font-size:18px;margin-top:16px;max-width:520px;line-height:1.6;}
-main{max-width:1100px;margin:0 auto;padding:60px 40px;}
-section{margin-bottom:80px;}
-.section-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:24px;display:flex;align-items:center;gap:12px;}
-.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
-h2{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;margin-bottom:16px;}
-p{line-height:1.8;color:#c8c4bb;font-size:16px;}
-code{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent3);background:#0a0a0a;padding:2px 6px;border-radius:2px;}
-.txn-sim{margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
-.topbar{background:#111;padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
-.dot{width:10px;height:10px;border-radius:50%;}.dot.r{background:var(--red);}.dot.y{background:var(--accent);}.dot.g{background:var(--green);}
-.topbar span{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-left:8px;}
-.sim-body{padding:32px;}
-.account-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
-@media(max-width:600px){.account-row{grid-template-columns:1fr;}}
-.account-box{background:var(--card);border:1px solid var(--border);padding:20px;border-radius:2px;text-align:center;}
-.account-name{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
-.account-balance{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--accent);}
-.account-box.active{border-color:var(--accent);background:#f5c51808;}
-.account-box.error{border-color:var(--red);background:#ff6b6b08;}
-.txn-log{background:#060606;border:1px solid var(--border);border-radius:2px;padding:16px;min-height:160px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.9;margin:16px 0;overflow-y:auto;max-height:200px;}
-.tl{animation:fadeIn .2s ease;}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.t-ok{color:var(--green);}.t-err{color:var(--red);}.t-info{color:var(--accent3);}.t-warn{color:var(--accent);}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap;}
-.sim-btn{padding:12px 20px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;transition:all .2s;border-radius:2px;}
-.sim-btn.commit{background:var(--green);color:#000;}
-.sim-btn.rollback{background:var(--red);color:#fff;}
-.sim-btn.send{background:var(--accent);color:#000;}
-.sim-btn:hover{transform:translateY(-1px);}
-.sim-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-.savepoint-demo{margin-top:32px;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:28px;}
-.sp-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;}
-.sp-timeline{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:20px 0;}
-.sp-point{background:var(--surface);border:2px solid var(--border);border-radius:2px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;text-align:center;}
-.sp-point.sp{border-color:var(--accent3);color:var(--accent3);}
-.sp-point.commit{border-color:var(--green);color:var(--green);}
-.sp-arrow{padding:0 8px;color:var(--muted);}
-.code-block{background:#0a0a0a;border:1px solid var(--border);border-radius:2px;padding:20px;font-family:'DM Mono',monospace;font-size:13px;line-height:2;overflow-x:auto;margin-top:20px;}
-.kw{color:var(--accent2);}.fn{color:var(--accent3);}.str{color:var(--green);}.num{color:var(--accent);}.comment{color:#4a4a4a;}
-.concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px;margin-top:32px;}
-.concept-card{background:var(--card);padding:24px;border-left:3px solid transparent;transition:border-color .2s;}
-.concept-card:hover{border-left-color:var(--accent);}
-.concept-icon{font-size:24px;margin-bottom:12px;}
-.concept-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;}
-.concept-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--accent2);margin-bottom:8px;display:block;}
-.concept-card p{font-size:13px;}
-.quiz-wrap{background:var(--surface);border:1px solid var(--border);padding:36px;margin-top:32px;border-radius:4px;}
-.quiz-q{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:24px;}
-.quiz-opts{display:flex;flex-direction:column;gap:10px;}
-.quiz-opt{padding:14px 18px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:'Lora',serif;font-size:15px;text-align:left;cursor:pointer;transition:all .15s;border-radius:2px;}
-.quiz-opt:hover{border-color:var(--accent);background:#f5c51808;}
-.quiz-opt.correct{border-color:var(--green);background:#6bcb7715;color:var(--green);}
-.quiz-opt.wrong{border-color:var(--red);background:#ff6b6b10;color:var(--red);}
-.quiz-feedback{margin-top:20px;font-style:italic;font-size:15px;min-height:28px;color:var(--muted);}
-.next-btn{margin-top:20px;padding:10px 24px;background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;display:none;transition:all .2s;}
-.next-btn:hover{background:var(--accent);color:#000;}
-.next-btn.show{display:inline-block;}
-.progress-dots{display:flex;gap:8px;margin-bottom:28px;}
-.progress-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s;}
-.progress-dot.done{background:var(--green);}.progress-dot.current{background:var(--accent);}
-.quiz-complete{text-align:center;padding:20px;display:none;}
-.quiz-complete h3{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);margin-bottom:12px;}
-.quiz-complete p{font-size:16px;color:var(--muted);}
-footer{border-top:1px solid var(--border);padding:40px;text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
-</style></head><body>
-<header>
-  <div class="tag">Database Concept — 04 of 15</div>
-  <h1>Database <span>Transactions</span></h1>
-  <p class="subtitle">Grouping multiple SQL operations into one safe, atomic unit — commit or rollback together.</p>
-</header>
-<main>
-  <section>
-    <div class="section-label">01 — The Idea</div>
-    <h2>A transaction is a promise</h2>
-    <p>A transaction groups multiple SQL statements so they succeed or fail together. Without transactions, a system failure mid-operation could leave your data half-written — money deducted but never credited, orders placed but never recorded. Transactions prevent this entirely.</p>
-    <div class="code-block">
-      <span class="comment">-- A complete transaction: transfer ৳5000 from Alice to Bob</span><br>
-      <span class="kw">BEGIN</span>;  <span class="comment">-- start the transaction</span><br><br>
-      <span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance - <span class="num">5000</span> <span class="kw">WHERE</span> user = <span class="str">'Alice'</span>;<br>
-      <span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance + <span class="num">5000</span> <span class="kw">WHERE</span> user = <span class="str">'Bob'</span>;<br><br>
-      <span class="comment">-- If both succeed:</span><br>
-      <span class="kw">COMMIT</span>;  <span class="comment">-- make changes permanent</span><br><br>
-      <span class="comment">-- If anything fails:</span><br>
-      <span class="kw">ROLLBACK</span>;  <span class="comment">-- undo EVERYTHING back to before BEGIN</span>
-    </div>
-  </section>
-  <section>
-    <div class="section-label">02 — Interactive Simulator</div>
-    <h2>Run a live bank transfer transaction</h2>
-    <p>Click SEND to initiate a transfer. Then choose COMMIT or ROLLBACK to see the outcome.</p>
-    <div class="txn-sim">
-      <div class="topbar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>transaction.simulator — Bank Transfer</span></div>
-      <div class="sim-body">
-        <div class="account-row">
-          <div class="account-box" id="alice-box"><div class="account-name">ALICE</div><div class="account-balance" id="alice-bal">৳10,000</div></div>
-          <div class="account-box" id="bob-box"><div class="account-name">BOB</div><div class="account-balance" id="bob-bal">৳3,000</div></div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Transactions</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --card: #1e1e1e;
+      --border: #2a2a2a;
+      --accent: #f5c518;
+      --accent2: #ff6b35;
+      --accent3: #4ecdc4;
+      --text: #f0ece3;
+      --muted: #7a7570;
+      --green: #6bcb77;
+      --red: #ff6b6b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Lora', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      padding: 60px 40px 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: 'TXN';
+      position: absolute;
+      right: -20px;
+      top: -20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 200px;
+      font-weight: 800;
+      color: #ffffff06;
+      pointer-events: none;
+      letter-spacing: -10px;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: #f5c51815;
+      border: 1px solid #f5c51830;
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 7vw, 72px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px;
+      max-width: 760px;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 18px;
+      margin-top: 16px;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
+    section {
+      margin-bottom: 80px;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    p {
+      line-height: 1.8;
+      color: #c8c4bb;
+      font-size: 16px;
+    }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--accent3);
+      background: #0a0a0a;
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    .txn-sim {
+      margin-top: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .topbar {
+      background: #111;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.r {
+      background: var(--red);
+    }
+
+    .dot.y {
+      background: var(--accent);
+    }
+
+    .dot.g {
+      background: var(--green);
+    }
+
+    .topbar span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .sim-body {
+      padding: 32px;
+    }
+
+    .account-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media(max-width:600px) {
+      .account-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .account-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 2px;
+      text-align: center;
+    }
+
+    .account-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .account-balance {
+      font-family: 'Syne', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .account-box.active {
+      border-color: var(--accent);
+      background: #f5c51808;
+    }
+
+    .account-box.error {
+      border-color: var(--red);
+      background: #ff6b6b08;
+    }
+
+    .txn-log {
+      background: #060606;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 16px;
+      min-height: 160px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.9;
+      margin: 16px 0;
+      overflow-y: auto;
+      max-height: 200px;
+    }
+
+    .tl {
+      animation: fadeIn .2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .t-ok {
+      color: var(--green);
+    }
+
+    .t-err {
+      color: var(--red);
+    }
+
+    .t-info {
+      color: var(--accent3);
+    }
+
+    .t-warn {
+      color: var(--accent);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sim-btn {
+      padding: 12px 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all .2s;
+      border-radius: 2px;
+    }
+
+    .sim-btn.commit {
+      background: var(--green);
+      color: #000;
+    }
+
+    .sim-btn.rollback {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .sim-btn.send {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .sim-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .sim-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .savepoint-demo {
+      margin-top: 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 28px;
+    }
+
+    .sp-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .sp-timeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .sp-point {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 2px;
+      padding: 10px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .sp-point.sp {
+      border-color: var(--accent3);
+      color: var(--accent3);
+    }
+
+    .sp-point.commit {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .sp-arrow {
+      padding: 0 8px;
+      color: var(--muted);
+    }
+
+    .code-block {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    .kw {
+      color: var(--accent2);
+    }
+
+    .fn {
+      color: var(--accent3);
+    }
+
+    .str {
+      color: var(--green);
+    }
+
+    .num {
+      color: var(--accent);
+    }
+
+    .comment {
+      color: #4a4a4a;
+    }
+
+    .concepts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2px;
+      margin-top: 32px;
+    }
+
+    .concept-card {
+      background: var(--card);
+      padding: 24px;
+      border-left: 3px solid transparent;
+      transition: border-color .2s;
+    }
+
+    .concept-card:hover {
+      border-left-color: var(--accent);
+    }
+
+    .concept-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .concept-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .concept-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--accent2);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .concept-card p {
+      font-size: 13px;
+    }
+
+    .quiz-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 36px;
+      margin-top: 32px;
+      border-radius: 4px;
+    }
+
+    .quiz-q {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .quiz-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      text-align: left;
+      cursor: pointer;
+      transition: all .15s;
+      border-radius: 2px;
+    }
+
+    .quiz-opt:hover {
+      border-color: var(--accent);
+      background: #f5c51808;
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--green);
+      background: #6bcb7715;
+      color: var(--green);
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--red);
+      background: #ff6b6b10;
+      color: var(--red);
+    }
+
+    .quiz-feedback {
+      margin-top: 20px;
+      font-style: italic;
+      font-size: 15px;
+      min-height: 28px;
+      color: var(--muted);
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      padding: 10px 24px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      display: none;
+      transition: all .2s;
+    }
+
+    .next-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .next-btn.show {
+      display: inline-block;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background .3s;
+    }
+
+    .progress-dot.done {
+      background: var(--green);
+    }
+
+    .progress-dot.current {
+      background: var(--accent);
+    }
+
+    .quiz-complete {
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+
+    .quiz-complete h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .quiz-complete p {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="tag">Database Concept — 04 of 15</div>
+    <h1>Database <span>Transactions</span></h1>
+    <p class="subtitle">Grouping multiple SQL operations into one safe, atomic unit — commit or rollback together.</p>
+  </header>
+  <main>
+    <section>
+      <div class="section-label">01 — The Idea</div>
+      <h2>A transaction is a promise</h2>
+      <p>A transaction groups multiple SQL statements so they succeed or fail together. Without transactions, a system
+        failure mid-operation could leave your data half-written — money deducted but never credited, orders placed but
+        never recorded. Transactions prevent this entirely.</p>
+      <div class="code-block">
+        <span class="comment">-- A complete transaction: transfer ৳5000 from Alice to Bob</span><br>
+        <span class="kw">BEGIN</span>; <span class="comment">-- start the transaction</span><br><br>
+        <span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance - <span
+          class="num">5000</span> <span class="kw">WHERE</span> user = <span class="str">'Alice'</span>;<br>
+        <span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance + <span
+          class="num">5000</span> <span class="kw">WHERE</span> user = <span class="str">'Bob'</span>;<br><br>
+        <span class="comment">-- If both succeed:</span><br>
+        <span class="kw">COMMIT</span>; <span class="comment">-- make changes permanent</span><br><br>
+        <span class="comment">-- If anything fails:</span><br>
+        <span class="kw">ROLLBACK</span>; <span class="comment">-- undo EVERYTHING back to before BEGIN</span>
+      </div>
+    </section>
+    <section>
+      <div class="section-label">02 — Interactive Simulator</div>
+      <h2>Run a live bank transfer transaction</h2>
+      <p>Click SEND to initiate a transfer. Then choose COMMIT or ROLLBACK to see the outcome.</p>
+      <div class="txn-sim">
+        <div class="topbar">
+          <div class="dot r"></div>
+          <div class="dot y"></div>
+          <div class="dot g"></div><span>transaction.simulator — Bank Transfer</span>
         </div>
-        <div class="txn-log" id="txn-log"><div class="tl"><span class="t-info">// Ready. Click SEND TRANSFER to begin a transaction.</span></div></div>
-        <div class="btn-row">
-          <button class="sim-btn send" id="btn-send" onclick="sendTxn()">→ SEND ৳5000</button>
-          <button class="sim-btn commit" id="btn-commit" onclick="commitTxn()" disabled>✓ COMMIT</button>
-          <button class="sim-btn rollback" id="btn-roll" onclick="rollbackTxn()" disabled>✕ ROLLBACK</button>
+        <div class="sim-body">
+          <div class="account-row">
+            <div class="account-box" id="alice-box">
+              <div class="account-name">ALICE</div>
+              <div class="account-balance" id="alice-bal">৳10,000</div>
+            </div>
+            <div class="account-box" id="bob-box">
+              <div class="account-name">BOB</div>
+              <div class="account-balance" id="bob-bal">৳3,000</div>
+            </div>
+          </div>
+          <div class="txn-log" id="txn-log">
+            <div class="tl"><span class="t-info">// Ready. Click SEND TRANSFER to begin a transaction.</span></div>
+          </div>
+          <div class="btn-row">
+            <button class="sim-btn send" id="btn-send" onclick="sendTxn()">→ SEND ৳5000</button>
+            <button class="sim-btn commit" id="btn-commit" onclick="commitTxn()" disabled>✓ COMMIT</button>
+            <button class="sim-btn rollback" id="btn-roll" onclick="rollbackTxn()" disabled>✕ ROLLBACK</button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-  <section>
-    <div class="section-label">03 — Savepoints</div>
-    <h2>Partial rollback with savepoints</h2>
-    <p>Savepoints let you create checkpoints within a transaction — roll back to a specific point without undoing everything.</p>
-    <div class="savepoint-demo">
-      <div class="sp-title">Transaction with Savepoints</div>
-      <div class="sp-timeline">
-        <div class="sp-point">BEGIN</div><div class="sp-arrow">→</div>
-        <div class="sp-point">Op 1 ✓</div><div class="sp-arrow">→</div>
-        <div class="sp-point sp">SAVEPOINT A</div><div class="sp-arrow">→</div>
-        <div class="sp-point">Op 2 ✓</div><div class="sp-arrow">→</div>
-        <div class="sp-point sp">SAVEPOINT B</div><div class="sp-arrow">→</div>
-        <div class="sp-point" style="border-color:var(--red);color:var(--red);">Op 3 ✗</div><div class="sp-arrow">→</div>
-        <div class="sp-point" style="border-color:var(--accent3);color:var(--accent3);">ROLLBACK TO B</div><div class="sp-arrow">→</div>
-        <div class="sp-point commit">COMMIT</div>
+    </section>
+    <section>
+      <div class="section-label">03 — Savepoints</div>
+      <h2>Partial rollback with savepoints</h2>
+      <p>Savepoints let you create checkpoints within a transaction — roll back to a specific point without undoing
+        everything.</p>
+      <div class="savepoint-demo">
+        <div class="sp-title">Transaction with Savepoints</div>
+        <div class="sp-timeline">
+          <div class="sp-point">BEGIN</div>
+          <div class="sp-arrow">→</div>
+          <div class="sp-point">Op 1 ✓</div>
+          <div class="sp-arrow">→</div>
+          <div class="sp-point sp">SAVEPOINT A</div>
+          <div class="sp-arrow">→</div>
+          <div class="sp-point">Op 2 ✓</div>
+          <div class="sp-arrow">→</div>
+          <div class="sp-point sp">SAVEPOINT B</div>
+          <div class="sp-arrow">→</div>
+          <div class="sp-point" style="border-color:var(--red);color:var(--red);">Op 3 ✗</div>
+          <div class="sp-arrow">→</div>
+          <div class="sp-point" style="border-color:var(--accent3);color:var(--accent3);">ROLLBACK TO B</div>
+          <div class="sp-arrow">→</div>
+          <div class="sp-point commit">COMMIT</div>
+        </div>
       </div>
-    </div>
-    <div class="code-block">
-      <span class="kw">BEGIN</span>;<br>
-      <span class="kw">INSERT INTO</span> orders <span class="kw">VALUES</span> (...); <span class="comment">-- Op 1</span><br>
-      <span class="kw">SAVEPOINT</span> after_order;<br>
-      <span class="kw">UPDATE</span> inventory <span class="kw">SET</span> stock = stock - <span class="num">1</span> ...; <span class="comment">-- Op 2</span><br>
-      <span class="kw">SAVEPOINT</span> after_inventory;<br>
-      <span class="kw">UPDATE</span> rewards ...; <span class="comment">-- Op 3 — fails!</span><br>
-      <span class="kw">ROLLBACK TO</span> after_inventory; <span class="comment">-- undo only Op 3</span><br>
-      <span class="kw">COMMIT</span>; <span class="comment">-- Op 1 and Op 2 are committed</span>
-    </div>
-  </section>
-  <section>
-    <div class="section-label">04 — Key Concepts</div>
-    <h2>Vocabulary to know</h2>
-    <div class="concepts">
-      <div class="concept-card"><div class="concept-icon">▶️</div><span class="concept-tag">Start</span><div class="concept-title">BEGIN</div><p>Starts a transaction block. All subsequent statements are part of this transaction until COMMIT or ROLLBACK.</p></div>
-      <div class="concept-card"><div class="concept-icon">✅</div><span class="concept-tag">Success</span><div class="concept-title">COMMIT</div><p>Makes all transaction changes permanent. Other sessions can now see the changes. Cannot be undone.</p></div>
-      <div class="concept-card"><div class="concept-icon">⏪</div><span class="concept-tag">Undo</span><div class="concept-title">ROLLBACK</div><p>Undoes all changes made since BEGIN. Database returns to exactly the state before the transaction started.</p></div>
-      <div class="concept-card"><div class="concept-icon">📍</div><span class="concept-tag">Partial</span><div class="concept-title">SAVEPOINT</div><p>Named checkpoint inside a transaction. Roll back to it without losing earlier work in the same transaction.</p></div>
-    </div>
-  </section>
-  <section>
-    <div class="section-label">05 — Quiz</div>
-    <h2>Test your understanding</h2>
-    <div class="quiz-wrap">
-      <div class="progress-dots" id="progress-dots"></div>
-      <div id="quiz-container"></div>
-      <div class="quiz-complete" id="quiz-complete"><h3>🎉 Transactions mastered!</h3><p>Next: SQL Joins — combining tables.</p></div>
-    </div>
-  </section>
-</main>
-<footer><p>Transactions: the safety net under every database operation.</p></footer>
-<script>
-let aliceBal=10000,bobBal=3000,txnActive=false,committed=false;
-let alicePending=10000,bobPending=3000;
-function log(msg,cls='t-info'){const box=document.getElementById('txn-log');const el=document.createElement('div');el.className='tl';el.innerHTML=`<span class="${cls}">${msg}</span>`;box.appendChild(el);box.scrollTop=box.scrollHeight;}
-function updateDisplay(){document.getElementById('alice-bal').textContent='৳'+alicePending.toLocaleString();document.getElementById('bob-bal').textContent='৳'+bobPending.toLocaleString();}
-function sendTxn(){
-  if(txnActive)return;txnActive=true;committed=false;
-  document.getElementById('btn-send').disabled=true;
-  document.getElementById('txn-log').innerHTML='';
-  log('BEGIN;','t-warn');
-  setTimeout(()=>{log('UPDATE accounts SET balance = balance - 5000 WHERE user = \'Alice\';','t-info');alicePending=aliceBal-5000;updateDisplay();document.getElementById('alice-box').className='account-box active';},400);
-  setTimeout(()=>{log('UPDATE accounts SET balance = balance + 5000 WHERE user = \'Bob\';','t-info');bobPending=bobBal+5000;updateDisplay();document.getElementById('bob-box').className='account-box active';},900);
-  setTimeout(()=>{log('-- Transaction pending. COMMIT to save or ROLLBACK to undo.','t-warn');document.getElementById('btn-commit').disabled=false;document.getElementById('btn-roll').disabled=false;},1400);
-}
-function commitTxn(){
-  aliceBal=alicePending;bobBal=bobPending;
-  document.getElementById('btn-commit').disabled=true;document.getElementById('btn-roll').disabled=true;
-  log('COMMIT;','t-ok');log('✓ Changes are now permanent!','t-ok');
-  document.getElementById('alice-box').className='account-box';document.getElementById('bob-box').className='account-box';
-  txnActive=false;document.getElementById('btn-send').disabled=false;
-}
-function rollbackTxn(){
-  alicePending=aliceBal;bobPending=bobBal;updateDisplay();
-  document.getElementById('btn-commit').disabled=true;document.getElementById('btn-roll').disabled=true;
-  log('ROLLBACK;','t-err');log('✕ All changes undone. Balances restored.','t-err');
-  document.getElementById('alice-box').className='account-box';document.getElementById('bob-box').className='account-box';
-  txnActive=false;document.getElementById('btn-send').disabled=false;
-}
-const questions=[
-  {q:"What does ROLLBACK do in a database transaction?",opts:["Saves all changes permanently","Undoes all changes made since BEGIN","Creates a savepoint","Starts a new transaction"],correct:1,feedback:"ROLLBACK undoes every change made since the transaction began — the database returns to its prior state."},
-  {q:"When is a COMMIT permanent?",opts:["As soon as BEGIN is called","After the first UPDATE","After COMMIT is executed and acknowledged","Only after the server restarts"],correct:2,feedback:"COMMIT makes changes permanent. After COMMIT, the data is written to disk and other sessions can see it."},
-  {q:"What is the purpose of a SAVEPOINT?",opts:["To speed up a transaction","To allow partial rollback to a named point without losing earlier work","To lock a table","To commit part of a transaction"],correct:1,feedback:"SAVEPOINTs create named checkpoints. ROLLBACK TO savepoint_name undoes work only after that point."}
-];
-let cur=0,ans=false;
-function buildDots(){document.getElementById('progress-dots').innerHTML=questions.map((_,i)=>`<div class="progress-dot ${i===0?'current':''}" id="dot-${i}"></div>`).join('');}
-function renderQ(){ans=false;const q=questions[cur];document.getElementById('quiz-container').innerHTML=`<div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="quiz-feedback" id="qf"></div><button class="next-btn" id="nb" onclick="nextQ()">${cur===questions.length-1?'SEE RESULTS →':'NEXT →'}</button>`;}
-function answer(idx){if(ans)return;ans=true;const q=questions[cur];document.querySelectorAll('.quiz-opt').forEach((o,i)=>{if(i===idx)o.classList.add(i===q.correct?'correct':'wrong');if(i===q.correct)o.classList.add('correct');o.disabled=true;});document.getElementById('qf').textContent=q.feedback;document.getElementById('nb').classList.add('show');document.getElementById(`dot-${cur}`).classList.replace('current','done');}
-function nextQ(){cur++;if(cur>=questions.length){document.getElementById('quiz-container').style.display='none';document.getElementById('quiz-complete').style.display='block';}else{document.getElementById(`dot-${cur}`).classList.add('current');renderQ();}}
-buildDots();renderQ();
-</script>
-</body></html>
+      <div class="code-block">
+        <span class="kw">BEGIN</span>;<br>
+        <span class="kw">INSERT INTO</span> orders <span class="kw">VALUES</span> (...); <span class="comment">-- Op
+          1</span><br>
+        <span class="kw">SAVEPOINT</span> after_order;<br>
+        <span class="kw">UPDATE</span> inventory <span class="kw">SET</span> stock = stock - <span class="num">1</span>
+        ...; <span class="comment">-- Op 2</span><br>
+        <span class="kw">SAVEPOINT</span> after_inventory;<br>
+        <span class="kw">UPDATE</span> rewards ...; <span class="comment">-- Op 3 — fails!</span><br>
+        <span class="kw">ROLLBACK TO</span> after_inventory; <span class="comment">-- undo only Op 3</span><br>
+        <span class="kw">COMMIT</span>; <span class="comment">-- Op 1 and Op 2 are committed</span>
+      </div>
+    </section>
+    <section>
+      <div class="section-label">04 — Key Concepts</div>
+      <h2>Vocabulary to know</h2>
+      <div class="concepts">
+        <div class="concept-card">
+          <div class="concept-icon">▶️</div><span class="concept-tag">Start</span>
+          <div class="concept-title">BEGIN</div>
+          <p>Starts a transaction block. All subsequent statements are part of this transaction until COMMIT or
+            ROLLBACK.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">✅</div><span class="concept-tag">Success</span>
+          <div class="concept-title">COMMIT</div>
+          <p>Makes all transaction changes permanent. Other sessions can now see the changes. Cannot be undone.</p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">⏪</div><span class="concept-tag">Undo</span>
+          <div class="concept-title">ROLLBACK</div>
+          <p>Undoes all changes made since BEGIN. Database returns to exactly the state before the transaction started.
+          </p>
+        </div>
+        <div class="concept-card">
+          <div class="concept-icon">📍</div><span class="concept-tag">Partial</span>
+          <div class="concept-title">SAVEPOINT</div>
+          <p>Named checkpoint inside a transaction. Roll back to it without losing earlier work in the same transaction.
+          </p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="section-label">05 — Quiz</div>
+      <h2>Test your understanding</h2>
+      <div class="quiz-wrap">
+        <div class="progress-dots" id="progress-dots"></div>
+        <div id="quiz-container"></div>
+        <div class="quiz-complete" id="quiz-complete">
+          <h3>🎉 Transactions mastered!</h3>
+          <p>Next: SQL Joins — combining tables.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>Transactions: the safety net under every database operation.</p>
+  </footer>
+  <script>
+    let aliceBal = 10000, bobBal = 3000, txnActive = false, committed = false;
+    let alicePending = 10000, bobPending = 3000;
+    function log(msg, cls = 't-info') { const box = document.getElementById('txn-log'); const el = document.createElement('div'); el.className = 'tl'; el.innerHTML = `<span class="${cls}">${msg}</span>`; box.appendChild(el); box.scrollTop = box.scrollHeight; }
+    function updateDisplay() { document.getElementById('alice-bal').textContent = '৳' + alicePending.toLocaleString(); document.getElementById('bob-bal').textContent = '৳' + bobPending.toLocaleString(); }
+    function sendTxn() {
+      if (txnActive) return; txnActive = true; committed = false;
+      document.getElementById('btn-send').disabled = true;
+      document.getElementById('txn-log').innerHTML = '';
+      log('BEGIN;', 't-warn');
+      setTimeout(() => { log('UPDATE accounts SET balance = balance - 5000 WHERE user = \'Alice\';', 't-info'); alicePending = aliceBal - 5000; updateDisplay(); document.getElementById('alice-box').className = 'account-box active'; }, 400);
+      setTimeout(() => { log('UPDATE accounts SET balance = balance + 5000 WHERE user = \'Bob\';', 't-info'); bobPending = bobBal + 5000; updateDisplay(); document.getElementById('bob-box').className = 'account-box active'; }, 900);
+      setTimeout(() => { log('-- Transaction pending. COMMIT to save or ROLLBACK to undo.', 't-warn'); document.getElementById('btn-commit').disabled = false; document.getElementById('btn-roll').disabled = false; }, 1400);
+    }
+    function commitTxn() {
+      aliceBal = alicePending; bobBal = bobPending;
+      document.getElementById('btn-commit').disabled = true; document.getElementById('btn-roll').disabled = true;
+      log('COMMIT;', 't-ok'); log('✓ Changes are now permanent!', 't-ok');
+      document.getElementById('alice-box').className = 'account-box'; document.getElementById('bob-box').className = 'account-box';
+      txnActive = false; document.getElementById('btn-send').disabled = false;
+    }
+    function rollbackTxn() {
+      alicePending = aliceBal; bobPending = bobBal; updateDisplay();
+      document.getElementById('btn-commit').disabled = true; document.getElementById('btn-roll').disabled = true;
+      log('ROLLBACK;', 't-err'); log('✕ All changes undone. Balances restored.', 't-err');
+      document.getElementById('alice-box').className = 'account-box'; document.getElementById('bob-box').className = 'account-box';
+      txnActive = false; document.getElementById('btn-send').disabled = false;
+    }
+    const questions = [
+      { q: "What does ROLLBACK do in a database transaction?", opts: ["Saves all changes permanently", "Undoes all changes made since BEGIN", "Creates a savepoint", "Starts a new transaction"], correct: 1, feedback: "ROLLBACK undoes every change made since the transaction began — the database returns to its prior state." },
+      { q: "When is a COMMIT permanent?", opts: ["As soon as BEGIN is called", "After the first UPDATE", "After COMMIT is executed and acknowledged", "Only after the server restarts"], correct: 2, feedback: "COMMIT makes changes permanent. After COMMIT, the data is written to disk and other sessions can see it." },
+      { q: "What is the purpose of a SAVEPOINT?", opts: ["To speed up a transaction", "To allow partial rollback to a named point without losing earlier work", "To lock a table", "To commit part of a transaction"], correct: 1, feedback: "SAVEPOINTs create named checkpoints. ROLLBACK TO savepoint_name undoes work only after that point." }
+    ];
+    let cur = 0, ans = false;
+    function buildDots() { document.getElementById('progress-dots').innerHTML = questions.map((_, i) => `<div class="progress-dot ${i === 0 ? 'current' : ''}" id="dot-${i}"></div>`).join(''); }
+    function renderQ() { ans = false; const q = questions[cur]; document.getElementById('quiz-container').innerHTML = `<div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div><div class="quiz-feedback" id="qf"></div><button class="next-btn" id="nb" onclick="nextQ()">${cur === questions.length - 1 ? 'SEE RESULTS →' : 'NEXT →'}</button>`; }
+    function answer(idx) { if (ans) return; ans = true; const q = questions[cur]; document.querySelectorAll('.quiz-opt').forEach((o, i) => { if (i === idx) o.classList.add(i === q.correct ? 'correct' : 'wrong'); if (i === q.correct) o.classList.add('correct'); o.disabled = true; }); document.getElementById('qf').textContent = q.feedback; document.getElementById('nb').classList.add('show'); document.getElementById(`dot-${cur}`).classList.replace('current', 'done'); }
+    function nextQ() { cur++; if (cur >= questions.length) { document.getElementById('quiz-container').style.display = 'none'; document.getElementById('quiz-complete').style.display = 'block'; } else { document.getElementById(`dot-${cur}`).classList.add('current'); renderQ(); } }
+    buildDots(); renderQ();
+  </script>
+</body>
+
+</html>
