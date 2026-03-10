@@ -1,0 +1,23 @@
+[
+  {
+    "id": "001",
+    "title": "What is an API?",
+    "file": "api-explainer.html",
+    "subtitle": "A visual, interactive guide — from zero to genuinely understanding it.",
+    "date": "2025-01-15"
+  },
+  {
+    "id": "002",
+    "title": "What is Git?",
+    "file": "git-explainer.html",
+    "subtitle": "Version control — the time machine every developer uses, explained from scratch.",
+    "date": "2025-02-20"
+  },
+  {
+    "id": "003",
+    "title": "Hello, World!",
+    "file": "hello.html",
+    "subtitle": "Version control — the time machine every developer uses, explained from scratch.",
+    "date": "2025-02-20"
+  }
+]

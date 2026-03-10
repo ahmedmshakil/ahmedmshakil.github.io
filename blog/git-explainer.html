@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is Git?</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --card: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #f5c518;
+    --accent2: #ff6b35;
+    --accent3: #4ecdc4;
+    --text: #f0ece3;
+    --muted: #7a7570;
+    --green: #6bcb77;
+    --red: #ff6b6b;
+  }
+
+  body { background: var(--bg); color: var(--text); font-family: 'Lora', serif; min-height: 100vh; overflow-x: hidden; }
+
+  header {
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: 'GIT';
+    position: absolute;
+    right: -20px; top: -20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 220px; font-weight: 800;
+    color: #ffffff06; pointer-events: none; letter-spacing: -10px;
+  }
+  .tag {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); background: #f5c51815;
+    border: 1px solid #f5c51830; padding: 4px 10px;
+    display: inline-block; margin-bottom: 20px;
+  }
+  h1 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 7vw, 72px); font-weight: 800; line-height: 1; letter-spacing: -2px; max-width: 700px; }
+  h1 span { color: var(--accent); }
+  .subtitle { font-style: italic; color: var(--muted); font-size: 18px; margin-top: 16px; max-width: 500px; line-height: 1.6; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
+  section { margin-bottom: 80px; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+  p { line-height: 1.8; color: #c8c4bb; font-size: 16px; }
+
+  /* TIME MACHINE ANALOGY */
+  .timeline-analogy {
+    margin-top: 40px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  .analogy-header {
+    background: #111; padding: 16px 24px;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    letter-spacing: 3px; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+  .analogy-body {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  }
+  @media(max-width:600px){ .analogy-body { grid-template-columns: 1fr; } }
+  .analogy-col {
+    padding: 32px 28px;
+    background: var(--card);
+  }
+  .analogy-col:first-child { border-right: 1px solid var(--border); }
+  .analogy-col .icon { font-size: 36px; margin-bottom: 12px; }
+  .analogy-col .role { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .analogy-col h3 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+  .analogy-col p { font-size: 14px; }
+
+  /* COMMIT TIMELINE VISUAL */
+  .commit-track {
+    margin-top: 40px;
+    padding: 36px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+  .commit-label {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 28px;
+  }
+  .commits-row {
+    display: flex; align-items: center; gap: 0;
+    min-width: 600px;
+  }
+  .commit-node {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .commit-dot {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--card); border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; transition: all 0.2s; position: relative;
+    z-index: 2;
+  }
+  .commit-node:hover .commit-dot, .commit-node.active .commit-dot {
+    border-color: var(--accent); background: #f5c51815;
+    box-shadow: 0 0 0 4px #f5c51820;
+  }
+  .commit-hash {
+    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px;
+  }
+  .commit-msg {
+    font-size: 11px; color: #c8c4bb; text-align: center; max-width: 80px; line-height: 1.3;
+  }
+  .commit-line {
+    flex: 1; height: 2px; background: var(--border); min-width: 30px;
+    position: relative;
+  }
+  .commit-line::after {
+    content: ''; position: absolute; right: -6px; top: -4px;
+    width: 0; height: 0;
+    border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+    border-left: 8px solid var(--border);
+  }
+  .commit-detail {
+    margin-top: 24px; background: #0a0a0a;
+    border: 1px solid var(--border); border-radius: 2px;
+    padding: 20px; font-family: 'DM Mono', monospace;
+    font-size: 13px; line-height: 1.8;
+    display: none; animation: fadeIn 0.3s ease;
+  }
+  .commit-detail.visible { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .commit-detail .key { color: var(--accent3); }
+  .commit-detail .val { color: var(--accent); }
+  .commit-detail .str { color: var(--green); }
+  .commit-detail .del { color: var(--red); }
+  .commit-detail .add { color: var(--green); }
+
+  /* BRANCH VISUALIZER */
+  .branch-viz {
+    margin-top: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .branch-topbar {
+    background: #111; padding: 12px 20px;
+    display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: var(--red); } .dot.y { background: var(--accent); } .dot.g { background: var(--green); }
+  .branch-topbar span { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-left: 8px; }
+  .branch-body { padding: 32px; }
+
+  .branch-selector {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px;
+  }
+  .branch-btn {
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    padding: 7px 14px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted);
+    cursor: pointer; letter-spacing: 1px; transition: all 0.2s; border-radius: 2px;
+  }
+  .branch-btn:hover, .branch-btn.active { border-color: var(--accent); color: var(--accent); background: #f5c51810; }
+
+  .branch-scene { display: none; animation: fadeIn 0.35s ease; }
+  .branch-scene.visible { display: block; }
+
+  svg.branch-svg { width: 100%; overflow: visible; display: block; }
+
+  .branch-explain {
+    margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 2px;
+  }
+  .bex { background: var(--card); padding: 18px; }
+  .bex-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .bex p { font-size: 13px; }
+
+  /* COMMANDS EXPLORER */
+  .cmd-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 2px; margin-top: 32px;
+  }
+  .cmd-card {
+    background: var(--card); padding: 24px;
+    border-left: 3px solid transparent; transition: border-color 0.2s; cursor: pointer;
+  }
+  .cmd-card:hover { border-left-color: var(--accent); }
+  .cmd-code {
+    font-family: 'DM Mono', monospace; font-size: 14px;
+    color: var(--accent3); margin-bottom: 8px;
+    background: #0a0a0a; display: inline-block;
+    padding: 4px 10px; border-radius: 2px;
+  }
+  .cmd-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .cmd-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .cmd-tag {
+    font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px;
+    padding: 2px 7px; border-radius: 2px; display: inline-block; margin-bottom: 10px;
+  }
+  .cmd-tag.save { background: #4ecdc420; color: var(--accent3); border: 1px solid #4ecdc440; }
+  .cmd-tag.share { background: #f5c51820; color: var(--accent); border: 1px solid #f5c51840; }
+  .cmd-tag.branch { background: #ff6b3520; color: var(--accent2); border: 1px solid #ff6b3540; }
+  .cmd-tag.undo { background: #ff6b6b20; color: var(--red); border: 1px solid #ff6b6b40; }
+
+  /* SIMULATOR */
+  .git-sim {
+    margin-top: 32px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+  }
+  .git-sim-bar {
+    background: #111; padding: 12px 20px;
+    display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border);
+  }
+  .git-sim-bar span { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-left: 8px; }
+  .git-sim-body { display: grid; grid-template-columns: 1fr 1fr; }
+  @media(max-width:600px){ .git-sim-body { grid-template-columns: 1fr; } }
+  .sim-left { padding: 24px; border-right: 1px solid var(--border); }
+  .sim-right { padding: 24px; }
+  .sim-section-label {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+  }
+  .sim-cmd-list { display: flex; flex-direction: column; gap: 8px; }
+  .sim-cmd {
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    padding: 10px 14px; background: #0a0a0a;
+    border: 1px solid var(--border); color: var(--muted);
+    cursor: pointer; transition: all 0.2s; border-radius: 2px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sim-cmd::before { content: '$'; color: var(--accent); }
+  .sim-cmd:hover { border-color: var(--accent3); color: var(--text); }
+
+  .terminal {
+    background: #060606; border: 1px solid var(--border);
+    border-radius: 2px; padding: 16px; min-height: 220px;
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    line-height: 1.8; overflow-y: auto; max-height: 320px;
+  }
+  .term-line { display: flex; gap: 8px; animation: fadeIn 0.2s ease; }
+  .term-prompt { color: var(--accent); flex-shrink: 0; }
+  .term-cmd { color: var(--text); }
+  .term-output { color: var(--muted); padding-left: 16px; }
+  .term-success { color: var(--green); padding-left: 16px; }
+  .term-error { color: var(--red); padding-left: 16px; }
+  .term-info { color: var(--accent3); padding-left: 16px; }
+  .cursor {
+    display: inline-block; width: 8px; height: 14px;
+    background: var(--accent); animation: blink 1s step-end infinite; vertical-align: middle;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* KEY CONCEPTS */
+  .concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px; margin-top: 32px; }
+  .concept-card { background: var(--card); padding: 24px; border-left: 3px solid transparent; transition: border-color 0.2s; }
+  .concept-card:hover { border-left-color: var(--accent); }
+  .concept-icon { font-size: 24px; margin-bottom: 12px; }
+  .concept-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .concept-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent2); margin-bottom: 8px; display: block; }
+  .concept-card p { font-size: 13px; }
+
+  /* QUIZ */
+  .quiz-wrap { background: var(--surface); border: 1px solid var(--border); padding: 36px; margin-top: 32px; border-radius: 4px; }
+  .quiz-q { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 24px; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt { padding: 14px 18px; border: 1px solid var(--border); background: transparent; color: var(--text); font-family: 'Lora', serif; font-size: 15px; text-align: left; cursor: pointer; transition: all 0.15s; border-radius: 2px; }
+  .quiz-opt:hover { border-color: var(--accent); background: #f5c51808; }
+  .quiz-opt.correct { border-color: var(--green); background: #6bcb7715; color: var(--green); }
+  .quiz-opt.wrong { border-color: var(--red); background: #ff6b6b10; color: var(--red); }
+  .quiz-feedback { margin-top: 20px; font-style: italic; font-size: 15px; min-height: 28px; color: var(--muted); }
+  .next-btn { margin-top: 20px; padding: 10px 24px; background: transparent; border: 1px solid var(--accent); color: var(--accent); font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 2px; cursor: pointer; display: none; transition: all 0.2s; }
+  .next-btn:hover { background: var(--accent); color: #000; }
+  .next-btn.show { display: inline-block; }
+  .progress-dots { display: flex; gap: 8px; margin-bottom: 28px; }
+  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
+  .progress-dot.done { background: var(--green); }
+  .progress-dot.current { background: var(--accent); }
+  .quiz-complete { text-align: center; padding: 20px; display: none; }
+  .quiz-complete h3 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent); margin-bottom: 12px; }
+  .quiz-complete p { font-size: 16px; color: var(--muted); }
+
+  footer { border-top: 1px solid var(--border); padding: 40px; text-align: center; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+
+  code { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent3); background: #0a0a0a; padding: 2px 6px; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Tech Concept Explainer</div>
+  <h1>What is <span>Git</span>?</h1>
+  <p class="subtitle">Version control — the time machine every developer uses, explained from scratch.</p>
+</header>
+
+<main>
+
+  <!-- SECTION 1: THE ANALOGY -->
+  <section>
+    <div class="section-label">01 — The Idea</div>
+    <h2>Think of it like a "Save History" for your code</h2>
+    <p>Git is a tool that tracks every change you make to your files over time. It's like Microsoft Word's "Track Changes" — but supercharged for code. You decide when to save a snapshot, and you can always go back to any earlier version.</p>
+
+    <div class="timeline-analogy">
+      <div class="analogy-header">The Core Idea</div>
+      <div class="analogy-body">
+        <div class="analogy-col">
+          <div class="icon">🎮</div>
+          <div class="role">Without Git</div>
+          <h3>No save points</h3>
+          <p>Imagine playing a game with no checkpoints. You break something, and you can't go back. Developers used to name files <em>project_final_v2_REAL_final.zip</em> — that was the "system."</p>
+        </div>
+        <div class="analogy-col">
+          <div class="icon">💾</div>
+          <div class="role">With Git</div>
+          <h3>Unlimited save points</h3>
+          <p>Every time you finish a chunk of work, you save a <strong>commit</strong> — a named snapshot. Break something? Roll back. Want to try a risky feature? Make a <strong>branch</strong>. Git has your back.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: COMMITS -->
+  <section>
+    <div class="section-label">02 — Commits</div>
+    <h2>Your project's history, one commit at a time</h2>
+    <p>A <strong>commit</strong> is a saved snapshot of your code at a specific moment. Click each commit below to see what changed.</p>
+
+    <div class="commit-track">
+      <div class="commit-label">Project Timeline — click any commit</div>
+      <div class="commits-row">
+        <div class="commit-node active" onclick="showCommit(0, this)">
+          <div class="commit-dot">🌱</div>
+          <div class="commit-hash">a1b2c3</div>
+          <div class="commit-msg">Initial setup</div>
+        </div>
+        <div class="commit-line"></div>
+        <div class="commit-node" onclick="showCommit(1, this)">
+          <div class="commit-dot">✍️</div>
+          <div class="commit-hash">d4e5f6</div>
+          <div class="commit-msg">Add login page</div>
+        </div>
+        <div class="commit-line"></div>
+        <div class="commit-node" onclick="showCommit(2, this)">
+          <div class="commit-dot">🐛</div>
+          <div class="commit-hash">g7h8i9</div>
+          <div class="commit-msg">Fix password bug</div>
+        </div>
+        <div class="commit-line"></div>
+        <div class="commit-node" onclick="showCommit(3, this)">
+          <div class="commit-dot">🎨</div>
+          <div class="commit-hash">j1k2l3</div>
+          <div class="commit-msg">Redesign header</div>
+        </div>
+        <div class="commit-line"></div>
+        <div class="commit-node" onclick="showCommit(4, this)">
+          <div class="commit-dot">🚀</div>
+          <div class="commit-hash">m4n5o6</div>
+          <div class="commit-msg">Launch v1.0</div>
+        </div>
+      </div>
+
+      <div id="commit-detail" class="commit-detail visible">
+        <span class="key">commit</span> <span class="val">a1b2c3f</span><br>
+        <span class="key">Author:</span> <span class="str">Alex &lt;alex@dev.io&gt;</span><br>
+        <span class="key">Date:</span> &nbsp;&nbsp;<span class="str">Mon Jan 6 09:00:00 2025</span><br>
+        <span class="key">Message:</span> <span class="str">"Initial project setup"</span><br><br>
+        <span class="add">+ Added: index.html</span><br>
+        <span class="add">+ Added: style.css</span><br>
+        <span class="add">+ Added: README.md</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: BRANCHES -->
+  <section>
+    <div class="section-label">03 — Branches</div>
+    <h2>Work on new features without breaking anything</h2>
+    <p>A <strong>branch</strong> is a parallel copy of your code. You can experiment freely — and when you're happy, you <strong>merge</strong> it back into the main codebase. Choose a scenario below.</p>
+
+    <div class="branch-viz">
+      <div class="branch-topbar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span>branch-visualizer.interactive</span>
+      </div>
+      <div class="branch-body">
+        <div class="branch-selector">
+          <button class="branch-btn active" onclick="showBranch('feature')">🌿 Feature Branch</button>
+          <button class="branch-btn" onclick="showBranch('bugfix')">🐛 Bug Fix Branch</button>
+          <button class="branch-btn" onclick="showBranch('team')">👥 Team Workflow</button>
+        </div>
+
+        <!-- Feature Branch -->
+        <div id="branch-feature" class="branch-scene visible">
+          <svg class="branch-svg" viewBox="0 0 700 160" height="160">
+            <!-- main line -->
+            <line x1="40" y1="60" x2="660" y2="60" stroke="#2a2a2a" stroke-width="2"/>
+            <!-- branch line -->
+            <line x1="200" y1="60" x2="320" y2="120" stroke="#f5c518" stroke-width="2" stroke-dasharray="6,3"/>
+            <line x1="320" y1="120" x2="500" y2="120" stroke="#f5c518" stroke-width="2" stroke-dasharray="6,3"/>
+            <line x1="500" y1="120" x2="580" y2="60" stroke="#f5c518" stroke-width="2" stroke-dasharray="6,3"/>
+            <!-- main commits -->
+            <circle cx="80" cy="60" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="80" y="65" text-anchor="middle" font-size="12" fill="#4ecdc4">C1</text>
+            <text x="80" y="90" text-anchor="middle" font-size="10" fill="#7a7570" font-family="monospace">main</text>
+            <circle cx="200" cy="60" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="200" y="65" text-anchor="middle" font-size="12" fill="#4ecdc4">C2</text>
+            <circle cx="580" cy="60" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="580" y="65" text-anchor="middle" font-size="12" fill="#4ecdc4">C5</text>
+            <text x="580" y="90" text-anchor="middle" font-size="10" fill="#6bcb77" font-family="monospace">merged!</text>
+            <circle cx="660" cy="60" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="660" y="65" text-anchor="middle" font-size="12" fill="#4ecdc4">C6</text>
+            <!-- branch commits -->
+            <circle cx="320" cy="120" r="14" fill="#1e1e1e" stroke="#f5c518" stroke-width="2"/>
+            <text x="320" y="125" text-anchor="middle" font-size="12" fill="#f5c518">C3</text>
+            <circle cx="440" cy="120" r="14" fill="#1e1e1e" stroke="#f5c518" stroke-width="2"/>
+            <text x="440" y="125" text-anchor="middle" font-size="12" fill="#f5c518">C4</text>
+            <text x="380" y="150" text-anchor="middle" font-size="10" fill="#f5c518" font-family="monospace">feature/dark-mode</text>
+            <!-- HEAD label -->
+            <rect x="630" y="30" width="60" height="18" rx="2" fill="#f5c51820" stroke="#f5c51840"/>
+            <text x="660" y="43" text-anchor="middle" font-size="10" fill="#f5c518" font-family="monospace">HEAD</text>
+          </svg>
+          <div class="branch-explain">
+            <div class="bex"><div class="bex-title">🌿 Create a branch</div><p>Run <code>git checkout -b feature/dark-mode</code>. You now have a safe copy to work in — main is untouched.</p></div>
+            <div class="bex"><div class="bex-title">✍️ Commit your work</div><p>Make changes, commit them. They only exist on your branch — your teammates don't see them yet.</p></div>
+            <div class="bex"><div class="bex-title">🔀 Merge back</div><p>When done, run <code>git merge feature/dark-mode</code>. Your new feature joins the main codebase.</p></div>
+          </div>
+        </div>
+
+        <!-- Bug fix -->
+        <div id="branch-bugfix" class="branch-scene">
+          <svg class="branch-svg" viewBox="0 0 700 160" height="160">
+            <line x1="40" y1="80" x2="660" y2="80" stroke="#2a2a2a" stroke-width="2"/>
+            <line x1="180" y1="80" x2="260" y2="30" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="6,3"/>
+            <line x1="260" y1="30" x2="420" y2="30" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="6,3"/>
+            <line x1="420" y1="30" x2="500" y2="80" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="6,3"/>
+            <circle cx="80" cy="80" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="80" y="85" text-anchor="middle" font-size="12" fill="#4ecdc4">C1</text>
+            <circle cx="180" cy="80" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="180" y="85" text-anchor="middle" font-size="12" fill="#4ecdc4">C2</text>
+            <text x="80" y="110" text-anchor="middle" font-size="10" fill="#7a7570" font-family="monospace">main (live!)</text>
+            <circle cx="500" cy="80" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="500" y="85" text-anchor="middle" font-size="12" fill="#4ecdc4">C5</text>
+            <text x="500" y="110" text-anchor="middle" font-size="10" fill="#6bcb77" font-family="monospace">fixed ✓</text>
+            <circle cx="600" cy="80" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="600" y="85" text-anchor="middle" font-size="12" fill="#4ecdc4">C6</text>
+            <circle cx="260" cy="30" r="14" fill="#1e1e1e" stroke="#ff6b6b" stroke-width="2"/>
+            <text x="260" y="35" text-anchor="middle" font-size="12" fill="#ff6b6b">C3</text>
+            <circle cx="380" cy="30" r="14" fill="#1e1e1e" stroke="#ff6b6b" stroke-width="2"/>
+            <text x="380" y="35" text-anchor="middle" font-size="12" fill="#ff6b6b">C4</text>
+            <text x="320" y="14" text-anchor="middle" font-size="10" fill="#ff6b6b" font-family="monospace">hotfix/login-crash</text>
+          </svg>
+          <div class="branch-explain">
+            <div class="bex"><div class="bex-title">🚨 Bug found in production</div><p>Users are crashing on login. You need to fix it <em>right now</em> without touching ongoing feature work.</p></div>
+            <div class="bex"><div class="bex-title">🔥 Create a hotfix branch</div><p>Branch off main: <code>git checkout -b hotfix/login-crash</code>. Fix only the bug, nothing else.</p></div>
+            <div class="bex"><div class="bex-title">🚑 Merge and deploy</div><p>Merge back to main and deploy. Bug is gone. Feature branch is completely unaffected.</p></div>
+          </div>
+        </div>
+
+        <!-- Team workflow -->
+        <div id="branch-team" class="branch-scene">
+          <svg class="branch-svg" viewBox="0 0 700 200" height="200">
+            <!-- main -->
+            <line x1="40" y1="100" x2="660" y2="100" stroke="#2a2a2a" stroke-width="2.5"/>
+            <!-- alice branch -->
+            <line x1="160" y1="100" x2="220" y2="40" stroke="#4ecdc4" stroke-width="2" stroke-dasharray="6,3"/>
+            <line x1="220" y1="40" x2="420" y2="40" stroke="#4ecdc4" stroke-width="2" stroke-dasharray="6,3"/>
+            <line x1="420" y1="40" x2="480" y2="100" stroke="#4ecdc4" stroke-width="2" stroke-dasharray="6,3"/>
+            <!-- bob branch -->
+            <line x1="160" y1="100" x2="220" y2="160" stroke="#f5c518" stroke-width="2" stroke-dasharray="6,3"/>
+            <line x1="220" y1="160" x2="500" y2="160" stroke="#f5c518" stroke-width="2" stroke-dasharray="6,3"/>
+            <line x1="500" y1="160" x2="560" y2="100" stroke="#f5c518" stroke-width="2" stroke-dasharray="6,3"/>
+            <!-- main commits -->
+            <circle cx="80" cy="100" r="14" fill="#1e1e1e" stroke="#7a7570" stroke-width="2"/>
+            <text x="80" y="105" text-anchor="middle" font-size="11" fill="#7a7570">C1</text>
+            <circle cx="160" cy="100" r="14" fill="#1e1e1e" stroke="#7a7570" stroke-width="2"/>
+            <text x="160" y="105" text-anchor="middle" font-size="11" fill="#7a7570">C2</text>
+            <circle cx="480" cy="100" r="14" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="480" y="105" text-anchor="middle" font-size="11" fill="#4ecdc4">M1</text>
+            <circle cx="560" cy="100" r="14" fill="#1e1e1e" stroke="#f5c518" stroke-width="2"/>
+            <text x="560" y="105" text-anchor="middle" font-size="11" fill="#f5c518">M2</text>
+            <circle cx="640" cy="100" r="14" fill="#1e1e1e" stroke="#6bcb77" stroke-width="2"/>
+            <text x="640" y="105" text-anchor="middle" font-size="10" fill="#6bcb77">🚀</text>
+            <!-- Alice commits -->
+            <circle cx="300" cy="40" r="12" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="300" y="45" text-anchor="middle" font-size="10" fill="#4ecdc4">A1</text>
+            <circle cx="380" cy="40" r="12" fill="#1e1e1e" stroke="#4ecdc4" stroke-width="2"/>
+            <text x="380" y="45" text-anchor="middle" font-size="10" fill="#4ecdc4">A2</text>
+            <text x="300" y="22" text-anchor="middle" font-size="10" fill="#4ecdc4" font-family="monospace">Alice / search-feature</text>
+            <!-- Bob commits -->
+            <circle cx="310" cy="160" r="12" fill="#1e1e1e" stroke="#f5c518" stroke-width="2"/>
+            <text x="310" y="165" text-anchor="middle" font-size="10" fill="#f5c518">B1</text>
+            <circle cx="420" cy="160" r="12" fill="#1e1e1e" stroke="#f5c518" stroke-width="2"/>
+            <text x="420" y="165" text-anchor="middle" font-size="10" fill="#f5c518">B2</text>
+            <text x="360" y="185" text-anchor="middle" font-size="10" fill="#f5c518" font-family="monospace">Bob / payment-ui</text>
+          </svg>
+          <div class="branch-explain">
+            <div class="bex"><div class="bex-title">👩‍💻 Alice's branch</div><p>Alice works on the search feature in her own branch. Her code doesn't affect Bob's work at all.</p></div>
+            <div class="bex"><div class="bex-title">👨‍💻 Bob's branch</div><p>Bob builds the payment UI simultaneously. Two features, zero conflicts — until they're ready to merge.</p></div>
+            <div class="bex"><div class="bex-title">🚀 Both merge to main</div><p>When both are done and reviewed, they merge into main and the team ships the release together.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: COMMANDS SIMULATOR -->
+  <section>
+    <div class="section-label">04 — Try It</div>
+    <h2>Run Git commands in a simulated terminal</h2>
+    <p>Click any command on the left to see what it does and what output you'd get in a real terminal.</p>
+
+    <div class="git-sim">
+      <div class="git-sim-bar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span>git-terminal.simulator</span>
+      </div>
+      <div class="git-sim-body">
+        <div class="sim-left">
+          <div class="sim-section-label">Common commands</div>
+          <div class="sim-cmd-list">
+            <div class="sim-cmd" onclick="runCmd('init')">git init</div>
+            <div class="sim-cmd" onclick="runCmd('status')">git status</div>
+            <div class="sim-cmd" onclick="runCmd('add')">git add .</div>
+            <div class="sim-cmd" onclick="runCmd('commit')">git commit -m "feat: add login"</div>
+            <div class="sim-cmd" onclick="runCmd('log')">git log --oneline</div>
+            <div class="sim-cmd" onclick="runCmd('branch')">git branch feature/search</div>
+            <div class="sim-cmd" onclick="runCmd('checkout')">git checkout feature/search</div>
+            <div class="sim-cmd" onclick="runCmd('merge')">git merge feature/search</div>
+            <div class="sim-cmd" onclick="runCmd('push')">git push origin main</div>
+            <div class="sim-cmd" onclick="runCmd('pull')">git pull origin main</div>
+          </div>
+        </div>
+        <div class="sim-right">
+          <div class="sim-section-label">Terminal output</div>
+          <div class="terminal" id="terminal">
+            <div class="term-line"><span class="term-info">👋 Click a command on the left to run it</span></div>
+            <div class="term-line"><span class="term-output">This simulates what Git would show you in a real terminal.</span></div>
+            <div class="term-line">&nbsp;</div>
+            <div class="term-line"><span class="term-prompt">~$</span><span class="cursor"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: KEY VOCABULARY -->
+  <section>
+    <div class="section-label">05 — Key Concepts</div>
+    <h2>The vocabulary you need</h2>
+    <p>Know these 6 terms and you can follow any Git conversation or tutorial in the world.</p>
+
+    <div class="concepts">
+      <div class="concept-card">
+        <div class="concept-icon">📸</div>
+        <span class="concept-tag">Core Action</span>
+        <div class="concept-title">Commit</div>
+        <p>A saved snapshot of your code. Like a checkpoint in a video game. Every commit has a unique ID and a message describing what changed.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🌿</div>
+        <span class="concept-tag">Workflow</span>
+        <div class="concept-title">Branch</div>
+        <p>A parallel copy of your project. Work on a new feature or fix safely — without touching the main working codebase.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔀</div>
+        <span class="concept-tag">Combining</span>
+        <div class="concept-title">Merge</div>
+        <p>Combining two branches into one. When your feature is done, you merge it back into <code>main</code> to make it official.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">☁️</div>
+        <span class="concept-tag">Remote</span>
+        <div class="concept-title">GitHub / Remote</div>
+        <p>Git is the tool. GitHub is a website that stores your Git history online. <code>git push</code> = upload. <code>git pull</code> = download.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">📋</div>
+        <span class="concept-tag">Review</span>
+        <div class="concept-title">Pull Request</div>
+        <p>A request to merge your branch into main. Teammates review the code, leave comments, then approve it. Standard team workflow.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">⏮️</div>
+        <span class="concept-tag">Safety Net</span>
+        <div class="concept-title">Revert / Reset</div>
+        <p>Made a mistake? You can roll back to any previous commit. This is why Git exists — your old code is never truly gone.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: QUIZ -->
+  <section>
+    <div class="section-label">06 — Check Your Understanding</div>
+    <h2>Quick quiz</h2>
+    <p>Three questions — see what's clicked.</p>
+
+    <div class="quiz-wrap">
+      <div class="progress-dots" id="progress-dots"></div>
+      <div id="quiz-container"></div>
+      <div class="quiz-complete" id="quiz-complete">
+        <h3>🎉 You've got it!</h3>
+        <p>You now understand Git better than many developers starting their first job.<br><br>
+        Next step: install Git and try <code>git init</code> in a folder — or explore <a href="https://github.com" target="_blank" style="color:var(--accent)">GitHub.com</a> to see it in action.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Git: the safety net under every developer's work</p>
+</footer>
+
+<script>
+  // --- Commit detail viewer ---
+  const commitDetails = [
+    `<span class="key">commit</span> <span class="val">a1b2c3f</span>\n<span class="key">Author:</span> <span class="str">Alex &lt;alex@dev.io&gt;</span>\n<span class="key">Date:</span>   <span class="str">Mon Jan 6 09:00:00 2025</span>\n<span class="key">Message:</span> <span class="str">"Initial project setup"</span>\n\n<span class="add">+ Added: index.html</span>\n<span class="add">+ Added: style.css</span>\n<span class="add">+ Added: README.md</span>`,
+    `<span class="key">commit</span> <span class="val">d4e5f6a</span>\n<span class="key">Author:</span> <span class="str">Alex &lt;alex@dev.io&gt;</span>\n<span class="key">Date:</span>   <span class="str">Tue Jan 7 14:22:00 2025</span>\n<span class="key">Message:</span> <span class="str">"Add login page"</span>\n\n<span class="add">+ Added: login.html (42 lines)</span>\n<span class="add">+ Added: auth.js (87 lines)</span>`,
+    `<span class="key">commit</span> <span class="val">g7h8i9b</span>\n<span class="key">Author:</span> <span class="str">Alex &lt;alex@dev.io&gt;</span>\n<span class="key">Date:</span>   <span class="str">Wed Jan 8 10:05:00 2025</span>\n<span class="key">Message:</span> <span class="str">"Fix password validation bug"</span>\n\n<span class="del">- auth.js line 34: if(pass.length > 6)</span>\n<span class="add">+ auth.js line 34: if(pass.length >= 8)</span>`,
+    `<span class="key">commit</span> <span class="val">j1k2l3c</span>\n<span class="key">Author:</span> <span class="str">Alex &lt;alex@dev.io&gt;</span>\n<span class="key">Date:</span>   <span class="str">Thu Jan 9 16:40:00 2025</span>\n<span class="key">Message:</span> <span class="str">"Redesign navigation header"</span>\n\n<span class="del">- style.css: 18 lines removed</span>\n<span class="add">+ style.css: 34 lines added</span>\n<span class="add">+ header.css: new file</span>`,
+    `<span class="key">commit</span> <span class="val">m4n5o6d</span>\n<span class="key">Author:</span> <span class="str">Alex &lt;alex@dev.io&gt;</span>\n<span class="key">Date:</span>   <span class="str">Fri Jan 10 12:00:00 2025</span>\n<span class="key">Message:</span> <span class="str">"🚀 Release v1.0 — ship it!"</span>\n\n<span class="add">+ Updated: package.json version → 1.0.0</span>\n<span class="add">+ Added: CHANGELOG.md</span>`
+  ];
+
+  function showCommit(idx, el) {
+    document.querySelectorAll('.commit-node').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    const detail = document.getElementById('commit-detail');
+    detail.classList.remove('visible');
+    setTimeout(() => {
+      detail.innerHTML = commitDetails[idx];
+      detail.classList.add('visible');
+    }, 100);
+  }
+
+  // --- Branch switcher ---
+  function showBranch(id) {
+    document.querySelectorAll('.branch-scene').forEach(s => s.classList.remove('visible'));
+    document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('branch-' + id).classList.add('visible');
+    event.target.classList.add('active');
+  }
+
+  // --- Terminal simulator ---
+  const cmdOutputs = {
+    init: {
+      cmd: 'git init',
+      lines: [
+        { type: 'success', text: 'Initialized empty Git repository in /my-project/.git/' },
+        { type: 'info', text: '💡 Git is now tracking this folder. Your history starts here.' }
+      ]
+    },
+    status: {
+      cmd: 'git status',
+      lines: [
+        { type: 'output', text: 'On branch main' },
+        { type: 'output', text: 'Changes not staged for commit:' },
+        { type: 'error', text: '  modified:   index.html' },
+        { type: 'error', text: '  modified:   style.css' },
+        { type: 'output', text: 'Untracked files:' },
+        { type: 'error', text: '  new-feature.js' },
+        { type: 'info', text: '💡 Red = unsaved changes. Run "git add ." to stage them.' }
+      ]
+    },
+    add: {
+      cmd: 'git add .',
+      lines: [
+        { type: 'success', text: '✓ All changes staged for commit' },
+        { type: 'info', text: '💡 "Staging" means you\'ve selected what to include in the next snapshot.' }
+      ]
+    },
+    commit: {
+      cmd: 'git commit -m "feat: add login"',
+      lines: [
+        { type: 'success', text: '[main d4e5f6a] feat: add login' },
+        { type: 'output', text: ' 2 files changed, 42 insertions(+), 3 deletions(-)' },
+        { type: 'output', text: ' create mode 100644 login.html' },
+        { type: 'info', text: '💡 Snapshot saved! This commit now lives in your history forever.' }
+      ]
+    },
+    log: {
+      cmd: 'git log --oneline',
+      lines: [
+        { type: 'success', text: 'm4n5o6d 🚀 Release v1.0 — ship it!' },
+        { type: 'output', text: 'j1k2l3c Redesign navigation header' },
+        { type: 'output', text: 'g7h8i9b Fix password validation bug' },
+        { type: 'output', text: 'd4e5f6a feat: add login' },
+        { type: 'output', text: 'a1b2c3f Initial project setup' },
+        { type: 'info', text: '💡 Your full history. Every commit, forever.' }
+      ]
+    },
+    branch: {
+      cmd: 'git branch feature/search',
+      lines: [
+        { type: 'success', text: '✓ Branch \'feature/search\' created' },
+        { type: 'info', text: '💡 A new parallel timeline just forked off main. Main is untouched.' }
+      ]
+    },
+    checkout: {
+      cmd: 'git checkout feature/search',
+      lines: [
+        { type: 'success', text: 'Switched to branch \'feature/search\'' },
+        { type: 'info', text: '💡 You\'re now ON that branch. Any commits you make go here, not main.' }
+      ]
+    },
+    merge: {
+      cmd: 'git merge feature/search',
+      lines: [
+        { type: 'output', text: 'Updating a1b2c3..d4e5f6' },
+        { type: 'output', text: 'Fast-forward' },
+        { type: 'success', text: ' search.js     | 67 ++++++++++++' },
+        { type: 'success', text: ' 1 file changed, 67 insertions(+)' },
+        { type: 'info', text: '💡 Feature branch merged into main. Both timelines are now one.' }
+      ]
+    },
+    push: {
+      cmd: 'git push origin main',
+      lines: [
+        { type: 'output', text: 'Enumerating objects: 5, done.' },
+        { type: 'output', text: 'Counting objects: 100% (5/5), done.' },
+        { type: 'success', text: 'To https://github.com/alex/my-project.git' },
+        { type: 'success', text: '   a1b2c3..m4n5o6  main -> main' },
+        { type: 'info', text: '💡 Your commits are now on GitHub — backed up and shareable.' }
+      ]
+    },
+    pull: {
+      cmd: 'git pull origin main',
+      lines: [
+        { type: 'output', text: 'remote: Enumerating objects: 3, done.' },
+        { type: 'output', text: 'Updating a1b2c3..z9y8x7' },
+        { type: 'success', text: 'Fast-forward' },
+        { type: 'success', text: ' auth.js | 12 ++++++------' },
+        { type: 'info', text: '💡 You\'ve pulled your teammate\'s latest commits down to your machine.' }
+      ]
+    }
+  };
+
+  function runCmd(key) {
+    const term = document.getElementById('terminal');
+    const data = cmdOutputs[key];
+    term.innerHTML = '';
+
+    const promptLine = document.createElement('div');
+    promptLine.className = 'term-line';
+    promptLine.innerHTML = `<span class="term-prompt">~$</span><span class="term-cmd"> ${data.cmd}</span>`;
+    term.appendChild(promptLine);
+
+    data.lines.forEach((line, i) => {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'term-line';
+        const cls = line.type === 'success' ? 'term-success' : line.type === 'error' ? 'term-error' : line.type === 'info' ? 'term-info' : 'term-output';
+        el.innerHTML = `<span class="${cls}">${line.text}</span>`;
+        term.appendChild(el);
+        term.scrollTop = term.scrollHeight;
+      }, (i + 1) * 120);
+    });
+
+    setTimeout(() => {
+      const cur = document.createElement('div');
+      cur.className = 'term-line';
+      cur.innerHTML = `<span class="term-prompt">~$</span><span class="cursor"></span>`;
+      term.appendChild(cur);
+      term.scrollTop = term.scrollHeight;
+    }, (data.lines.length + 1) * 120);
+  }
+
+  // --- Quiz ---
+  const questions = [
+    {
+      q: "What is a Git 'commit'?",
+      opts: ["Uploading code to GitHub", "A saved snapshot of your code at a specific moment", "A request for a teammate to review code", "Deleting old code"],
+      correct: 1,
+      feedback: "Exactly! A commit is like a checkpoint — a permanent snapshot of what your code looked like at that moment."
+    },
+    {
+      q: "Why would you create a branch?",
+      opts: ["To delete a feature permanently", "To work on something new without affecting the main codebase", "To download code from GitHub", "To see who wrote each line of code"],
+      correct: 1,
+      feedback: "Right! Branches let you experiment safely. If things go wrong, main is completely unaffected."
+    },
+    {
+      q: "What is the difference between Git and GitHub?",
+      opts: ["They are the same thing", "GitHub is newer and better than Git", "Git is the tool on your computer; GitHub is the website that stores your history online", "Git is only for teams; GitHub is for solo developers"],
+      correct: 2,
+      feedback: "Spot on! Git = the local tool tracking changes. GitHub = the cloud service storing and sharing that history."
+    }
+  ];
+
+  let current = 0;
+  let answered = false;
+
+  function buildDots() {
+    const dots = document.getElementById('progress-dots');
+    dots.innerHTML = questions.map((_, i) => `<div class="progress-dot ${i === 0 ? 'current' : ''}" id="dot-${i}"></div>`).join('');
+  }
+
+  function renderQuestion() {
+    const q = questions[current];
+    answered = false;
+    document.getElementById('quiz-container').innerHTML = `
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-opts">${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}</div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">${current === questions.length - 1 ? 'SEE RESULTS →' : 'NEXT QUESTION →'}</button>
+    `;
+  }
+
+  function answer(idx) {
+    if (answered) return;
+    answered = true;
+    const q = questions[current];
+    const opts = document.querySelectorAll('.quiz-opt');
+    opts[idx].classList.add(idx === q.correct ? 'correct' : 'wrong');
+    if (idx !== q.correct) opts[q.correct].classList.add('correct');
+    opts.forEach(o => o.disabled = true);
+    document.getElementById('quiz-feedback').textContent = q.feedback;
+    document.getElementById('next-btn').classList.add('show');
+    document.getElementById(`dot-${current}`).classList.add('done');
+    document.getElementById(`dot-${current}`).classList.remove('current');
+  }
+
+  function nextQuestion() {
+    current++;
+    if (current >= questions.length) {
+      document.getElementById('quiz-container').style.display = 'none';
+      document.getElementById('quiz-complete').style.display = 'block';
+    } else {
+      document.getElementById(`dot-${current}`).classList.add('current');
+      renderQuestion();
+    }
+  }
+
+  buildDots();
+  renderQuestion();
+</script>
+</body>
+</html>

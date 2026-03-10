@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is an API?</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --card: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #f5c518;
+    --accent2: #ff6b35;
+    --accent3: #4ecdc4;
+    --text: #f0ece3;
+    --muted: #7a7570;
+    --green: #6bcb77;
+    --red: #ff6b6b;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lora', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: 'API';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 220px;
+    font-weight: 800;
+    color: #ffffff06;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: #f5c51815;
+    border: 1px solid #f5c51830;
+    padding: 4px 10px;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+    max-width: 700px;
+  }
+  h1 span { color: var(--accent); }
+  .subtitle {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 18px;
+    margin-top: 16px;
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  /* MAIN LAYOUT */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  section { margin-bottom: 80px; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  p { line-height: 1.8; color: #c8c4bb; font-size: 16px; }
+
+  /* RESTAURANT ANALOGY */
+  .restaurant {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    align-items: stretch;
+    margin-top: 40px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .rest-panel {
+    padding: 32px 28px;
+    background: var(--card);
+  }
+  .rest-panel.you { border-right: 1px solid var(--border); }
+  .rest-panel.kitchen { border-left: 1px solid var(--border); }
+
+  .rest-panel .icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  .rest-panel .role {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .rest-panel h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .rest-panel p { font-size: 14px; }
+
+  .rest-middle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    background: #111;
+    gap: 8px;
+  }
+  .rest-middle .waiter-icon { font-size: 32px; }
+  .rest-middle .label {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .rest-middle .sublabel {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .arrow-down { color: var(--accent); font-size: 20px; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+  /* INTERACTIVE DEMO */
+  .demo-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 32px;
+  }
+  .demo-topbar {
+    background: #111;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: var(--red); }
+  .dot.y { background: var(--accent); }
+  .dot.g { background: var(--green); }
+  .demo-topbar span {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+
+  .demo-body { padding: 28px; }
+  .demo-body p { font-size: 14px; margin-bottom: 20px; }
+
+  .api-selector {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .api-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+  .api-btn:hover, .api-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: #f5c51810;
+  }
+
+  .demo-flow {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .demo-flow.visible { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  .flow-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2px;
+    margin-bottom: 20px;
+  }
+  .flow-step {
+    background: var(--card);
+    padding: 16px;
+    position: relative;
+  }
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+  }
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .step-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .code-block {
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-x: auto;
+  }
+  .code-block .comment { color: #4a4a4a; }
+  .code-block .key { color: var(--accent3); }
+  .code-block .val { color: var(--accent); }
+  .code-block .str { color: var(--green); }
+  .code-block .url { color: var(--accent2); }
+
+  /* REQUEST / RESPONSE SIMULATOR */
+  .simulator {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  @media (max-width: 600px) { .simulator { grid-template-columns: 1fr; } }
+
+  .sim-panel { background: var(--card); padding: 24px; }
+  .sim-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sim-label .badge {
+    padding: 2px 7px;
+    border-radius: 2px;
+    font-size: 9px;
+    font-weight: 600;
+  }
+  .badge.req { background: #4ecdc420; color: var(--accent3); border: 1px solid #4ecdc440; }
+  .badge.res { background: #6bcb7720; color: var(--green); border: 1px solid #6bcb7740; }
+  .badge.err { background: #ff6b6b20; color: var(--red); border: 1px solid #ff6b6b40; }
+
+  .send-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: all 0.2s;
+  }
+  .send-btn:hover { background: #ffd740; transform: translateY(-1px); }
+  .send-btn:active { transform: translateY(0); }
+
+  .response-area {
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .loading-bar {
+    height: 2px;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.6s ease;
+    display: none;
+  }
+  .loading-bar.running { display: block; }
+
+  /* CONCEPTS GRID */
+  .concepts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2px;
+    margin-top: 32px;
+  }
+  .concept-card {
+    background: var(--card);
+    padding: 24px;
+    border-left: 3px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .concept-card:hover { border-left-color: var(--accent); }
+  .concept-icon { font-size: 24px; margin-bottom: 12px; }
+  .concept-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .concept-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .concept-card p { font-size: 13px; }
+
+  /* REAL EXAMPLES */
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 2px;
+    margin-top: 32px;
+  }
+  .ex-card {
+    background: var(--card);
+    padding: 20px;
+    text-align: center;
+    cursor: default;
+    transition: background 0.2s;
+  }
+  .ex-card:hover { background: #252525; }
+  .ex-emoji { font-size: 28px; margin-bottom: 10px; }
+  .ex-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .ex-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* QUIZ */
+  .quiz-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px;
+    margin-top: 32px;
+    border-radius: 4px;
+  }
+  .quiz-q {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+  .quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 2px;
+  }
+  .quiz-opt:hover { border-color: var(--accent); background: #f5c51808; }
+  .quiz-opt.correct { border-color: var(--green); background: #6bcb7715; color: var(--green); }
+  .quiz-opt.wrong { border-color: var(--red); background: #ff6b6b10; color: var(--red); }
+  .quiz-feedback {
+    margin-top: 20px;
+    font-style: italic;
+    font-size: 15px;
+    min-height: 28px;
+    color: var(--muted);
+  }
+  .next-btn {
+    margin-top: 20px;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    display: none;
+    transition: all 0.2s;
+  }
+  .next-btn:hover { background: var(--accent); color: #000; }
+  .next-btn.show { display: inline-block; }
+
+  .progress-dots { display: flex; gap: 8px; margin-bottom: 28px; }
+  .progress-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .progress-dot.done { background: var(--green); }
+  .progress-dot.current { background: var(--accent); }
+
+  .quiz-complete {
+    text-align: center;
+    padding: 20px;
+    display: none;
+  }
+  .quiz-complete h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .quiz-complete p { font-size: 16px; color: var(--muted); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Tech Concept Explainer</div>
+  <h1>What is an <span>API</span>?</h1>
+  <p class="subtitle">A visual, interactive guide — from zero to genuinely understanding it.</p>
+</header>
+
+<main>
+
+  <!-- SECTION 1: THE ANALOGY -->
+  <section>
+    <div class="section-label">01 — The Idea</div>
+    <h2>Think of it like a restaurant</h2>
+    <p>API stands for <strong>Application Programming Interface</strong>. That sounds intimidating, but the idea is simple: an API is a <em>messenger</em> that lets two different pieces of software talk to each other — just like a waiter connects you to the kitchen.</p>
+
+    <div class="restaurant">
+      <div class="rest-panel you">
+        <div class="icon">🧑‍💻</div>
+        <div class="role">Your App / Browser</div>
+        <h3>You (the customer)</h3>
+        <p>You don't go into the kitchen yourself. You look at the menu — what's available — and place an order.</p>
+      </div>
+
+      <div class="rest-middle">
+        <div class="waiter-icon">🛎️</div>
+        <div class="arrow-down">↕</div>
+        <div class="label">The API</div>
+        <div class="sublabel">The Waiter</div>
+      </div>
+
+      <div class="rest-panel kitchen">
+        <div class="icon">🗄️</div>
+        <div class="role">Server / Database</div>
+        <h3>The Kitchen</h3>
+        <p>Where the actual data and logic lives. You don't need to know how it works — you just get the result.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: INTERACTIVE DEMO -->
+  <section>
+    <div class="section-label">02 — Real Examples</div>
+    <h2>APIs you use every day</h2>
+    <p>You interact with APIs constantly — you just never see them. Pick one below to see how it works behind the scenes.</p>
+
+    <div class="demo-box">
+      <div class="demo-topbar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span>api-explorer.interactive</span>
+      </div>
+      <div class="demo-body">
+        <p>Choose a scenario to explore:</p>
+        <div class="api-selector">
+          <button class="api-btn active" onclick="showDemo('weather')">🌤 Weather App</button>
+          <button class="api-btn" onclick="showDemo('maps')">🗺 Google Maps</button>
+          <button class="api-btn" onclick="showDemo('login')">🔐 Login with Google</button>
+          <button class="api-btn" onclick="showDemo('payment')">💳 Stripe Payment</button>
+        </div>
+
+        <div id="demo-weather" class="demo-flow visible">
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-num">STEP 01</div>
+              <div class="step-title">You open a weather app</div>
+              <div class="step-desc">The app needs current weather data. It doesn't store this itself.</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">STEP 02</div>
+              <div class="step-title">App sends a Request</div>
+              <div class="step-desc">It calls OpenWeatherMap's API: "Give me weather for Dhaka."</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">STEP 03</div>
+              <div class="step-title">API returns a Response</div>
+              <div class="step-desc">The server replies with structured data: temp, humidity, conditions.</div>
+            </div>
+            <div class="flow-step">
+              <div class="step-num">STEP 04</div>
+              <div class="step-title">App shows you the result</div>
+              <div class="step-desc">Your app renders "🌤 28°C, Partly Cloudy" — all from the API.</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <span class="comment">// What the app sends to the API (the "request"):</span><br>
+            GET <span class="url">https://api.openweathermap.org/data/2.5/weather</span><br>
+            &nbsp;&nbsp;<span class="key">?city</span>=<span class="str">"Dhaka"</span><br>
+            &nbsp;&nbsp;<span class="key">&api_key</span>=<span class="str">"your_secret_key"</span><br><br>
+            <span class="comment">// What comes back (the "response"):</span><br>
+            {<br>
+            &nbsp;&nbsp;<span class="key">"temp"</span>: <span class="val">28</span>,<br>
+            &nbsp;&nbsp;<span class="key">"condition"</span>: <span class="str">"Partly Cloudy"</span>,<br>
+            &nbsp;&nbsp;<span class="key">"humidity"</span>: <span class="val">72</span><br>
+            }
+          </div>
+        </div>
+
+        <div id="demo-maps" class="demo-flow">
+          <div class="flow-steps">
+            <div class="flow-step"><div class="step-num">STEP 01</div><div class="step-title">Website embeds a map</div><div class="step-desc">A food delivery site needs to show a map — it doesn't build one itself.</div></div>
+            <div class="flow-step"><div class="step-num">STEP 02</div><div class="step-title">Calls Google Maps API</div><div class="step-desc">It asks Google: "Give me a map centered on this address."</div></div>
+            <div class="flow-step"><div class="step-num">STEP 03</div><div class="step-title">Google responds</div><div class="step-desc">Google sends back map tiles, routing data, and place info.</div></div>
+            <div class="flow-step"><div class="step-num">STEP 04</div><div class="step-title">Map appears in the app</div><div class="step-desc">The user sees a full interactive map — powered entirely by Google's API.</div></div>
+          </div>
+          <div class="code-block">
+            <span class="comment">// Embedding a Google Map via API:</span><br>
+            <span class="key">const</span> map = <span class="str">new</span> google.maps.Map(document.getElementById(<span class="str">"map"</span>), {<br>
+            &nbsp;&nbsp;<span class="key">center</span>: { <span class="key">lat</span>: <span class="val">23.8103</span>, <span class="key">lng</span>: <span class="val">90.4125</span> },<br>
+            &nbsp;&nbsp;<span class="key">zoom</span>: <span class="val">12</span><br>
+            });<br><br>
+            <span class="comment">// Google's API handles ALL the map rendering — you just configure it.</span>
+          </div>
+        </div>
+
+        <div id="demo-login" class="demo-flow">
+          <div class="flow-steps">
+            <div class="flow-step"><div class="step-num">STEP 01</div><div class="step-title">You click "Login with Google"</div><div class="step-desc">The website doesn't store your Google password — it asks Google directly.</div></div>
+            <div class="flow-step"><div class="step-num">STEP 02</div><div class="step-title">Google's API is called</div><div class="step-desc">The site sends you to Google's auth API to verify your identity.</div></div>
+            <div class="flow-step"><div class="step-num">STEP 03</div><div class="step-title">Google confirms who you are</div><div class="step-desc">Google responds with a secure token — proof you're you.</div></div>
+            <div class="flow-step"><div class="step-num">STEP 04</div><div class="step-title">You're logged in</div><div class="step-desc">The site reads your name/email from the token. No password needed.</div></div>
+          </div>
+          <div class="code-block">
+            <span class="comment">// Google sends back a token with your identity:</span><br>
+            {<br>
+            &nbsp;&nbsp;<span class="key">"sub"</span>: <span class="str">"1234567890"</span>, &nbsp;&nbsp;<span class="comment">// your unique Google ID</span><br>
+            &nbsp;&nbsp;<span class="key">"name"</span>: <span class="str">"Alex Rahman"</span>,<br>
+            &nbsp;&nbsp;<span class="key">"email"</span>: <span class="str">"alex@gmail.com"</span>,<br>
+            &nbsp;&nbsp;<span class="key">"verified"</span>: <span class="val">true</span><br>
+            }
+          </div>
+        </div>
+
+        <div id="demo-payment" class="demo-flow">
+          <div class="flow-steps">
+            <div class="flow-step"><div class="step-num">STEP 01</div><div class="step-title">You hit "Pay Now"</div><div class="step-desc">The website needs to charge your card but it never sees your card details.</div></div>
+            <div class="flow-step"><div class="step-num">STEP 02</div><div class="step-title">Stripe's API is called</div><div class="step-desc">Your card info goes directly to Stripe's secure API — not the website.</div></div>
+            <div class="flow-step"><div class="step-num">STEP 03</div><div class="step-title">Stripe processes payment</div><div class="step-desc">Stripe talks to your bank, handles fraud checks, and confirms.</div></div>
+            <div class="flow-step"><div class="step-num">STEP 04</div><div class="step-title">Response: success or fail</div><div class="step-desc">Stripe tells the site: "Payment successful" — order confirmed!</div></div>
+          </div>
+          <div class="code-block">
+            <span class="comment">// Stripe API response after a payment:</span><br>
+            {<br>
+            &nbsp;&nbsp;<span class="key">"id"</span>: <span class="str">"ch_3Q9abc..."</span>,<br>
+            &nbsp;&nbsp;<span class="key">"status"</span>: <span class="str">"succeeded"</span>,<br>
+            &nbsp;&nbsp;<span class="key">"amount"</span>: <span class="val">2999</span>, &nbsp;<span class="comment">// $29.99 in cents</span><br>
+            &nbsp;&nbsp;<span class="key">"currency"</span>: <span class="str">"usd"</span><br>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: REQUEST / RESPONSE SIMULATOR -->
+  <section>
+    <div class="section-label">03 — Try It</div>
+    <h2>Send a simulated API request</h2>
+    <p>Every API interaction has two parts: a <strong>Request</strong> (what you ask) and a <strong>Response</strong> (what you get back). Hit the button to see it in action.</p>
+
+    <div class="simulator">
+      <div class="sim-panel">
+        <div class="sim-label"><span class="badge req">REQUEST</span> What you send</div>
+        <div class="code-block" style="font-size:12px; background:#0d0d0d;">
+          <span class="key">Method:</span> <span class="str">GET</span><br>
+          <span class="key">URL:</span> <span class="url">/api/user/42</span><br>
+          <span class="key">Headers:</span><br>
+          &nbsp;&nbsp;<span class="key">Authorization:</span> <span class="str">Bearer abc123</span><br>
+          &nbsp;&nbsp;<span class="key">Accept:</span> <span class="str">application/json</span>
+        </div>
+        <button class="send-btn" onclick="simulateRequest()">→ SEND REQUEST</button>
+      </div>
+
+      <div class="sim-panel">
+        <div class="sim-label"><span id="res-badge" class="badge res">RESPONSE</span> What comes back</div>
+        <div class="loading-bar" id="loading-bar"></div>
+        <div class="response-area" id="response-area">
+          <div class="code-block" style="font-size:12px; background:#0d0d0d; color: #3a3a3a;">
+            // Waiting for request...<br>
+            // Hit "Send Request" to see<br>
+            // a response come back.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: KEY CONCEPTS -->
+  <section>
+    <div class="section-label">04 — Key Concepts</div>
+    <h2>The vocabulary you need</h2>
+    <p>Once you understand these terms, you can read any API documentation in the world.</p>
+
+    <div class="concepts">
+      <div class="concept-card">
+        <div class="concept-icon">📤</div>
+        <span class="concept-tag">Request</span>
+        <div class="concept-title">Endpoint</div>
+        <p>The specific URL you send a request to. Like a door into the API. e.g. <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent3)">/api/weather</code></p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔧</div>
+        <span class="concept-tag">Request Type</span>
+        <div class="concept-title">HTTP Methods</div>
+        <p><strong>GET</strong> = fetch data. <strong>POST</strong> = send data. <strong>PUT</strong> = update. <strong>DELETE</strong> = remove.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔑</div>
+        <span class="concept-tag">Security</span>
+        <div class="concept-title">API Key</div>
+        <p>A secret password proving who you are. Keeps APIs from being used by strangers.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">📦</div>
+        <span class="concept-tag">Format</span>
+        <div class="concept-title">JSON</div>
+        <p>The most common format for API data. A structured way to package information — like a labelled box.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🚦</div>
+        <span class="concept-tag">Response</span>
+        <div class="concept-title">Status Codes</div>
+        <p><strong>200</strong> = success. <strong>404</strong> = not found. <strong>401</strong> = unauthorized. <strong>500</strong> = server error.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">📋</div>
+        <span class="concept-tag">Documentation</span>
+        <div class="concept-title">API Docs</div>
+        <p>The "menu" of an API — it tells you what endpoints exist and how to use them.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: REAL-WORLD EXAMPLES -->
+  <section>
+    <div class="section-label">05 — In the Wild</div>
+    <h2>APIs powering the apps you love</h2>
+    <p>Every major app relies on dozens of APIs. None of them build everything from scratch.</p>
+
+    <div class="examples-grid">
+      <div class="ex-card"><div class="ex-emoji">🎵</div><div class="ex-title">Spotify</div><div class="ex-desc">Apps can search songs, control playback, and fetch playlists via Spotify's API</div></div>
+      <div class="ex-card"><div class="ex-emoji">🐦</div><div class="ex-title">Twitter/X</div><div class="ex-desc">Bots, schedulers, and analytics tools all work through Twitter's API</div></div>
+      <div class="ex-card"><div class="ex-emoji">📍</div><div class="ex-title">Uber</div><div class="ex-desc">Uses Google Maps API for routing and Stripe API for payments</div></div>
+      <div class="ex-card"><div class="ex-emoji">🤖</div><div class="ex-title">ChatGPT</div><div class="ex-desc">Claude and ChatGPT both expose APIs so developers can build AI into their own apps</div></div>
+      <div class="ex-card"><div class="ex-emoji">📸</div><div class="ex-title">Instagram</div><div class="ex-desc">Third-party apps can post, read comments, and track analytics via the API</div></div>
+      <div class="ex-card"><div class="ex-emoji">🏦</div><div class="ex-title">Banking</div><div class="ex-desc">Finance apps like Plaid use banking APIs to link your accounts securely</div></div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: QUIZ -->
+  <section>
+    <div class="section-label">06 — Check Your Understanding</div>
+    <h2>Quick quiz</h2>
+    <p>Let's see how much has clicked. Three questions — no pressure.</p>
+
+    <div class="quiz-wrap">
+      <div class="progress-dots" id="progress-dots"></div>
+      <div id="quiz-container"></div>
+      <div class="quiz-complete" id="quiz-complete">
+        <h3>🎉 You got it!</h3>
+        <p>You now understand APIs better than most people who use them every day.<br><br>Next step: try reading a real API's documentation — <a href="https://openweathermap.org/api" target="_blank" style="color:var(--accent)">OpenWeatherMap</a> is a great beginner-friendly one.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>APIs: the invisible glue of the modern internet</p>
+</footer>
+
+<script>
+  // --- Demo switcher ---
+  function showDemo(id) {
+    document.querySelectorAll('.demo-flow').forEach(d => d.classList.remove('visible'));
+    document.querySelectorAll('.api-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('demo-' + id).classList.add('visible');
+    event.target.classList.add('active');
+  }
+
+  // --- Simulator ---
+  const responses = [
+    { status: 200, data: `{\n  "id": 42,\n  "name": "Alex Rahman",\n  "email": "alex@example.com",\n  "plan": "pro",\n  "joined": "2024-03-01"\n}`, ok: true },
+    { status: 404, data: `{\n  "error": "User not found",\n  "code": 404,\n  "message": "No user with ID 42 exists."\n}`, ok: false },
+    { status: 200, data: `{\n  "id": 42,\n  "name": "Alex Rahman",\n  "email": "alex@example.com",\n  "plan": "free",\n  "joined": "2024-03-01"\n}`, ok: true },
+  ];
+  let reqCount = 0;
+
+  function simulateRequest() {
+    const btn = document.querySelector('.send-btn');
+    const bar = document.getElementById('loading-bar');
+    const area = document.getElementById('response-area');
+    const badge = document.getElementById('res-badge');
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    bar.className = 'loading-bar running';
+    bar.style.width = '0%';
+
+    setTimeout(() => bar.style.width = '60%', 100);
+    setTimeout(() => bar.style.width = '90%', 500);
+
+    setTimeout(() => {
+      bar.style.width = '100%';
+      const res = responses[reqCount % responses.length];
+      reqCount++;
+
+      const statusColor = res.ok ? 'var(--green)' : 'var(--red)';
+      const badgeClass = res.ok ? 'res' : 'err';
+
+      badge.className = 'badge ' + badgeClass;
+      badge.textContent = res.ok ? 'RESPONSE' : 'ERROR';
+
+      area.innerHTML = `
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:${statusColor};letter-spacing:2px;margin-bottom:8px;">
+          HTTP ${res.status} ${res.ok ? '✓ OK' : '✗ ERROR'}
+        </div>
+        <div class="code-block" style="font-size:12px;background:#0d0d0d;">
+          <span style="color:var(--muted)">// Response body (JSON):</span><br>
+          <span style="color:${res.ok ? 'var(--green)' : 'var(--red)'}">${res.data}</span>
+        </div>
+      `;
+
+      bar.style.display = 'none';
+      btn.disabled = false;
+      btn.textContent = '→ SEND ANOTHER';
+    }, 900);
+  }
+
+  // --- Quiz ---
+  const questions = [
+    {
+      q: "What does API stand for?",
+      opts: ["Advanced Programming Interface", "Application Programming Interface", "Automated Process Integration", "App Protocol Interface"],
+      correct: 1,
+      feedback: "Correct! Application Programming Interface — though what it *does* matters more than what it stands for."
+    },
+    {
+      q: "Which HTTP method would you use to FETCH data (like getting a user profile)?",
+      opts: ["POST", "DELETE", "GET", "PUT"],
+      correct: 2,
+      feedback: "Exactly — GET is for retrieving data. Think of it as 'getting' something."
+    },
+    {
+      q: "An app uses the Stripe API to process payments. What is Stripe in this analogy?",
+      opts: ["The customer placing an order", "The restaurant kitchen doing the real work", "The menu showing what's available", "The receipt at the end"],
+      correct: 1,
+      feedback: "Yes! Stripe is the kitchen — it handles the complex work (payments) so your app doesn't have to."
+    }
+  ];
+
+  let current = 0;
+  let answered = false;
+
+  function buildDots() {
+    const dots = document.getElementById('progress-dots');
+    dots.innerHTML = questions.map((_, i) =>
+      `<div class="progress-dot ${i === 0 ? 'current' : ''}" id="dot-${i}"></div>`
+    ).join('');
+  }
+
+  function renderQuestion() {
+    const q = questions[current];
+    answered = false;
+    document.getElementById('quiz-container').innerHTML = `
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-opts">
+        ${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">NEXT QUESTION →</button>
+    `;
+  }
+
+  function answer(idx) {
+    if (answered) return;
+    answered = true;
+    const q = questions[current];
+    const opts = document.querySelectorAll('.quiz-opt');
+    opts[idx].classList.add(idx === q.correct ? 'correct' : 'wrong');
+    if (idx !== q.correct) opts[q.correct].classList.add('correct');
+    opts.forEach(o => o.disabled = true);
+    document.getElementById('quiz-feedback').textContent = q.feedback;
+    const nb = document.getElementById('next-btn');
+    if (nb) nb.classList.add('show');
+    if (current === questions.length - 1 && nb) nb.textContent = 'SEE RESULTS →';
+    document.getElementById(`dot-${current}`).classList.add('done');
+    document.getElementById(`dot-${current}`).classList.remove('current');
+  }
+
+  function nextQuestion() {
+    current++;
+    if (current >= questions.length) {
+      document.getElementById('quiz-container').style.display = 'none';
+      document.getElementById('quiz-complete').style.display = 'block';
+    } else {
+      document.getElementById(`dot-${current}`).classList.add('current');
+      renderQuestion();
+    }
+  }
+
+  buildDots();
+  renderQuestion();
+</script>
+</body>
+</html>
