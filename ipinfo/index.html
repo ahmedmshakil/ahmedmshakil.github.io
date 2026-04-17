@@ -1,33 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Information Report</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png">
-    <link rel="stylesheet" href="../css/ipinfo.css">
-    <script src="../js/ipinfo.js" defer></script>
-</head>
-<body>
-    <div class="container">
-        <div class="watermark-header">
-            <div class="logo">
-                <div class="logo-icon">🔒</div>
-                <h1>IPinfo Report</h1>
-            </div>
-            <div class="date-badge" id="current-date"></div>
-        </div>
-        
-        <div class="content" id="content">
-            <div class="error-message">Loading IP information...</div>
-        </div>
-        
-        <div class="footer">
-            <div class="website">shakilahmed.live</div>
-            <div class="author" id="footer-text"></div>
-        </div>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IPinfo Report | Shakil Ahmed</title>
+    <link rel="canonical" href="https://shakilahmed.tech/ipinfo/" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon/favicon-16x16.png" />
+    <link rel="stylesheet" href="./ipinfo.css" />
+    <script src="./ipinfo.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <main class="container">
+        <header class="report-header">
+          <a class="home-button" href="../" aria-label="Go to homepage">
+            <span class="home-button-icon">←</span>
+            <span>Home</span>
+          </a>
 
-</body>
+          <div class="report-title-wrap">
+            <h1>IPinfo Report</h1>
+          </div>
+
+          <div class="date-badge" id="current-date" aria-label="Report date"></div>
+        </header>
+
+        <section class="content" id="content">
+          <div class="message-card card loading-state">
+            <div class="loading-indicator" aria-hidden="true"></div>
+            <p>Loading IP information...</p>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <p class="author">© 2026 Shakil Ahmed - All Rights Reserved</p>
+        </footer>
+      </main>
+    </div>
+  </body>
 </html>

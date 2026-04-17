@@ -5,7 +5,7 @@
 
 document.addEventListener("DOMContentLoaded", function () {
   const IP_STORAGE_KEY = "ipinfo_data";
-  const IP_INFO_PAGE_URL = "ipinfo/index.html";
+  const IP_INFO_PAGE_URL = "ipinfo";
   const TERMINAL_FRAMES = [
     {
       command: "whoami",
