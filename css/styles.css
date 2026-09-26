@@ -397,7 +397,7 @@ section {
     background: 
         radial-gradient(circle at 10% 20%, rgba(50, 108, 229, 0.2) 0%, rgba(13, 17, 23, 0) 50%),
         radial-gradient(circle at 90% 80%, rgba(76, 175, 80, 0.2) 0%, rgba(13, 17, 23, 0) 50%),
-        url('../images/bg-green.jpg');
+        url('../images/bg-green.webp');
 
     background-size: cover;  /* Ensure the image covers the section */
     background-position: center;
@@ -2039,4 +2039,57 @@ body.modal-open {
     .footer-social a {
         font-size: 1rem;
     }
+}
+
+/* ===== SEO / accessibility helpers ===== */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 3000;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--terminal-green);
+    color: var(--primary-bg);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    transform: translateY(-150%);
+    transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+    transform: none;
+    color: var(--primary-bg);
+}
+
+/* Marquee only animates once JS has added the duplicate set. */
+.tool-track:not(.is-looping) {
+    animation: none;
+}
+
+/* Links inside text shouldn't rely on colour alone. */
+.about-text p a,
+.edu-school a,
+.contact-item p a {
+    text-decoration: underline;
+    text-decoration-color: rgba(36, 150, 237, 0.45);
+    text-underline-offset: 3px;
+}
+
+.about-text p a:hover,
+.edu-school a:hover,
+.contact-item p a:hover {
+    text-decoration-color: currentColor;
 }

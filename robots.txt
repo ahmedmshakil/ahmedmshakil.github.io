@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /ipinfo/
+
+Sitemap: https://shakilahmed.tech/sitemap.xml

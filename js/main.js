@@ -306,6 +306,19 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   */
 
+  // Duplicate the logo set at runtime for a seamless marquee loop.
+  // Keeping only one set in the HTML avoids duplicate images for crawlers.
+  function initializeToolMarquee() {
+    const track = document.querySelector(".tool-track");
+    const set = track && track.querySelector(".tool-set");
+    if (!set) return;
+    const clone = set.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    clone.querySelectorAll("img").forEach((img) => img.setAttribute("alt", ""));
+    track.appendChild(clone);
+    track.classList.add("is-looping");
+  }
+
   // Swap to the bundled icon if an external brand logo fails to load.
   function initializeToolLogoFallback() {
     document.querySelectorAll("img[data-fallback]").forEach((img) => {
@@ -405,6 +418,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeIpInfo();
   initializeNavScroll();
   initializeResumeModal();
+  initializeToolMarquee();
   initializeToolLogoFallback();
   initializeMobileNavigation();
   initializeSmoothScrolling();
