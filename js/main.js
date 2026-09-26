@@ -115,6 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
     menuToggle.addEventListener("click", function () {
       menuToggle.classList.toggle("active");
       navMenu.classList.toggle("active");
+      menuToggle.setAttribute("aria-expanded", String(navMenu.classList.contains("active")));
 
       const bars = document.querySelectorAll(".bar");
       if (menuToggle.classList.contains("active")) {
@@ -197,11 +198,11 @@ document.addEventListener("DOMContentLoaded", function () {
   function initializeSkillAnimation() {
     const skillCategories = document.querySelectorAll(".skill-category");
 
-    if (!skillCategories.length || typeof IntersectionObserver === "undefined") {
+    if (!skillCategories.length || typeof Intersectiondevopsr === "undefined") {
       return;
     }
 
-    const observer = new IntersectionObserver(
+    const devopsr = new Intersectiondevopsr(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -217,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
       category.style.opacity = 0;
       category.style.transform = "translateY(20px)";
       category.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-      observer.observe(category);
+      devopsr.devops(category);
     });
   }
 
@@ -267,7 +268,46 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Swap to the bundled icon if an external brand logo fails to load.
+  function initializeToolLogoFallback() {
+    document.querySelectorAll("img[data-fallback]").forEach((img) => {
+      const useFallback = () => {
+        const fallback = img.dataset.fallback;
+        if (!fallback || img.dataset.fallbackUsed === "true") return;
+        img.dataset.fallbackUsed = "true";
+        img.src = fallback;
+      };
+      img.addEventListener("error", useFallback);
+      // The image may have already failed before this script ran.
+      if (img.complete && img.naturalWidth === 0) useFallback();
+    });
+  }
+
+  // Tighten the floating header once the page scrolls.
+  function initializeNavScroll() {
+    const navWrap = document.querySelector("[data-nav]");
+    if (!navWrap) return;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      navWrap.classList.toggle("scrolled", window.scrollY > 32);
+    };
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+    update();
+  }
+
   initializeIpInfo();
+  initializeNavScroll();
+  initializeToolLogoFallback();
   initializeMobileNavigation();
   initializeSmoothScrolling();
   initializeTerminal();
