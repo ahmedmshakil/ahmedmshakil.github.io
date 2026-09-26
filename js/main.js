@@ -198,16 +198,17 @@ document.addEventListener("DOMContentLoaded", function () {
   function initializeSkillAnimation() {
     const skillCategories = document.querySelectorAll(".skill-category");
 
-    if (!skillCategories.length || typeof Intersectiondevopsr === "undefined") {
+    if (!skillCategories.length || typeof IntersectionObserver === "undefined") {
       return;
     }
 
-    const devopsr = new Intersectiondevopsr(
+    // Fade cards in with a class (not inline styles) so the CSS hover lift keeps working.
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.style.opacity = 1;
-            entry.target.style.transform = "translateY(0)";
+            entry.target.classList.remove("skill-hidden");
+            observer.unobserve(entry.target);
           }
         });
       },
@@ -215,10 +216,8 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     skillCategories.forEach((category) => {
-      category.style.opacity = 0;
-      category.style.transform = "translateY(20px)";
-      category.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-      devopsr.devops(category);
+      category.classList.add("skill-hidden");
+      observer.observe(category);
     });
   }
 
@@ -305,8 +304,68 @@ document.addEventListener("DOMContentLoaded", function () {
     update();
   }
 
+  // Resume viewer popup: opens the PDF in a modal with open/download actions.
+  function initializeResumeModal() {
+    const modal = document.getElementById("resume-modal");
+    const triggers = document.querySelectorAll("[data-resume-open]");
+    if (!modal || !triggers.length) return;
+
+    const frame = modal.querySelector("[data-resume-frame]");
+    const closeButtons = modal.querySelectorAll("[data-resume-close]");
+    const panel = modal.querySelector(".resume-modal__panel");
+    let lastFocused = null;
+
+    const open = (event) => {
+      event.preventDefault();
+      lastFocused = document.activeElement;
+      // Load the PDF only the first time the viewer is opened.
+      if (frame && !frame.getAttribute("src")) {
+        frame.setAttribute("src", frame.dataset.src);
+      }
+      modal.hidden = false;
+      document.body.classList.add("modal-open");
+      requestAnimationFrame(() => modal.classList.add("is-open"));
+      modal.querySelector(".resume-modal__close")?.focus();
+    };
+
+    const close = () => {
+      if (modal.hidden) return;
+      modal.classList.remove("is-open");
+      document.body.classList.remove("modal-open");
+      setTimeout(() => {
+        modal.hidden = true;
+      }, 200);
+      lastFocused?.focus();
+    };
+
+    triggers.forEach((trigger) => trigger.addEventListener("click", open));
+    closeButtons.forEach((button) => button.addEventListener("click", close));
+
+    document.addEventListener("keydown", (event) => {
+      if (modal.hidden) return;
+      if (event.key === "Escape") {
+        close();
+        return;
+      }
+      // Keep keyboard focus inside the popup.
+      if (event.key === "Tab" && panel) {
+        const focusable = panel.querySelectorAll("a[href], button:not([disabled]), iframe");
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+  }
+
   initializeIpInfo();
   initializeNavScroll();
+  initializeResumeModal();
   initializeToolLogoFallback();
   initializeMobileNavigation();
   initializeSmoothScrolling();

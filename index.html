@@ -97,8 +97,7 @@
           </div>
           <div class="hero-buttons">
             <a href="#contact" class="btn primary-btn">Get in Touch</a>
-            <a href="#" class="btn secondary-btn" download>Download Resume</a>
-            <!-- <a href="../cv-pdf/shakil-ahmed-cv-v13.pdf" class="btn secondary-btn" download>Download Resume</a> -->
+            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="btn secondary-btn" data-resume-open aria-haspopup="dialog">View Resume</a>
           </div>
         </div>
 
@@ -222,7 +221,7 @@
         <h2 class="section-title">Education</h2>
         <div class="about-text">
           <div class="edu-entry">
-            <h3 class="edu-degree">Bachelor of Computer Science and Engineering</h3>
+            <h3 class="edu-degree">Bachelor of Science in Computer Science </h3>
             <p class="edu-school">
               <a href="https://iub.ac.bd/" target="_blank" rel="noopener noreferrer">Independent University, Bangladesh (IUB)</a>
             </p>
@@ -829,6 +828,49 @@
         </div>
       </div>
     </footer>
+
+
+    <!-- Resume viewer popup -->
+    <div class="resume-modal" id="resume-modal" role="dialog" aria-modal="true" aria-labelledby="resume-modal-title" hidden>
+      <div class="resume-modal__backdrop" data-resume-close></div>
+      <div class="resume-modal__panel">
+        <div class="resume-modal__header">
+          <div class="terminal-buttons" aria-hidden="true">
+            <span class="terminal-button red"></span>
+            <span class="terminal-button yellow"></span>
+            <span class="terminal-button green"></span>
+          </div>
+          <h2 class="resume-modal__title" id="resume-modal-title">shakil-ahmed-resume.pdf</h2>
+          <div class="resume-modal__actions">
+            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="resume-modal__btn" target="_blank" rel="noopener noreferrer">
+              <i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Open</span>
+            </a>
+            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="resume-modal__btn resume-modal__btn--primary" download="Shakil-Ahmed-Resume.pdf">
+              <i class="fas fa-download" aria-hidden="true"></i><span>Download</span>
+            </a>
+            <button type="button" class="resume-modal__close" data-resume-close aria-label="Close resume viewer">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div class="resume-modal__body">
+          <iframe
+            class="resume-modal__frame"
+            data-resume-frame
+            data-src="cv-pdf/shakil-ahmed-resume-March-2026.pdf#view=FitH"
+            title="Shakil Ahmed resume"></iframe>
+          <!-- Phones can't show PDFs inline, so offer the actions instead -->
+          <div class="resume-modal__fallback">
+            <i class="fas fa-file-pdf" aria-hidden="true"></i>
+            <p>Preview isn't available on this device.</p>
+            <div class="resume-modal__fallback-actions">
+              <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="btn secondary-btn" target="_blank" rel="noopener noreferrer">Open Resume</a>
+              <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="btn primary-btn" download="Shakil-Ahmed-Resume.pdf">Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="js/main.js"></script>
     <script src="alert/blog-alert.js"></script>
