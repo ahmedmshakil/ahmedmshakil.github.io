@@ -221,51 +221,90 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  /* EmailJS contact form (disabled: visitors email info@shakilahmed.tech directly)
   function initializeContactForm() {
-    emailjs.init("YJZu6V-1TBhEYFccE"); //currently on (Shakil)_Replace with YOUR_PUBLIC_KEY
+    const EMAILJS_PUBLIC_KEY = "";
+    const EMAILJS_SERVICE_ID = "";
+    const EMAILJS_TEMPLATE_ID = "";
 
     const contactForm = document.getElementById("contactForm");
     if (!contactForm) {
       return;
     }
 
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    const statusElement = contactForm.querySelector(".form-status");
+    const honeypot = contactForm.querySelector(".form-honeypot");
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // The EmailJS script comes from a CDN; an ad blocker can stop it loading.
+    const emailjsReady = typeof emailjs !== "undefined";
+    if (emailjsReady) {
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+
+    function setStatus(message, type) {
+      if (!statusElement) return;
+      statusElement.textContent = message;
+      statusElement.className = `form-status${type ? ` form-status--${type}` : ""}`;
+    }
+
     contactForm.addEventListener("submit", function (event) {
       event.preventDefault();
 
-      const formValues = {
-        from_name: document.getElementById("name").value,
-        from_email: document.getElementById("email").value,
-        subject: document.getElementById("subject").value,
-        message: document.getElementById("message").value,
+      const email = document.getElementById("email").value.trim();
+      const subject = document.getElementById("subject").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (honeypot && honeypot.value) {
+        return;
+      }
+
+      if (!emailPattern.test(email)) {
+        setStatus("Please enter a valid email address.", "error");
+        document.getElementById("email").focus();
+        return;
+      }
+
+      if (!subject || !message) {
+        setStatus("Please fill in the subject and message.", "error");
+        return;
+      }
+
+      if (!emailjsReady) {
+        setStatus("Couldn't load the mail service. Please email me directly at ahmedmshakil1@gmail.com.", "error");
+        return;
+      }
+
+      // These names must match the {{variables}} used in the EmailJS template.
+      const templateParams = {
+        from_email: email,
+        reply_to: email,
+        subject: subject,
+        message: message,
       };
 
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending...";
+      setStatus("", "");
+
       emailjs
-        .send("service_tq5blnq", "template_8wmpcf9", formValues)
-        .then(function (response) {
-          console.log("Email sent successfully!", response);
-
-          const successMessage = document.createElement("div");
-          successMessage.className = "success-message";
-          successMessage.textContent = "Thank you for your message! I will get back to you soon.";
-          successMessage.style.color = "var(--terminal-green)";
-          successMessage.style.padding = "15px";
-          successMessage.style.marginTop = "15px";
-          successMessage.style.backgroundColor = "rgba(76, 175, 80, 0.1)";
-          successMessage.style.borderRadius = "4px";
-
-          contactForm.appendChild(successMessage);
+        .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(function () {
           contactForm.reset();
-
-          setTimeout(() => {
-            successMessage.remove();
-          }, 5000);
+          setStatus("Thanks for your message! I'll get back to you soon.", "success");
         })
         .catch(function (error) {
           console.error("Email sending failed!", error);
-          alert("Failed to send message. Please try again later.");
+          setStatus("Sorry, the message couldn't be sent. Please try again or email me directly at ahmedmshakil1@gmail.com.", "error");
+        })
+        .finally(function () {
+          submitButton.disabled = false;
+          submitButton.textContent = "Send Message";
         });
     });
   }
+  */
 
   // Swap to the bundled icon if an external brand logo fails to load.
   function initializeToolLogoFallback() {
@@ -371,5 +410,5 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeSmoothScrolling();
   initializeTerminal();
   initializeSkillAnimation();
-  initializeContactForm();
+  // initializeContactForm(); // EmailJS disabled
 });

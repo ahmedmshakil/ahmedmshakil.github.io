@@ -1912,3 +1912,91 @@ body.modal-open {
         transition: none;
     }
 }
+
+/* ===== Contact form states ===== */
+.form-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.contact-form form {
+    position: relative;
+}
+
+.contact-form button[disabled] {
+    opacity: 0.7;
+    cursor: wait;
+    transform: none;
+}
+
+.form-status {
+    margin: 15px 0 0;
+    font-size: 0.9rem;
+}
+
+.form-status:empty {
+    display: none;
+}
+
+.form-status--success,
+.form-status--error {
+    padding: 12px 15px;
+    border-radius: 4px;
+}
+
+.form-status--success {
+    color: var(--terminal-green);
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.form-status--error {
+    color: #ff7b72;
+    background: rgba(255, 123, 114, 0.1);
+}
+
+/* ===== Contact: direct email card (replaces the EmailJS form) ===== */
+.contact-mail {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+}
+
+.contact-mail__icon {
+    font-size: 1.8rem;
+    color: var(--terminal-green);
+}
+
+.contact-mail h3 {
+    margin: 0;
+}
+
+.contact-mail p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.contact-mail__address {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--terminal-green);
+    word-break: break-all;
+}
+
+.contact-mail__address:hover {
+    color: #5fc463;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.contact-mail__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
