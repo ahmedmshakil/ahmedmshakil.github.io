@@ -1,48 +1,26 @@
-# Personal Portfolio
+<div align="center">
+
+# Md Shakil Ahmed · Portfolio
+
+[![Portfolio](https://img.shields.io/badge/Portfolio-shakilahmed.tech-00c853?style=for-the-badge&logo=googlechrome&logoColor=white)](https://shakilahmed.tech/)
+[![Email](https://img.shields.io/badge/Email-info%40shakilahmed.tech-161b22?style=for-the-badge&logo=maildotru&logoColor=white)](mailto:info@shakilahmed.tech)
+
+<br />
+
+<a href="https://shakilahmed.tech/">
+  <img src="images/readme/portfolio-preview.jpg" alt="Screenshot of shakilahmed.tech" width="100%" />
+</a>
+
+<br />
+<br />
+
+## Author
 
 
-## 🌐 Live Website
 
-Visit my portfolio at: [shakilahmed.tech](https://shakilahmed.tech/)
+### Md Shakil Ahmed
 
-## 🏗️ Portfolio Structure
+[![GitHub](https://img.shields.io/badge/GitHub-ahmedmshakil-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/ahmedmshakil)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-ahmedmshakil-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/ahmedmshakil)
 
-```
-portfolio/
-├── css/
-│   └── styles.css          # Main stylesheet
-├── js/
-│   └── main.js            # JavaScript functionalitys
-├── images/                # Image assets
-│   ├── favicon/          # Favicon files
-│   └── ...
-├── certificates/         # Certification images
-├── cv-pdf/              # Resume/CV files
-└── index.html           # Main HTML file
-```
-
-## 🚀 Getting Started
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/ahmedmshakil/ahmedmshakil.github.io.git
-   ```
-
-2. Navigate to the project directory:
-   ```bash
-   cd ahmedmshakil.github.io
-   ```
-3. Make sure you are on version4 branch.
-   ```bash
-   git checkout version4
-   ``` 
-
-4. Open `index.html` in your browser to view the website locally.
-
-
-## 👤 Author
-
-**Shakil Ahmed**
-- GitHub: [@ahmedmshakil](https://github.com/ahmedmshakil)
-- LinkedIn: [ahmedmshakil](https://linkedin.com/in/ahmedmshakil)
-
+</div>
