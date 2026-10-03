@@ -8,6 +8,7 @@
   "use strict";
 
   var DELAY_MS = 3000;
+  var VISIBLE_MS = 10000;
   var DISMISS_KEY = "blog_alert_dismissed";
   var DISMISS_TTL = 24 * 60 * 60 * 1000;
 
@@ -20,7 +21,10 @@
     stack = document.createElement("div");
     stack.id = "notif-stack";
     document.body.appendChild(stack);
+  }
 
+  /* Keyed by id: whichever alert script runs first injects the stack styles. */
+  if (!document.getElementById("notif-stack-style")) {
     var stackCss = [
       "#notif-stack{",
         "position:fixed;bottom:24px;right:24px;z-index:9999;",
@@ -31,10 +35,11 @@
       "}",
       "#notif-stack > *{pointer-events:auto;}",
       "@media(max-width:480px){",
-        "#notif-stack{right:12px;left:12px;bottom:16px;align-items:stretch;}",
+        "#notif-stack{right:10px;bottom:10px;gap:8px;}",
       "}"
     ].join("\n");
     var ss = document.createElement("style");
+    ss.id = "notif-stack-style";
     ss.textContent = stackCss;
     document.head.appendChild(ss);
   }
@@ -120,7 +125,19 @@
       "transform:translateY(-1px);",
     "}",
 
-    "@media(max-width:480px){.blog-alert{width:100%;}}"
+    /* Phones: same card, tighter type and spacing so it covers far less screen. */
+    "@media(max-width:480px){",
+      ".blog-alert{width:50vw;min-width:170px;border-radius:8px;}",
+      ".blog-alert-bar{padding:4px 9px;}",
+      ".blog-alert-dots span{width:7px;height:7px;}",
+      ".blog-alert-bar-title{font-size:.58rem;}",
+      ".blog-alert-close{font-size:.9rem;}",
+      ".blog-alert-body{padding:8px 10px 9px;}",
+      ".blog-alert-prompt{font-size:.64rem;margin-bottom:3px;}",
+      ".blog-alert-msg{font-size:.66rem;line-height:1.4;min-height:0;margin-bottom:7px;}",
+      ".ba-cursor{width:5px;height:10px;}",
+      ".blog-alert-btn{padding:4px 11px;font-size:.64rem;border-radius:5px;}",
+    "}"
   ].join("\n");
 
   var styleEl = document.createElement("style");
@@ -206,5 +223,5 @@
     if (wrap.classList.contains("show") && !wrap.classList.contains("hide")) {
       dismiss();
     }
-  }, DELAY_MS + 20000);
+  }, DELAY_MS + VISIBLE_MS);
 })();

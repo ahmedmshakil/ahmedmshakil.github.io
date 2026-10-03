@@ -8,6 +8,7 @@
   "use strict";
 
   var DELAY_MS = 5000; // 3s (blog) + 2s gap
+  var VISIBLE_MS = 10000;
   var DISMISS_KEY = "keylm_alert_dismissed";
   var DISMISS_TTL = 24 * 60 * 60 * 1000;
 
@@ -20,6 +21,27 @@
     stack = document.createElement("div");
     stack.id = "notif-stack";
     document.body.appendChild(stack);
+  }
+
+  /* The blog alert bails out early once dismissed, so carry the stack styles here too. */
+  if (!document.getElementById("notif-stack-style")) {
+    var stackCss = [
+      "#notif-stack{",
+        "position:fixed;bottom:24px;right:24px;z-index:9999;",
+        "display:flex;flex-direction:column-reverse;gap:12px;",
+        "align-items:flex-end;",
+        "pointer-events:none;",
+        "transition:all .5s cubic-bezier(.22,1,.36,1);",
+      "}",
+      "#notif-stack > *{pointer-events:auto;}",
+      "@media(max-width:480px){",
+        "#notif-stack{right:10px;bottom:10px;gap:8px;}",
+      "}"
+    ].join("\n");
+    var ss = document.createElement("style");
+    ss.id = "notif-stack-style";
+    ss.textContent = stackCss;
+    document.head.appendChild(ss);
   }
 
   /* ---------- CSS ---------- */
@@ -103,7 +125,19 @@
       "transform:translateY(-1px);",
     "}",
 
-    "@media(max-width:480px){.keylm-alert{width:100%;}}"
+    /* Phones: same card, tighter type and spacing so it covers far less screen. */
+    "@media(max-width:480px){",
+      ".keylm-alert{width:50vw;min-width:170px;border-radius:8px;}",
+      ".keylm-alert-bar{padding:4px 9px;}",
+      ".keylm-alert-dots span{width:7px;height:7px;}",
+      ".keylm-alert-bar-title{font-size:.58rem;}",
+      ".keylm-alert-close{font-size:.9rem;}",
+      ".keylm-alert-body{padding:8px 10px 9px;}",
+      ".keylm-alert-prompt{font-size:.64rem;margin-bottom:3px;}",
+      ".keylm-alert-msg{font-size:.66rem;line-height:1.4;min-height:0;margin-bottom:7px;}",
+      ".ka-cursor{width:5px;height:10px;}",
+      ".keylm-alert-btn{padding:4px 11px;font-size:.64rem;border-radius:5px;}",
+    "}"
   ].join("\n");
 
   var styleEl = document.createElement("style");
@@ -189,5 +223,5 @@
     if (wrap.classList.contains("show") && !wrap.classList.contains("hide")) {
       dismiss();
     }
-  }, DELAY_MS + 20000);
+  }, DELAY_MS + VISIBLE_MS);
 })();
