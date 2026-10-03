@@ -1,5 +1,27 @@
-# ubuntu 22.04(LTS)
-
+# OS and editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp
 .vscode/
+.idea/
+
+# Secrets and local configuration
+.env
+.env.*
+*.pem
+*.key
+*.p12
+secrets.json
+
+# Dependencies, build output and logs
+node_modules/
+dist/
+*.log
+
+# Private drafts and local experiments
 /ipHost
 personal_file_unedited
+*.local.*
+/private/
