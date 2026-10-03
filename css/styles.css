@@ -1705,12 +1705,12 @@ section {
     text-decoration-color: var(--terminal-green);
 }
 
-/* ===== Resume Viewer Modal ===== */
+/* ===== Popup shell: resume viewer, contact card and IP report ===== */
 body.modal-open {
     overflow: hidden;
 }
 
-.resume-modal {
+.site-modal {
     position: fixed;
     inset: 0;
     z-index: 2000;
@@ -1720,11 +1720,11 @@ body.modal-open {
     padding: 24px;
 }
 
-.resume-modal[hidden] {
+.site-modal[hidden] {
     display: none;
 }
 
-.resume-modal__backdrop {
+.site-modal__backdrop {
     position: absolute;
     inset: 0;
     background: rgba(5, 8, 12, 0.72);
@@ -1734,7 +1734,7 @@ body.modal-open {
     transition: opacity 0.2s ease;
 }
 
-.resume-modal__panel {
+.site-modal__panel {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1750,16 +1750,16 @@ body.modal-open {
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.resume-modal.is-open .resume-modal__backdrop {
+.site-modal.is-open .site-modal__backdrop {
     opacity: 1;
 }
 
-.resume-modal.is-open .resume-modal__panel {
+.site-modal.is-open .site-modal__panel {
     opacity: 1;
     transform: none;
 }
 
-.resume-modal__header {
+.site-modal__header {
     display: flex;
     align-items: center;
     gap: 14px;
@@ -1768,11 +1768,11 @@ body.modal-open {
     border-bottom: 1px solid var(--border-color);
 }
 
-.resume-modal__header .terminal-buttons {
+.site-modal__header .terminal-buttons {
     margin-right: 0;
 }
 
-.resume-modal__title {
+.site-modal__title {
     flex: 1;
     min-width: 0;
     margin: 0;
@@ -1784,14 +1784,14 @@ body.modal-open {
     color: var(--text-secondary);
 }
 
-.resume-modal__actions {
+.site-modal__actions {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.resume-modal__btn,
-.resume-modal__close {
+.site-modal__btn,
+.site-modal__close {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1808,36 +1808,57 @@ body.modal-open {
     transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
-.resume-modal__btn:hover,
-.resume-modal__close:hover {
+/* The flex display above would otherwise beat the [hidden] default. */
+.site-modal__btn[hidden] {
+    display: none;
+}
+
+.site-modal__btn:hover,
+.site-modal__close:hover {
     border-color: var(--terminal-green);
     color: var(--terminal-green);
 }
 
-.resume-modal__btn--primary {
+.site-modal__btn--primary {
     border-color: var(--terminal-green);
     background: var(--terminal-green);
     color: var(--primary-bg);
     font-weight: 700;
 }
 
-.resume-modal__btn--primary:hover {
+.site-modal__btn--primary:hover {
     background: #5fc463;
     color: var(--primary-bg);
 }
 
-.resume-modal__close {
+.site-modal__close {
     width: 34px;
     padding: 0;
 }
 
-.resume-modal__body {
+/* Panels that hold plain content instead of a PDF size to their text. */
+.site-modal__panel--compact {
+    width: min(620px, 100%);
+    height: auto;
+    max-height: min(88vh, 900px);
+}
+
+.site-modal__body {
     position: relative;
     flex: 1;
+    min-height: 0;
+}
+
+.site-modal__body--pdf {
     background: #525659;
 }
 
-.resume-modal__frame {
+.site-modal__body--scroll {
+    overflow-y: auto;
+    padding: 26px;
+}
+
+.site-modal__frame {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -1846,7 +1867,7 @@ body.modal-open {
     border: 0;
 }
 
-.resume-modal__fallback {
+.site-modal__fallback {
     position: absolute;
     inset: 0;
     display: none;
@@ -1860,12 +1881,12 @@ body.modal-open {
     color: var(--text-secondary);
 }
 
-.resume-modal__fallback i {
+.site-modal__fallback i {
     font-size: 3rem;
     color: var(--terminal-green);
 }
 
-.resume-modal__fallback-actions {
+.site-modal__fallback-actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -1874,41 +1895,121 @@ body.modal-open {
 
 /* Phones and tablets: no inline PDF, show the fallback card instead. */
 @media (max-width: 768px) and (pointer: coarse) {
-    .resume-modal__frame {
+    .site-modal__frame {
         display: none;
     }
 
-    .resume-modal__fallback {
+    .site-modal__fallback {
         display: flex;
     }
 
-    .resume-modal__panel {
+    .site-modal__panel {
         height: auto;
         min-height: 320px;
     }
 }
 
 @media (max-width: 560px) {
-    .resume-modal {
+    .site-modal {
         padding: 12px;
     }
 
-    .resume-modal__header .terminal-buttons,
-    .resume-modal__btn span {
+    .site-modal__header .terminal-buttons,
+    .site-modal__btn span {
         display: none;
     }
 
-    .resume-modal__btn {
+    .site-modal__btn {
         width: 34px;
         padding: 0;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .resume-modal__backdrop,
-    .resume-modal__panel {
+    .site-modal__backdrop,
+    .site-modal__panel {
         transition: none;
     }
+}
+
+/* ===== IP report popup ===== */
+.ip-report {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ip-report__spotlight {
+    padding: 18px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--secondary-bg);
+}
+
+.ip-report__kicker {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--terminal-green);
+}
+
+.ip-report__ip {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    font-weight: 700;
+    word-break: break-all;
+    color: var(--text-primary);
+}
+
+.ip-report__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+}
+
+.ip-report__item {
+    padding: 12px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--secondary-bg);
+}
+
+.ip-report__item dt {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.ip-report__item dd {
+    margin: 4px 0 0;
+    font-size: 0.92rem;
+    word-break: break-word;
+    color: var(--text-primary);
+}
+
+.ip-report__json {
+    margin: 0;
+    max-height: 240px;
+    overflow: auto;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--primary-bg);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.ip-report__note {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
 }
 
 /* ===== Contact form states ===== */

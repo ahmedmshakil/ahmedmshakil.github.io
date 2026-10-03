@@ -138,7 +138,7 @@
             <div class="ip-display" title="Detected IP address">
               <span class="ip-dot" aria-hidden="true"></span>
               <span class="ip-label">Detected IP:</span>
-              <a href="#" id="ip-link"><span id="user-ip">Loading...</span></a>
+              <a href="ipinfo" id="ip-link" data-modal-open="ip-modal" aria-haspopup="dialog"><span id="user-ip">Loading...</span></a>
             </div>
             <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
               <span class="bar"></span>
@@ -190,8 +190,8 @@
             </div>
           </div>
           <div class="hero-buttons">
-            <a href="#contact" class="btn primary-btn">Get in Touch</a>
-            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="btn secondary-btn" data-resume-open aria-haspopup="dialog">View Resume</a>
+            <a href="#contact" class="btn primary-btn" data-modal-open="contact-modal" aria-haspopup="dialog">Get in Touch</a>
+            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="btn secondary-btn" data-modal-open="resume-modal" aria-haspopup="dialog">View Resume</a>
           </div>
         </div>
 
@@ -927,43 +927,117 @@
 
 
     <!-- Resume viewer popup -->
-    <div class="resume-modal" id="resume-modal" role="dialog" aria-modal="true" aria-labelledby="resume-modal-title" hidden>
-      <div class="resume-modal__backdrop" data-resume-close></div>
-      <div class="resume-modal__panel">
-        <div class="resume-modal__header">
+    <div class="site-modal" id="resume-modal" role="dialog" aria-modal="true" aria-labelledby="resume-modal-title" hidden>
+      <div class="site-modal__backdrop" data-modal-close></div>
+      <div class="site-modal__panel">
+        <div class="site-modal__header">
           <div class="terminal-buttons" aria-hidden="true">
             <span class="terminal-button red"></span>
             <span class="terminal-button yellow"></span>
             <span class="terminal-button green"></span>
           </div>
-          <h2 class="resume-modal__title" id="resume-modal-title">shakil-ahmed-resume.pdf</h2>
-          <div class="resume-modal__actions">
-            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="resume-modal__btn" target="_blank" rel="noopener noreferrer">
+          <h2 class="site-modal__title" id="resume-modal-title">shakil-ahmed-resume.pdf</h2>
+          <div class="site-modal__actions">
+            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="site-modal__btn" target="_blank" rel="noopener noreferrer">
               <i class="fas fa-external-link-alt" aria-hidden="true"></i><span>Open</span>
             </a>
-            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="resume-modal__btn resume-modal__btn--primary" download="Shakil-Ahmed-Resume.pdf">
+            <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="site-modal__btn site-modal__btn--primary" download="Shakil-Ahmed-Resume.pdf">
               <i class="fas fa-download" aria-hidden="true"></i><span>Download</span>
             </a>
-            <button type="button" class="resume-modal__close" data-resume-close aria-label="Close resume viewer">
+            <button type="button" class="site-modal__close" data-modal-close aria-label="Close resume viewer">
               <i class="fas fa-times" aria-hidden="true"></i>
             </button>
           </div>
         </div>
-        <div class="resume-modal__body">
+        <div class="site-modal__body site-modal__body--pdf">
           <iframe
-            class="resume-modal__frame"
-            data-resume-frame
+            class="site-modal__frame"
+            data-modal-frame
             data-src="cv-pdf/shakil-ahmed-resume-March-2026.pdf#view=FitH"
             title="Shakil Ahmed resume"></iframe>
           <!-- Phones can't show PDFs inline, so offer the actions instead -->
-          <div class="resume-modal__fallback">
+          <div class="site-modal__fallback">
             <i class="fas fa-file-pdf" aria-hidden="true"></i>
             <p>Preview isn't available on this device.</p>
-            <div class="resume-modal__fallback-actions">
+            <div class="site-modal__fallback-actions">
               <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="btn secondary-btn" target="_blank" rel="noopener noreferrer">Open Resume</a>
               <a href="cv-pdf/shakil-ahmed-resume-March-2026.pdf" class="btn primary-btn" download="Shakil-Ahmed-Resume.pdf">Download</a>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- "Let's talk" popup, opened from the hero Get in Touch button -->
+    <div class="site-modal" id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title" hidden>
+      <div class="site-modal__backdrop" data-modal-close></div>
+      <div class="site-modal__panel site-modal__panel--compact">
+        <div class="site-modal__header">
+          <div class="terminal-buttons" aria-hidden="true">
+            <span class="terminal-button red"></span>
+            <span class="terminal-button yellow"></span>
+            <span class="terminal-button green"></span>
+          </div>
+          <h2 class="site-modal__title" id="contact-modal-title">lets-talk.txt</h2>
+          <div class="site-modal__actions">
+            <button type="button" class="site-modal__close" data-modal-close aria-label="Close contact popup">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div class="site-modal__body site-modal__body--scroll">
+          <div class="contact-mail">
+            <i class="fas fa-paper-plane contact-mail__icon" aria-hidden="true"></i>
+            <h3>Let's talk</h3>
+            <p>
+              Have a question, an opportunity, or just want to say hello? Send me an email and I'll get back to you as
+              soon as I can.
+            </p>
+            <a class="contact-mail__address" href="mailto:info@shakilahmed.tech">info@shakilahmed.tech</a>
+            <a class="btn primary-btn contact-mail__btn" href="mailto:info@shakilahmed.tech">
+              <i class="fas fa-envelope" aria-hidden="true"></i> Email Me
+            </a>
+            <div class="social-links">
+              <a href="https://github.com/ahmedmshakil" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub profile">
+                <i class="fab fa-github"></i>
+              </a>
+              <a href="https://linkedin.com/in/ahmedmshakil" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn profile">
+                <i class="fab fa-linkedin"></i>
+              </a>
+              <a href="https://codeforces.com/profile/shakil_13" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Codeforces profile">
+                <i class="fas fa-code"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IP report popup, opened from the detected IP in the header -->
+    <div class="site-modal" id="ip-modal" role="dialog" aria-modal="true" aria-labelledby="ip-modal-title" hidden>
+      <div class="site-modal__backdrop" data-modal-close></div>
+      <div class="site-modal__panel site-modal__panel--compact">
+        <div class="site-modal__header">
+          <div class="terminal-buttons" aria-hidden="true">
+            <span class="terminal-button red"></span>
+            <span class="terminal-button yellow"></span>
+            <span class="terminal-button green"></span>
+          </div>
+          <h2 class="site-modal__title" id="ip-modal-title">ipinfo.json</h2>
+          <div class="site-modal__actions">
+            <button type="button" class="site-modal__btn" data-ip-copy>
+              <i class="fas fa-copy" aria-hidden="true"></i><span>Copy JSON</span>
+            </button>
+            <button type="button" class="site-modal__btn site-modal__btn--primary" data-ip-download>
+              <i class="fas fa-download" aria-hidden="true"></i><span>Download</span>
+            </button>
+            <button type="button" class="site-modal__close" data-modal-close aria-label="Close IP report">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div class="site-modal__body site-modal__body--scroll">
+          <div class="ip-report" data-ip-report></div>
         </div>
       </div>
     </div>

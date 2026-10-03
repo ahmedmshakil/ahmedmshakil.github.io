@@ -111,8 +111,7 @@
     contentElement.innerHTML = `
       <div class="left-panel">
         <section class="ip-spotlight card">
-          <span class="eyebrow">Network Snapshot</span>
-          <h2>Your IP Address</h2>
+          <h2 class="eyebrow">Your IP Address</h2>
           <div class="ip-value">${escapeHtml(data.ip || "N/A")}</div>
         </section>
 

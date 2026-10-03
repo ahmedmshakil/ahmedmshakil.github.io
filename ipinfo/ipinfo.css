@@ -209,13 +209,6 @@ body::after {
   text-transform: uppercase;
 }
 
-.ip-spotlight h2 {
-  margin-bottom: 14px;
-  font-size: 1rem;
-  color: var(--ip-text-secondary);
-  font-weight: 600;
-}
-
 .ip-value {
   display: block;
   font-family: var(--ip-font-mono);

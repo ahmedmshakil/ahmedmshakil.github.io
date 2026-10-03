@@ -5,7 +5,7 @@
 
 document.addEventListener("DOMContentLoaded", function () {
   const IP_STORAGE_KEY = "ipinfo_data";
-  const IP_INFO_PAGE_URL = "ipinfo";
+  const modalControllers = new Map();
   const TERMINAL_FRAMES = [
     {
       command: "whoami",
@@ -37,11 +37,272 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   ];
 
+  const IP_REPORT_FIELDS = [
+    ["Hostname", "hostname"],
+    ["City", "city"],
+    ["Region", "region"],
+    ["Country", "country"],
+    ["Location", "loc"],
+    ["Organization", "org"],
+    ["Postal code", "postal"],
+    ["Timezone", "timezone"],
+  ];
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   function isValidIP(ip) {
     const ipv4Pattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     const ipv6Pattern = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::$|^([0-9a-fA-F]{1,4}:){1,7}:$|^:(:([0-9a-fA-F]{1,4})){1,7}$|^([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}$|^([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}$|^([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}$|^([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}$|^([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}$|^[0-9a-fA-F]{1,4}:(:[0-9a-fA-F]{1,4}){1,6}$/;
 
     return ipv4Pattern.test(ip) || ipv6Pattern.test(ip);
+  }
+
+  function countryCodeToFlag(countryCode) {
+    if (!countryCode || countryCode.length !== 2) {
+      return "";
+    }
+
+    return String.fromCodePoint(
+      ...countryCode
+        .toUpperCase()
+        .split("")
+        .map((character) => 127397 + character.charCodeAt(0)),
+    );
+  }
+
+  function renderIpReport(container, data) {
+    if (!container) {
+      return;
+    }
+
+    if (!data) {
+      container.innerHTML = `
+        <p class="ip-report__note">
+          Your IP address hasn't been detected yet. Check your connection or any ad blocker, then try again.
+        </p>
+      `;
+      return;
+    }
+
+    const items = IP_REPORT_FIELDS.map(([label, key]) => {
+      const value = key === "country" ? `${countryCodeToFlag(data.country)} ${data.country || ""}`.trim() : data[key];
+
+      return `
+        <div class="ip-report__item">
+          <dt>${label}</dt>
+          <dd>${escapeHtml(value || "N/A")}</dd>
+        </div>
+      `;
+    }).join("");
+
+    container.innerHTML = `
+      <section class="ip-report__spotlight">
+        <span class="ip-report__kicker">Your IP Address</span>
+        <div class="ip-report__ip">${escapeHtml(data.ip)}</div>
+      </section>
+      <dl class="ip-report__grid">${items}</dl>
+      <pre class="ip-report__json">${escapeHtml(JSON.stringify(data, null, 2))}</pre>
+    `;
+  }
+
+  // Fold typography down to the single-byte characters WinAnsiEncoding can show.
+  function toPdfText(value) {
+    return String(value ?? "")
+      .replace(/[\u2013\u2014]/g, "-")
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201c\u201d]/g, '"')
+      .replace(/[^\x20-\xff]/g, "");
+  }
+
+  // Helvetica and Arial share their metrics, so the canvas gives usable PDF text widths.
+  function createPdfTextMeasurer() {
+    const context = document.createElement("canvas").getContext("2d");
+    const cssFonts = {
+      F1: "{size}px Helvetica, Arial, sans-serif",
+      F2: "bold {size}px Helvetica, Arial, sans-serif",
+      F3: "{size}px 'Courier New', monospace",
+    };
+    const fallbackRatios = { F1: 0.5, F2: 0.55, F3: 0.6 };
+
+    return (value, size, font) => {
+      if (!context) {
+        return value.length * size * fallbackRatios[font];
+      }
+
+      context.font = cssFonts[font].replace("{size}", size);
+      return context.measureText(value).width;
+    };
+  }
+
+  // Hand-written single page PDF so the report downloads without pulling in a PDF library.
+  function createIpReportPdf(data) {
+    const PAGE_WIDTH = 595.28;
+    const PAGE_HEIGHT = 841.89;
+    const MARGIN = 48;
+    const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
+    const INK = {
+      text: "0.11 0.13 0.15",
+      muted: "0.42 0.46 0.5",
+      accent: "0.3 0.69 0.31",
+      rule: "0.85 0.86 0.88",
+    };
+
+    const measure = createPdfTextMeasurer();
+    const operations = [];
+
+    const text = (value, { x, y, size = 10, font = "F1", color = INK.text, align = "left" }) => {
+      const content = toPdfText(value);
+      if (!content) return;
+
+      const left = align === "right" ? x - measure(content, size, font) : x;
+      const escaped = content.replace(/([\\()])/g, "\\$1");
+      operations.push(`BT ${color} rg /${font} ${size} Tf 1 0 0 1 ${left.toFixed(2)} ${y.toFixed(2)} Tm (${escaped}) Tj ET`);
+    };
+
+    const rule = (y, { color = INK.rule, width = 0.8 } = {}) => {
+      operations.push(`${color} RG ${width} w ${MARGIN} ${y} m ${PAGE_WIDTH - MARGIN} ${y} l S`);
+    };
+
+    const panel = (y, height) => {
+      operations.push(
+        `0.97 0.97 0.98 rg ${INK.rule} RG 0.6 w ${MARGIN} ${y.toFixed(2)} ${CONTENT_WIDTH} ${height.toFixed(2)} re B`,
+      );
+    };
+
+    const truncate = (value, maxWidth, size, font) => {
+      let content = toPdfText(value);
+      if (measure(content, size, font) <= maxWidth) return content;
+
+      while (content.length > 1 && measure(`${content}...`, size, font) > maxWidth) {
+        content = content.slice(0, -1);
+      }
+
+      return `${content}...`;
+    };
+
+    text("Md Shakil Ahmed", { x: MARGIN, y: 790, size: 15, font: "F2" });
+    text("IT, Network & DevOps Engineer \u00b7 shakilahmed.tech", { x: MARGIN, y: 774, size: 8.5, color: INK.muted });
+    text("IP INFORMATION REPORT", {
+      x: PAGE_WIDTH - MARGIN,
+      y: 790,
+      size: 10,
+      font: "F2",
+      color: INK.accent,
+      align: "right",
+    });
+    text(new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }), {
+      x: PAGE_WIDTH - MARGIN,
+      y: 774,
+      size: 8.5,
+      color: INK.muted,
+      align: "right",
+    });
+    rule(762, { color: INK.accent, width: 1.6 });
+
+    text("DETECTED IP ADDRESS", { x: MARGIN, y: 726, size: 8, font: "F2", color: INK.muted });
+    text(data.ip, { x: MARGIN, y: 694, size: 24, font: "F2" });
+    rule(674);
+
+    text("CONNECTION DETAILS", { x: MARGIN, y: 646, size: 8, font: "F2", color: INK.muted });
+
+    const columnWidth = CONTENT_WIDTH / 2;
+    IP_REPORT_FIELDS.forEach(([label, key], index) => {
+      const x = MARGIN + (index % 2) * columnWidth;
+      const y = 616 - Math.floor(index / 2) * 50;
+
+      text(label.toUpperCase(), { x, y, size: 7.5, font: "F2", color: INK.muted });
+      text(truncate(data[key] || "N/A", columnWidth - 18, 10.5, "F1"), { x, y: y - 16, size: 10.5 });
+    });
+
+    rule(428);
+    text("RAW JSON", { x: MARGIN, y: 400, size: 8, font: "F2", color: INK.muted });
+
+    // Tighten the leading if the payload is unusually long, so it still fits on one page.
+    const jsonLines = JSON.stringify(data, null, 2).split("\n");
+    const jsonTop = 386;
+    const leading = Math.min(11, (jsonTop - 228) / jsonLines.length);
+    panel(jsonTop - (jsonLines.length * leading + 18), jsonLines.length * leading + 18);
+
+    jsonLines.forEach((line, index) => {
+      const y = jsonTop - 14 - index * leading;
+      text(truncate(line, CONTENT_WIDTH - 24, leading - 3, "F3"), {
+        x: MARGIN + 12,
+        y,
+        size: leading - 3,
+        font: "F3",
+        color: INK.muted,
+      });
+    });
+
+    text("ABOUT THIS REPORT", { x: MARGIN, y: 200, size: 8, font: "F2", color: INK.muted });
+    text("Network details detected for this visitor's public IP at the time shown above.", {
+      x: MARGIN,
+      y: 184,
+      size: 8.5,
+      color: INK.muted,
+    });
+    text("Lookup data from ipinfo.io. Nothing from this report is stored on shakilahmed.tech.", {
+      x: MARGIN,
+      y: 172,
+      size: 8.5,
+      color: INK.muted,
+    });
+
+    rule(104);
+    text("Report prepared by Md Shakil Ahmed", { x: MARGIN, y: 86, size: 9, font: "F2" });
+    text("\u00a9 2026 Shakil Ahmed. All Rights Reserved. \u00b7 shakilahmed.tech", {
+      x: MARGIN,
+      y: 74,
+      size: 8,
+      color: INK.muted,
+    });
+    text("Data source: ipinfo.io", { x: PAGE_WIDTH - MARGIN, y: 86, size: 8, color: INK.muted, align: "right" });
+    text("Page 1 of 1", { x: PAGE_WIDTH - MARGIN, y: 74, size: 8, color: INK.muted, align: "right" });
+
+    const stream = operations.join("\n");
+    const objects = [
+      "<< /Type /Catalog /Pages 2 0 R >>",
+      "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_WIDTH} ${PAGE_HEIGHT}] ` +
+        "/Resources << /Font << /F1 5 0 R /F2 6 0 R /F3 7 0 R >> >> /Contents 4 0 R >>",
+      `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
+      "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",
+      "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>",
+      "<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>",
+      "<< /Title (IP Information Report) /Author (Md Shakil Ahmed) /Creator (shakilahmed.tech) >>",
+    ];
+
+    const bytes = [];
+    const write = (value) => {
+      for (let index = 0; index < value.length; index += 1) {
+        bytes.push(value.charCodeAt(index) & 0xff);
+      }
+    };
+
+    write("%PDF-1.4\n");
+    const offsets = objects.map((body, index) => {
+      const offset = bytes.length;
+      write(`${index + 1} 0 obj\n${body}\nendobj\n`);
+      return offset;
+    });
+
+    // The cross-reference table needs byte offsets, so every entry is padded to 20 bytes.
+    const startXref = bytes.length;
+    write(`xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`);
+    offsets.forEach((offset) => write(`${String(offset).padStart(10, "0")} 00000 n \n`));
+    write(
+      `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R /Info ${objects.length} 0 R >>\n` +
+        `startxref\n${startXref}\n%%EOF\n`,
+    );
+
+    return new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
   }
 
   function initializeIpInfo() {
@@ -85,23 +346,71 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    ipLinkElement.addEventListener("click", function (event) {
-      event.preventDefault();
+    async function copyIpJson(button) {
+      const label = button.querySelector("span");
 
-      if (!ipInfoData) {
-        alert("IP information not loaded yet. Please wait a moment.");
-        return;
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(ipInfoData, null, 2));
+        if (label) label.textContent = "Copied";
+      } catch (error) {
+        console.error("Copying the IP report failed:", error);
+        if (label) label.textContent = "Copy failed";
       }
 
-      localStorage.setItem(IP_STORAGE_KEY, JSON.stringify(ipInfoData));
+      setTimeout(() => {
+        if (label) label.textContent = "Copy JSON";
+      }, 1800);
+    }
 
-      const ipInfoWindow = window.open(IP_INFO_PAGE_URL, "_blank", "noopener");
-      if (ipInfoWindow) {
-        ipInfoWindow.opener = null;
+    function downloadIpReport(button) {
+      const label = button.querySelector("span");
+
+      try {
+        const url = URL.createObjectURL(createIpReportPdf(ipInfoData));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `ip-report-${ipInfoData.ip}.pdf`;
+        // Some browsers only honour a programmatic click on an anchor in the document.
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        if (label) label.textContent = "Saved";
+      } catch (error) {
+        console.error("Building the IP report PDF failed:", error);
+        if (label) label.textContent = "Failed";
       }
-    });
+
+      setTimeout(() => {
+        if (label) label.textContent = "Download";
+      }, 1800);
+    }
 
     fetchIpInfo();
+
+    const ipModal = modalControllers.get("ip-modal");
+    if (!ipModal) {
+      return;
+    }
+
+    const report = document.querySelector("[data-ip-report]");
+    const copyButton = document.querySelector("[data-ip-copy]");
+    const downloadButton = document.querySelector("[data-ip-download]");
+
+    // Fill the popup just before it opens so it always shows the latest lookup.
+    ipModal.onBeforeOpen = () => {
+      if (ipInfoData) {
+        // The standalone /ipinfo report reads the lookup back from storage.
+        localStorage.setItem(IP_STORAGE_KEY, JSON.stringify(ipInfoData));
+      }
+
+      renderIpReport(report, ipInfoData);
+      if (copyButton) copyButton.hidden = !ipInfoData;
+      if (downloadButton) downloadButton.hidden = !ipInfoData;
+    };
+
+    copyButton?.addEventListener("click", () => copyIpJson(copyButton));
+    downloadButton?.addEventListener("click", () => downloadIpReport(downloadButton));
   }
 
   function initializeMobileNavigation() {
@@ -140,6 +449,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function initializeSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      // Links that open a popup keep their hash only as a no-JS fallback.
+      if (anchor.hasAttribute("data-modal-open")) {
+        return;
+      }
+
       anchor.addEventListener("click", function (event) {
         const targetId = this.getAttribute("href");
 
@@ -356,52 +670,58 @@ document.addEventListener("DOMContentLoaded", function () {
     update();
   }
 
-  // Resume viewer popup: opens the PDF in a modal with open/download actions.
-  function initializeResumeModal() {
-    const modal = document.getElementById("resume-modal");
-    const triggers = document.querySelectorAll("[data-resume-open]");
-    if (!modal || !triggers.length) return;
-
-    const frame = modal.querySelector("[data-resume-frame]");
-    const closeButtons = modal.querySelectorAll("[data-resume-close]");
-    const panel = modal.querySelector(".resume-modal__panel");
+  // Popup shell shared by the resume viewer, the "Let's talk" card and the IP report.
+  function createModalController(modal) {
+    const frame = modal.querySelector("[data-modal-frame]");
+    const closeButtons = modal.querySelectorAll("[data-modal-close]");
+    const panel = modal.querySelector(".site-modal__panel");
     let lastFocused = null;
 
-    const open = (event) => {
-      event.preventDefault();
-      lastFocused = document.activeElement;
-      // Load the PDF only the first time the viewer is opened.
-      if (frame && !frame.getAttribute("src")) {
-        frame.setAttribute("src", frame.dataset.src);
-      }
-      modal.hidden = false;
-      document.body.classList.add("modal-open");
-      requestAnimationFrame(() => modal.classList.add("is-open"));
-      modal.querySelector(".resume-modal__close")?.focus();
+    const controller = {
+      // Consumers can set this to fill the popup right before it appears.
+      onBeforeOpen: null,
+
+      open() {
+        if (typeof controller.onBeforeOpen === "function") {
+          controller.onBeforeOpen();
+        }
+        lastFocused = document.activeElement;
+        // Load an embedded document only the first time the popup is opened.
+        if (frame && !frame.getAttribute("src")) {
+          frame.setAttribute("src", frame.dataset.src);
+        }
+        modal.hidden = false;
+        document.body.classList.add("modal-open");
+        // Flush the style change so the fade-in transition runs from its start value.
+        void modal.offsetWidth;
+        modal.classList.add("is-open");
+        modal.querySelector(".site-modal__close")?.focus();
+      },
+
+      close() {
+        if (modal.hidden) return;
+        modal.classList.remove("is-open");
+        document.body.classList.remove("modal-open");
+        setTimeout(() => {
+          modal.hidden = true;
+        }, 200);
+        lastFocused?.focus();
+      },
     };
 
-    const close = () => {
-      if (modal.hidden) return;
-      modal.classList.remove("is-open");
-      document.body.classList.remove("modal-open");
-      setTimeout(() => {
-        modal.hidden = true;
-      }, 200);
-      lastFocused?.focus();
-    };
-
-    triggers.forEach((trigger) => trigger.addEventListener("click", open));
-    closeButtons.forEach((button) => button.addEventListener("click", close));
+    closeButtons.forEach((button) => button.addEventListener("click", controller.close));
 
     document.addEventListener("keydown", (event) => {
       if (modal.hidden) return;
       if (event.key === "Escape") {
-        close();
+        controller.close();
         return;
       }
       // Keep keyboard focus inside the popup.
       if (event.key === "Tab" && panel) {
-        const focusable = panel.querySelectorAll("a[href], button:not([disabled]), iframe");
+        const focusable = [...panel.querySelectorAll("a[href], button:not([disabled]), iframe")].filter(
+          (element) => !element.hidden,
+        );
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (event.shiftKey && document.activeElement === first) {
@@ -413,11 +733,30 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     });
+
+    return controller;
   }
 
+  function initializeModals() {
+    document.querySelectorAll(".site-modal").forEach((modal) => {
+      modalControllers.set(modal.id, createModalController(modal));
+    });
+
+    document.querySelectorAll("[data-modal-open]").forEach((trigger) => {
+      const controller = modalControllers.get(trigger.dataset.modalOpen);
+      // Without the popup markup the trigger stays a plain link.
+      if (!controller) return;
+
+      trigger.addEventListener("click", (event) => {
+        event.preventDefault();
+        controller.open();
+      });
+    });
+  }
+
+  initializeModals();
   initializeIpInfo();
   initializeNavScroll();
-  initializeResumeModal();
   initializeToolMarquee();
   initializeToolLogoFallback();
   initializeMobileNavigation();
