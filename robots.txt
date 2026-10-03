@@ -3,3 +3,5 @@ Allow: /
 Disallow: /ipinfo/
 
 Sitemap: https://shakilahmed.tech/sitemap.xml
+Sitemap: https://blog.shakilahmed.tech/sitemap.xml
+Sitemap: https://keylm.shakilahmed.tech/sitemap.xml
